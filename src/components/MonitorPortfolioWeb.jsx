@@ -2055,10 +2055,54 @@ function SmoothParallaxBlock({
 
 const ParallaxSectionBlock = SmoothParallaxBlock;
 
-// ── PERMANENTLY STACKED TECH STACK BOOKSHELF (All 16 Volumes Stacked & Steady On Normal Scroll) ──
+// ── PARALLAX RATCHET TECH STACK BOOKSHELF (Stacks on scroll down; stays stacked on scroll up) ──
 function ParallaxBookshelf({ techStackItems }) {
-  const sectionRef = useRef(null);
+  const trackRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const maxProgressRef = useRef(0);
+  const [isPinned, setIsPinned] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState(null);
+
+  useEffect(() => {
+    let rafId = null;
+
+    const computeProgress = () => {
+      const el = trackRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || 800;
+
+      const pinTop = 64;
+      const totalLockedDistance = Math.max(1, rect.height - (vh - pinTop));
+      const scrolledWhilePinned = pinTop - rect.top;
+
+      const currentlyPinned = scrolledWhilePinned >= -8 && scrolledWhilePinned <= totalLockedDistance + 8;
+      setIsPinned(currentlyPinned);
+
+      const raw = Math.max(0, Math.min(1, scrolledWhilePinned / totalLockedDistance));
+
+      // Parallax ratchet: stacks books when scrolling down, and stays as is when scrolling up!
+      if (raw > maxProgressRef.current) {
+        maxProgressRef.current = raw;
+        setScrollProgress(raw);
+      }
+    };
+
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(computeProgress);
+    };
+
+    computeProgress();
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', onScroll, { capture: true });
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
 
   // Ordered strictly according to visual size from Bottom (idx 0 = Widest) to Top (idx 15 = Smallest)
   // Color palette cycles through Navy Blue, Dark Grey, Grey, and Light Grey
@@ -2191,23 +2235,29 @@ function ParallaxBookshelf({ techStackItems }) {
   ];
 
   const totalBooks = orderedBooks.length;
+  // Progressively maps 0..0.88 of the scroll track to all 16 books
+  const bookPhaseProgress = Math.max(0, Math.min(1, scrollProgress / 0.88));
+  const floatBookIndex = bookPhaseProgress * totalBooks;
+  const stackedCount = Math.min(totalBooks, Math.floor(floatBookIndex + 0.06));
   const activeBook =
     hoveredIdx !== null
       ? orderedBooks[hoveredIdx]
-      : orderedBooks[0]; // Default to foundational React Native or currently selected
+      : orderedBooks[Math.min(totalBooks - 1, Math.max(0, stackedCount > 0 ? stackedCount - 1 : 0))];
 
   return (
     <div
-      ref={sectionRef}
+      ref={trackRef}
       style={{
         position: 'relative',
-        width: '100%',
-        paddingTop: '20px',
-        paddingBottom: '32px',
+        height: 'clamp(180vh, 210vh, 240vh)',
       }}
     >
       <div
         style={{
+          position: 'sticky',
+          top: '64px',
+          paddingTop: '8px',
+          paddingBottom: '24px',
           width: '100%',
         }}
       >
@@ -2252,11 +2302,17 @@ function ParallaxBookshelf({ techStackItems }) {
             {/* 16 Level Books Graduated by Size from Bottom (idx 0 = Widest) to Top (idx 15 = Smallest) */}
             {orderedBooks.map((book, idx) => {
               const isHovered = hoveredIdx === idx;
+              const itemProgress = Math.max(0, Math.min(1, floatBookIndex - idx));
+              const isRevealed = itemProgress > 0.04;
+              const isLanding = itemProgress > 0.04 && itemProgress < 0.96;
+
               const bookHeight = 34;
               const pal = bookPalettes[book.palette] || bookPalettes.navy;
 
-              // Permanently stacked in natural scroll flow; slides outward slightly on hover/tap
-              const slideX = isHovered ? 14 : 0;
+              // Parallax motion: drops down and slides in on scroll down; stays stacked on scroll up
+              const dropY = (1 - itemProgress) * -28;
+              const slideX = isHovered ? 14 : (1 - itemProgress) * -80;
+              const opacity = isRevealed ? 1 : 0;
 
               // Strictly decreasing minimum width + right padding by index so every book is ordered according to size!
               const minBookWidth = 515 - idx * 17;
@@ -2282,13 +2338,17 @@ function ParallaxBookshelf({ techStackItems }) {
                     borderRadius: '0 8px 8px 0',
                     position: 'relative',
                     zIndex: isHovered ? 30 : idx + 2,
-                    cursor: 'pointer',
-                    pointerEvents: 'auto',
-                    opacity: 1,
-                    transform: `translate3d(${slideX}px, 0, 0)`,
-                    transition: 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease',
+                    cursor: isRevealed ? 'pointer' : 'default',
+                    pointerEvents: isRevealed ? 'auto' : 'none',
+                    opacity: opacity,
+                    transform: isHovered
+                      ? 'translate3d(14px, 0px, 0)'
+                      : `translate3d(${slideX}px, ${dropY}px, 0)`,
+                    transition: isHovered
+                      ? 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease'
+                      : 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease-out, box-shadow 0.2s ease',
                     boxShadow:
-                      isHovered
+                      isHovered || isLanding
                         ? '12px 14px 30px rgba(15, 27, 43, 0.32)'
                         : '4px 6px 14px rgba(15, 27, 43, 0.14)',
                     display: 'inline-flex',
@@ -2447,15 +2507,20 @@ function ParallaxBookshelf({ techStackItems }) {
                     width: '7px',
                     height: '7px',
                     borderRadius: '50%',
-                    backgroundColor: '#16263b',
+                    backgroundColor: stackedCount === totalBooks ? '#10b981' : NAVY_PRIMARY,
+                    boxShadow: stackedCount === totalBooks ? '0 0 10px rgba(16, 185, 129, 0.6)' : `0 0 8px ${NAVY_PRIMARY}66`,
                   }}
                 />
                 <span style={{ fontWeight: '800', fontFamily: 'monospace' }}>
-                  16 / 16 BOOKS
+                  {String(stackedCount).padStart(2, '0')} / {String(totalBooks).padStart(2, '0')} BOOKS
                 </span>
                 <span style={{ color: TEXT_MUTED }}>·</span>
                 <span style={{ fontWeight: '600', color: TEXT_SECONDARY }}>
-                  {hoveredIdx !== null ? `Active: ${activeBook?.label}` : 'All 16 Volumes Stacked'}
+                  {stackedCount === 0
+                    ? '16 Technical Volumes'
+                    : stackedCount < totalBooks
+                      ? `Active: ${activeBook?.label}`
+                      : 'All 16 Volumes Stacked'}
                 </span>
               </div>
             </div>
@@ -2527,7 +2592,7 @@ function ParallaxBookshelf({ techStackItems }) {
                   flexShrink: 0,
                 }}
               >
-                100% READY
+                {stackedCount === totalBooks ? '100% READY' : `${Math.round(bookPhaseProgress * 100)}%`}
               </div>
             </div>
 
@@ -2541,6 +2606,8 @@ function ParallaxBookshelf({ techStackItems }) {
             >
               {capabilityCards.map((card, i) => {
                 const Icon = card.icon;
+                const cardStart = 0.4 + i * 0.1;
+                const cardProg = Math.max(0, Math.min(1, (scrollProgress - cardStart) / 0.14));
                 return (
                   <div
                     key={i}
@@ -2553,9 +2620,9 @@ function ParallaxBookshelf({ techStackItems }) {
                       flexDirection: 'column',
                       gap: '8px',
                       boxShadow: '0 12px 30px rgba(20, 21, 21, 0.04)',
-                      opacity: 1,
-                      transform: 'translate3d(0, 0, 0)',
-                      transition: 'transform 0.22s ease-out, box-shadow 0.22s ease-out',
+                      opacity: Math.max(0.65, cardProg),
+                      transform: `translate3d(0, ${(1 - cardProg) * 14}px, 0)`,
+                      transition: 'transform 0.22s ease-out, opacity 0.22s ease-out, box-shadow 0.22s ease-out',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
