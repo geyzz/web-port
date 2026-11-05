@@ -4902,13 +4902,15 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                 backgroundColor: BG_SURFACE,
                 border: `1px solid ${BORDER_SUBTLE}`,
                 borderRadius: '24px',
-                padding: 'clamp(28px, 4vw, 48px)',
+                padding: 'clamp(24px, 4vw, 44px)',
                 boxShadow: '0 20px 50px rgba(20, 21, 21, 0.04)',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '48px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                gap: 'clamp(28px, 4vw, 48px)',
                 position: 'relative',
                 overflow: 'hidden',
+                boxSizing: 'border-box',
+                width: '100%',
               }}
             >
               {/* Subtle Giant Watermark Number in Background Corner */}
@@ -4929,7 +4931,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                 04
               </div>
 
-              <ParallaxSectionBlock speed={0.02} delayMs={70}>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative', zIndex: 2 }}>
                 <div>
                   <h3
                     style={{
@@ -5029,9 +5031,9 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                     })}
                   </div>
                 </div>
-              </ParallaxSectionBlock>
+              </div>
 
-              <ParallaxSectionBlock speed={0.03} delayMs={100}>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative', zIndex: 2 }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', position: 'relative', zIndex: 2 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: TEXT_SECONDARY, marginBottom: '6px' }}>
@@ -5177,7 +5179,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                   </button>
 
                 </form>
-              </ParallaxSectionBlock>
+              </div>
             </div>
           </ParallaxSectionBlock>
         </section>

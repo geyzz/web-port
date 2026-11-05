@@ -1691,53 +1691,56 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     controls.maxDistance = 4.5;
     controls.maxPolarAngle = Math.PI - 0.12;
 
-    // 5. ACCURATE CYCLES-MATCHING LIGHTING SETUP
-    // Soft warm ambient bounce
-    const ambient = new THREE.AmbientLight(0x28180e, 0.4);
+    // 5. WARM, VIBRANT ARCHITECTURAL STUDIO LIGHTING (Reliable 100% illumination, zero black-outs)
+    // A. Warm general ambient light guaranteeing all meshes are visible & textured
+    const ambient = new THREE.AmbientLight(0xffecd6, 1.35);
     scene.add(ambient);
 
-    // A. Warm Amber Cove Uplight placed BEHIND the monitor against the panel
-    const monitorBacklight = new THREE.PointLight(0xff7a15, 9.5, 3.8);
+    // B. Soft studio fill directional light pointing into room from top-front
+    const studioFill = new THREE.DirectionalLight(0xfffaea, 1.25);
+    studioFill.position.set(1.5, 7.5, 1.0);
+    studioFill.target.position.set(-2.5, 5.8, 0.0);
+    scene.add(studioFill);
+    scene.add(studioFill.target);
+
+    // C. Warm Amber Cove Uplight placed BEHIND the monitor against the panel
+    const monitorBacklight = new THREE.PointLight(0xff7a15, 8.0, 4.5);
     monitorBacklight.position.set(-2.98, 5.85, 0.08);
     scene.add(monitorBacklight);
 
-    const monitorBacklightTop = new THREE.PointLight(0xff8c20, 6.0, 3.2);
+    const monitorBacklightTop = new THREE.PointLight(0xff8c20, 5.0, 3.8);
     monitorBacklightTop.position.set(-2.98, 6.5, 0.08);
     scene.add(monitorBacklightTop);
 
-    // B. Left Upper Shelf Warm Cove Light
-    const shelfLightLeft = new THREE.PointLight(0xff9925, 4.5, 2.8);
+    // D. Left Upper Shelf Warm Cove Light
+    const shelfLightLeft = new THREE.PointLight(0xff9925, 4.2, 3.2);
     shelfLightLeft.position.set(-2.4, 7.0, 1.2);
     scene.add(shelfLightLeft);
 
-    // C. Right Floating Shelf Warm Cove Light (Positioned under the books at Z: -1.3, safely away from the vases at Z: -0.76)
-    const shelfLightRight = new THREE.PointLight(0xff9925, 3.2, 2.5);
+    // E. Right Floating Shelf Warm Cove Light
+    const shelfLightRight = new THREE.PointLight(0xff9925, 3.2, 3.0);
     shelfLightRight.position.set(-2.5, 6.45, -1.35);
     scene.add(shelfLightRight);
 
-    // D. Table Lamp Light (Calibrated so desk papers and mug do not clip or wash out)
-    const tableLamp = new THREE.PointLight(0xfff2be, 1.6, 3.2);
+    // F. Table Lamp Light (Warm glow over desk surface)
+    const tableLamp = new THREE.PointLight(0xfff2be, 1.8, 3.8);
     tableLamp.position.set(-0.72, 5.92, -1.62);
-    tableLamp.castShadow = true;
-    tableLamp.shadow.mapSize.set(1024, 1024);
-    tableLamp.shadow.bias = -0.001;
-    tableLamp.shadow.normalBias = 0.02;
     scene.add(tableLamp);
 
-    // E. Ceiling Recessed Perimeter LED Strip
-    const ceilingLightCenter = new THREE.PointLight(0xfffaea, 3.2, 5.0);
+    // G. Ceiling Recessed Perimeter LED Strip
+    const ceilingLightCenter = new THREE.PointLight(0xfffaea, 3.0, 5.5);
     ceilingLightCenter.position.set(-1.4, 7.82, 0.0);
     scene.add(ceilingLightCenter);
 
-    // F. Monitor Screen Cool Blue Ambient
-    const monitorScreenLight = new THREE.PointLight(0x3b77cc, 1.2, 2.2);
+    // H. Monitor Screen Cool Blue Ambient
+    const monitorScreenLight = new THREE.PointLight(0x3b77cc, 1.5, 2.5);
     monitorScreenLight.position.set(-2.4, 5.65, 0.08);
     scene.add(monitorScreenLight);
 
     // 6. LOAD GLB AND FIX ALL MATERIALS (MUG, VASES, WOOD, BOOKS, PAPERS)
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    dracoLoader.setDecoderPath('/draco/');
     loader.setDRACOLoader(dracoLoader);
     const interactiveList = [];
     let bookCounter = 0;
@@ -1771,7 +1774,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     const resumePaperTexture = createResumePaperTexture();
     const aboutMePaperTexture = createAboutMePaperTexture();
     const polaroidPhotoTexture = new THREE.TextureLoader().load('/ghayzelle-polaroid.jpg');
-    polaroidPhotoTexture.flipY = false;
+    polaroidPhotoTexture.flipY = true;
     polaroidPhotoTexture.generateMipmaps = true;
     polaroidPhotoTexture.minFilter = THREE.LinearFilter;
     polaroidPhotoTexture.magFilter = THREE.LinearFilter;
@@ -1917,14 +1920,17 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               const posAttr = child.geometry.attributes.position;
               const uvAttr = child.geometry.attributes.uv;
               if (posAttr && uvAttr) {
+                // Front face of Cube.037 faces towards room camera (z > 0.1)
+                // In local space due to -94.2 deg Z rotation:
+                // y goes from -1 (left) to +1 (right) -> u = (y + 1) * 0.5
+                // x goes from -1 (up) to +1 (down) -> v = (x + 1) * 0.5 (with flipY = false on canvas texture)
                 for (let i = 0; i < posAttr.count; i++) {
                   const z = posAttr.getZ(i);
-                  // Front face of Cube.037 faces towards room camera (z <= 0)
-                  if (z <= 0.1) {
+                  if (z > 0.1) {
                     const x = posAttr.getX(i);
                     const y = posAttr.getY(i);
                     const u = (y + 1) * 0.5;
-                    const v = (1 - x) * 0.5;
+                    const v = (x + 1) * 0.5;
                     uvAttr.setXY(i, u, v);
                   } else {
                     uvAttr.setXY(i, 0.01, 0.01);
@@ -1959,12 +1965,15 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               const posAttr = child.geometry.attributes.position;
               const uvAttr = child.geometry.attributes.uv;
               if (posAttr && uvAttr) {
-                // Compute upright UV projection (maps hat to top, feet to bottom, crocodile horizontally)
+                // In local plane geometry:
+                // x goes from -1 (left) to +1 (right)
+                // z goes from -1 (top of polaroid frame) to +1 (bottom of polaroid frame)
+                // With flipY = true: v=1 is top of photo, v=0 is bottom
                 for (let i = 0; i < posAttr.count; i++) {
                   const x = posAttr.getX(i);
                   const z = posAttr.getZ(i);
-                  const u = (1 - z) * 0.5;
-                  const v = (x + 1) * 0.5;
+                  const u = (x + 1) * 0.5;
+                  const v = (1 - z) * 0.5;
                   uvAttr.setXY(i, u, v);
                 }
                 uvAttr.needsUpdate = true;
@@ -2199,52 +2208,11 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         model.add(resumeMesh);
         interactiveList.push(resumeMesh);
 
-        // DEDICATED CRISP PRINTED ABOUT ME MEMO SHEET ON BULLETIN BOARD
-        aboutMePaperTexture.needsUpdate = true;
-        const aboutMeGeo = new THREE.PlaneGeometry(0.584, 0.447);
-        const aboutMeMat = new THREE.MeshStandardMaterial({
-          map: aboutMePaperTexture,
-          emissiveMap: aboutMePaperTexture,
-          emissive: new THREE.Color(0xffffff),
-          emissiveIntensity: 0.75, // Crisp self-illumination guarantees 100% text legibility under all room lighting
-          roughness: 0.3,
-          metalness: 0.0,
-          side: THREE.DoubleSide,
-        });
-        const aboutMeMesh = new THREE.Mesh(aboutMeGeo, aboutMeMat);
-        aboutMeMesh.name = 'aboutMeNoteSheet';
-        aboutMeMesh.position.set(-2.285, 6.566, 1.818);
-        aboutMeMesh.rotation.set(0, Math.PI, 0.074);
-        aboutMeMesh.userData = { station: 'aboutme' };
-        model.add(aboutMeMesh);
-        interactiveList.push(aboutMeMesh);
-
-        // DEDICATED CRISP POLAROID PHOTO OVERLAY (Guaranteed 100% Upright Orientation)
-        polaroidPhotoTexture.needsUpdate = true;
-        const polaroidGeo = new THREE.PlaneGeometry(0.293, 0.338);
-        const polaroidMat = new THREE.MeshStandardMaterial({
-          map: polaroidPhotoTexture,
-          emissiveMap: polaroidPhotoTexture,
-          emissive: new THREE.Color(0xffffff),
-          emissiveIntensity: 0.4,
-          roughness: 0.2,
-          metalness: 0.05,
-          side: THREE.DoubleSide,
-        });
-        const polaroidMesh = new THREE.Mesh(polaroidGeo, polaroidMat);
-        polaroidMesh.name = 'polaroidPhotoSheet';
-        polaroidMesh.position.set(-1.765, 6.583, 1.819);
-        polaroidMesh.rotation.set(0, Math.PI, -0.187);
-        polaroidMesh.userData = { station: 'aboutme' };
-        model.add(polaroidMesh);
-        interactiveList.push(polaroidMesh);
-
         interactiveMeshesRef.current = interactiveList;
         scene.add(model);
         isModelLoadedRef.current = true;
         targetProgressRef.current = 100;
         renderer.shadowMap.needsUpdate = true;
-        renderer.render(scene, camera);
       },
       (xhr) => {
         let pct = 0;
@@ -2333,18 +2301,24 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     domEl.addEventListener('click', handleClick);
 
     // Cache DOM element references once at mount to eliminate per-frame getElementById lookups
-    const elements = {};
+    const getCalloutElements = (id) => {
+      let els = elementsRef.current[id];
+      if (!els || !els.badge) {
+        els = {
+          badge: document.getElementById(`callout-badge-${id}`),
+          lineGlow: document.getElementById(`callout-line-glow-${id}`),
+          line: document.getElementById(`callout-line-${id}`),
+          dot: document.getElementById(`callout-dot-${id}`),
+          halo: document.getElementById(`callout-halo-${id}`),
+        };
+        elementsRef.current[id] = els;
+      }
+      return els;
+    };
+
     for (let i = 0; i < CALLOUT_CONFIG.length; i++) {
-      const c = CALLOUT_CONFIG[i];
-      elements[c.id] = {
-        badge: document.getElementById(`callout-badge-${c.id}`),
-        lineGlow: document.getElementById(`callout-line-glow-${c.id}`),
-        line: document.getElementById(`callout-line-${c.id}`),
-        dot: document.getElementById(`callout-dot-${c.id}`),
-        halo: document.getElementById(`callout-halo-${c.id}`),
-      };
+      getCalloutElements(CALLOUT_CONFIG[i].id);
     }
-    elementsRef.current = elements;
 
     // Reusable projection vectors to avoid per-frame GC allocations
     const projBadgeVec = new THREE.Vector3();
@@ -2481,7 +2455,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         // Apply fast GPU transforms to elements
         for (let i = 0; i < badgeList.length; i++) {
           const b = badgeList[i];
-          const els = elementsRef.current[b.id];
+          const els = getCalloutElements(b.id);
           if (!els || !els.badge) continue;
 
           if (b.visible) {
@@ -2523,7 +2497,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
       } else if (mountRef.current && activeStationRef.current !== 'room') {
         for (let i = 0; i < CALLOUT_CONFIG.length; i++) {
           const c = CALLOUT_CONFIG[i];
-          const els = elementsRef.current[c.id];
+          const els = getCalloutElements(c.id);
           if (els && els.badge && els.badge.style.display !== 'none') {
             els.badge.style.display = 'none';
             if (els.lineGlow) els.lineGlow.style.display = 'none';
@@ -3337,19 +3311,18 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
       {/* ─────────────────────────────────────────────────────────────
           3D SPATIAL CALLOUT BADGES & POINTER LINES (Replaces Bottom Nav)
       ───────────────────────────────────────────────────────────── */}
-      {!loading && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            opacity: activeStation === 'room' ? 1 : 0,
-            transition: 'opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-            zIndex: 25,
-            overflow: 'hidden',
-          }}
-        >
-          {/* SVG Canvas for Elegant Ambient Glowing Pointer Lines & Anchor Beacons */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          opacity: (!loading && activeStation === 'room') ? 1 : 0,
+          transition: 'opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+          zIndex: 25,
+          overflow: 'hidden',
+        }}
+      >
+        {/* SVG Canvas for Elegant Ambient Glowing Pointer Lines & Anchor Beacons */}
           <svg
             style={{
               position: 'absolute',
@@ -3479,7 +3452,6 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             );
           })}
         </div>
-      )}
 
       {/* Return to Room View Pill (Visible when zoomed into any station) */}
       {!loading && activeStation !== 'room' && (
