@@ -421,12 +421,10 @@ export default function App() {
             width: '800px',
             height: '650px',
             borderRadius: '50%',
-            background: 'radial-gradient(ellipse at center, rgba(255, 115, 30, 0.08) 0%, rgba(255, 75, 20, 0.02) 50%, transparent 75%)',
+            background: 'radial-gradient(ellipse at center, rgba(255, 115, 30, 0.08) 0%, rgba(255, 75, 20, 0.02) 45%, transparent 70%)',
             pointerEvents: 'none',
             zIndex: 10,
-            filter: 'blur(70px)',
-            mixBlendMode: 'screen',
-            transition: 'opacity 0.5s ease',
+            transition: 'opacity 0.4s ease',
           }}
         />
       )}

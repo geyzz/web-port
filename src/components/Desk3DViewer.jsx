@@ -2297,15 +2297,20 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     const projBadgeVec = new THREE.Vector3();
     const projTargetVec = new THREE.Vector3();
 
-    // 8. Animation Loop with Smooth Camera Lerp & Active Collision Avoidance
+    // 8. On-Demand Animation Loop with Smooth Camera Lerp & Active Collision Avoidance
     let animationId;
+    let idleFrames = 0;
     const animate = () => {
       animationId = requestAnimationFrame(animate);
 
       // Instantly suspend 3D GPU render loop when viewing the live web portfolio
       if (isPausedRef.current) return;
 
+      let needsRender = false;
+
       if (isTransitioning.current) {
+        needsRender = true;
+        idleFrames = 0;
         camera.position.lerp(targetCamPos.current, 0.055);
         controls.target.lerp(targetLookAt.current, 0.055);
 
@@ -2325,7 +2330,18 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         }
       }
 
-      controls.update();
+      const controlsUpdated = controls.update();
+      if (controlsUpdated) {
+        needsRender = true;
+        idleFrames = 0;
+      } else if (idleFrames < 15) {
+        // Keep rendering for damping settle period
+        needsRender = true;
+        idleFrames++;
+      }
+
+      if (!needsRender) return;
+
       renderer.render(scene, camera);
 
       // Project 3D callout badges & glowing pointer lines (only active when in 'room' view)

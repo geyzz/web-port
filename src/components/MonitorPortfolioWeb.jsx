@@ -1987,6 +1987,7 @@ function SmoothParallaxBlock({
 }) {
   const containerRef = useRef(null);
   const parallaxRef = useRef(null);
+  const isInViewRef = useRef(false);
   const [isVisible, setIsVisible] = useState(false);
   const targetYRef = useRef(0);
   const currentYRef = useRef(0);
@@ -2001,16 +2002,18 @@ function SmoothParallaxBlock({
     // 1. Smooth entrance reveal observer:
     const observer = new IntersectionObserver(
       ([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
         if (entry.isIntersecting) {
           setIsVisible(true);
+          updateTarget();
         } else if (entry.boundingClientRect.top > (window.innerHeight || 800)) {
           // Only reset when scrolled well below the viewport so it never flickers while reading
           setIsVisible(false);
         }
       },
       {
-        threshold: 0.05,
-        rootMargin: '60px 0px 60px 0px',
+        threshold: 0.02,
+        rootMargin: '100px 0px 100px 0px',
       }
     );
     observer.observe(el);
@@ -2036,7 +2039,8 @@ function SmoothParallaxBlock({
     };
 
     const updateTarget = () => {
-      if (!containerRef.current) return;
+      // PERFORMANCE: Skip getBoundingClientRect() completely if off-screen (prevents layout thrashing on 27 blocks!)
+      if (!isInViewRef.current || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const vh = window.innerHeight || 800;
       // Calculate distance from screen center
@@ -2049,14 +2053,13 @@ function SmoothParallaxBlock({
       }
     };
 
-    updateTarget();
-    window.addEventListener('scroll', updateTarget, { capture: true, passive: true });
+    window.addEventListener('scroll', updateTarget, { passive: true });
     window.addEventListener('resize', updateTarget, { passive: true });
 
     return () => {
       observer.disconnect();
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
-      window.removeEventListener('scroll', updateTarget, { capture: true });
+      window.removeEventListener('scroll', updateTarget);
       window.removeEventListener('resize', updateTarget);
     };
   }, [speed]);

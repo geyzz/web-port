@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // FourPanelWindow
-export default function FourPanelWindow({
+function FourPanelWindow({
   isLit = false,
   lightOn = true,
   isHalf = false,
@@ -587,3 +587,5 @@ export default function FourPanelWindow({
     </div>
   );
 }
+
+export default React.memo(FourPanelWindow);
