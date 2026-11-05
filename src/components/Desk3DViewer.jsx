@@ -1671,9 +1671,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         curControls.maxDistance = 100.0;
       }
 
-      // Proportional travel duration: min 850ms, max 1150ms for realistic, cinematic travel
+      // Gentle, luxurious cinematic travel duration (min 1650ms, max 2100ms) eliminates sudden "woosh" rushes
       const distance = startCam.distanceTo(endCamPos);
-      const duration = Math.min(Math.max(distance * 280, 850), 1150);
+      const duration = Math.min(Math.max(distance * 380, 1650), 2100);
 
       flightState.current = {
         active: true,
@@ -2400,11 +2400,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         const elapsed = now - flight.startTime;
         const rawT = Math.min(Math.max(elapsed / flight.duration, 0), 1);
 
-        // Smooth cubic ease-in-out: starts gently with 0 jerk from exact current position,
-        // glides smoothly across 3D space, and cushions to a rest at destination ("from here to there")
-        const ease = rawT < 0.5
-          ? 4 * rawT * rawT * rawT
-          : 1 - Math.pow(-2 * rawT + 2, 3) / 2;
+        // Silky, gentle Sine Ease-In-Out: cuts peak acceleration in half compared to cubic easing,
+        // completely eliminating the abrupt "woosh" rush for a weightless, floating cinematic glide
+        const ease = 0.5 * (1 - Math.cos(Math.PI * rawT));
 
         camera.position.lerpVectors(flight.startPos, flight.endPos, ease);
         controls.target.lerpVectors(flight.startLookAt, flight.endLookAt, ease);
