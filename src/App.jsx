@@ -26,7 +26,6 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deskViewerOpen, setDeskViewerOpen] = useState(false);
   const [portfolioWebOpen, setPortfolioWebOpen] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [pullPos, setPullPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [stringHovered, setStringHovered] = useState(false);
@@ -38,6 +37,7 @@ export default function App() {
   const [emailError, setEmailError] = useState('');
 
   const containerRef = useRef(null);
+  const gridRef = useRef(null);
   const startPosRef = useRef({ x: 0, y: 0 });
   const currentPullRef = useRef({ x: 0, y: 0 });
   const isDraggingRef = useRef(false);
@@ -281,17 +281,25 @@ export default function App() {
     };
   }, []);
 
-  // Subtle mouse parallax effect
+  // High-performance hardware-accelerated mouse parallax (Zero React state re-renders!)
   useEffect(() => {
+    let rafId = null;
     const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 20; // -10px to +10px
-      const y = (e.clientY / innerHeight - 0.5) * 15; // -7.5px to +7.5px
-      setMousePos({ x, y });
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (!gridRef.current) return;
+        const { innerWidth, innerHeight } = window;
+        const x = (e.clientX / innerWidth - 0.5) * 8; // -4px to +4px
+        const y = (e.clientY / innerHeight - 0.5) * 6; // -3px to +3px
+        gridRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.02)`;
+      });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   const handleCopyEmail = (e) => {
@@ -326,6 +334,7 @@ export default function App() {
           1. ARCHITECTURAL BUILDING FACADE (WITH TOP HALF-WINDOW ROW)
       ───────────────────────────────────────────────────────────── */}
       <div
+        ref={gridRef}
         style={{
           position: 'absolute',
           inset: 0,
@@ -339,8 +348,9 @@ export default function App() {
             linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
             repeating-linear-gradient(0deg, transparent, transparent calc(20% - 2px), rgba(30, 36, 48, 0.4) calc(20% - 2px), rgba(30, 36, 48, 0.4) 20%)
           `,
-          transform: `translate(${mousePos.x * 0.4}px, ${mousePos.y * 0.4}px) scale(1.02)`,
-          transition: 'transform 0.15s ease-out',
+          transform: 'translate3d(0, 0, 0) scale(1.02)',
+          transition: 'transform 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+          willChange: 'transform',
         }}
       >
         {Array.from({ length: ROWS * COLS }).map((_, idx) => {
@@ -610,24 +620,18 @@ export default function App() {
                       <stop offset="100%" stopColor="#ff4d15" stopOpacity="0" />
                     </radialGradient>
 
-                    <filter id="fobGlow" x="-250%" y="-250%" width="600%" height="600%">
+                    <filter id="fobGlow" x="-70%" y="-70%" width="240%" height="240%">
                       <feDropShadow
                         dx="0" dy="0"
-                        stdDeviation={isThresholdReached ? '8' : !lightOn ? '14' : '4'}
+                        stdDeviation={isThresholdReached ? '4' : !lightOn ? '8' : '3'}
                         floodColor={isThresholdReached ? '#ffffff' : !lightOn ? '#ffaa30' : '#ff7728'}
-                        floodOpacity={isThresholdReached ? '1' : !lightOn ? '1' : '0.85'}
+                        floodOpacity={isThresholdReached ? '0.9' : !lightOn ? '0.85' : '0.6'}
                       />
                       <feDropShadow
-                        dx="0" dy="2"
-                        stdDeviation={isThresholdReached ? '18' : !lightOn ? '32' : '8'}
+                        dx="0" dy="1"
+                        stdDeviation={isThresholdReached ? '8' : !lightOn ? '14' : '6'}
                         floodColor={isThresholdReached ? '#ffb300' : !lightOn ? '#ff5a1e' : '#ff4d15'}
-                        floodOpacity={isThresholdReached ? '0.95' : !lightOn ? '0.95' : '0.65'}
-                      />
-                      <feDropShadow
-                        dx="0" dy="3"
-                        stdDeviation={isThresholdReached ? '30' : !lightOn ? '56' : '15'}
-                        floodColor={isThresholdReached ? '#ff6f00' : !lightOn ? '#ff3d00' : '#e65100'}
-                        floodOpacity={isThresholdReached ? '0.8' : !lightOn ? '0.85' : '0.4'}
+                        floodOpacity={isThresholdReached ? '0.8' : !lightOn ? '0.75' : '0.5'}
                       />
                     </filter>
                   </defs>

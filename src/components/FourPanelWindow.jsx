@@ -115,44 +115,6 @@ export default function FourPanelWindow({
         }}
       >
         <defs>
-          {/* Ambient room interior glow */}
-          <linearGradient id="warmInteriorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffb04a" />
-            <stop offset="35%" stopColor="#ff7a18" />
-            <stop offset="70%" stopColor="#cc4808" />
-            <stop offset="100%" stopColor="#551502" />
-          </linearGradient>
-
-          {/* Slat panel vertical stripes pattern */}
-          <pattern id="slatWoodPattern" width="6" height="156" patternUnits="userSpaceOnUse">
-            <rect width="3.5" height="156" fill="#7a421b" />
-            <rect x="3.5" width="2.5" height="156" fill="#1c0f08" />
-          </pattern>
-
-          {/* Desk Lamp Radial Glow */}
-          <radialGradient id="deskLampGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-            <stop offset="25%" stopColor="#fff2ba" stopOpacity="0.95" />
-            <stop offset="55%" stopColor="#ff9a28" stopOpacity="0.65" />
-            <stop offset="85%" stopColor="#ff5a0a" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#ff4000" stopOpacity="0" />
-          </radialGradient>
-
-          {/* Desk surface light pool */}
-          <radialGradient id="deskLightPool" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#fff8e8" stopOpacity="0.9" />
-            <stop offset="45%" stopColor="#ffaa30" stopOpacity="0.5" />
-            <stop offset="80%" stopColor="#c85010" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="#702005" stopOpacity="0" />
-          </radialGradient>
-
-          {/* Monitor Screen Glow */}
-          <linearGradient id="monitorScreenGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#d8e8ff" />
-            <stop offset="60%" stopColor="#609eff" />
-            <stop offset="100%" stopColor="#2255a4" />
-          </linearGradient>
-
           {/* Glass diagonal specular reflections */}
           <linearGradient id="glassReflection" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="rgba(255, 255, 255, 0.14)" />
@@ -176,47 +138,88 @@ export default function FourPanelWindow({
             <stop offset="100%" stopColor="#ff4d00" stopOpacity="0" />
           </radialGradient>
 
-          {/* Volumetric Light Beam Gradient - refined, softer cinematic intensity */}
-          <linearGradient id="windowVolumetricBeam" x1="90%" y1="15%" x2="0%" y2="75%">
-            <stop offset="0%" stopColor="#ffb540" stopOpacity="0.42" />
-            <stop offset="25%" stopColor="#ff7a18" stopOpacity="0.24" />
-            <stop offset="55%" stopColor="#d9480f" stopOpacity="0.10" />
-            <stop offset="85%" stopColor="#9a2808" stopOpacity="0.02" />
-            <stop offset="100%" stopColor="#661502" stopOpacity="0" />
-          </linearGradient>
+          {/* Lit window interior & beam defs (rendered ONLY when lit to eliminate overhead) */}
+          {isGlowing && (
+            <>
+              <linearGradient id="warmInteriorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffb04a" />
+                <stop offset="35%" stopColor="#ff7a18" />
+                <stop offset="70%" stopColor="#cc4808" />
+                <stop offset="100%" stopColor="#551502" />
+              </linearGradient>
 
-          {/* Soft Ambient Light Spill */}
-          <linearGradient id="windowAmbientSpill" x1="90%" y1="15%" x2="0%" y2="80%">
-            <stop offset="0%" stopColor="#ff9a28" stopOpacity="0.22" />
-            <stop offset="35%" stopColor="#ff5710" stopOpacity="0.09" />
-            <stop offset="75%" stopColor="#cc3500" stopOpacity="0.02" />
-            <stop offset="100%" stopColor="#7a1800" stopOpacity="0" />
-          </linearGradient>
+              <pattern id="slatWoodPattern" width="6" height="156" patternUnits="userSpaceOnUse">
+                <rect width="3.5" height="156" fill="#7a421b" />
+                <rect x="3.5" width="2.5" height="156" fill="#1c0f08" />
+              </pattern>
 
-          {/* Ambient Window Shimmer Gradients for selected rooms */}
-          <radialGradient id="cyanAmbientGlow" cx="45%" cy="55%" r="60%">
-            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.28" />
-            <stop offset="45%" stopColor="#0284c7" stopOpacity="0.14" />
-            <stop offset="100%" stopColor="#0369a1" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="warmAmbientGlow" cx="65%" cy="50%" r="55%">
-            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.24" />
-            <stop offset="45%" stopColor="#d97706" stopOpacity="0.11" />
-            <stop offset="100%" stopColor="#92400e" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="indigoAmbientGlow" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#818cf8" stopOpacity="0.22" />
-            <stop offset="45%" stopColor="#4f46e5" stopOpacity="0.09" />
-            <stop offset="100%" stopColor="#3730a3" stopOpacity="0" />
-          </radialGradient>
+              <radialGradient id="deskLampGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+                <stop offset="25%" stopColor="#fff2ba" stopOpacity="0.95" />
+                <stop offset="55%" stopColor="#ff9a28" stopOpacity="0.65" />
+                <stop offset="85%" stopColor="#ff5a0a" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#ff4000" stopOpacity="0" />
+              </radialGradient>
 
-          <filter id="beamBlurFilter" x="-300%" y="-300%" width="700%" height="700%">
-            <feGaussianBlur stdDeviation="12" />
-          </filter>
+              <radialGradient id="deskLightPool" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stopColor="#fff8e8" stopOpacity="0.9" />
+                <stop offset="45%" stopColor="#ffaa30" stopOpacity="0.5" />
+                <stop offset="80%" stopColor="#c85010" stopOpacity="0.15" />
+                <stop offset="100%" stopColor="#702005" stopOpacity="0" />
+              </radialGradient>
 
-          <filter id="softSpillBlurFilter" x="-300%" y="-300%" width="700%" height="700%">
-            <feGaussianBlur stdDeviation="36" />
-          </filter>
+              <linearGradient id="monitorScreenGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#d8e8ff" />
+                <stop offset="60%" stopColor="#609eff" />
+                <stop offset="100%" stopColor="#2255a4" />
+              </linearGradient>
+
+              <linearGradient id="windowVolumetricBeam" x1="90%" y1="15%" x2="0%" y2="75%">
+                <stop offset="0%" stopColor="#ffb540" stopOpacity="0.42" />
+                <stop offset="25%" stopColor="#ff7a18" stopOpacity="0.24" />
+                <stop offset="55%" stopColor="#d9480f" stopOpacity="0.10" />
+                <stop offset="85%" stopColor="#9a2808" stopOpacity="0.02" />
+                <stop offset="100%" stopColor="#661502" stopOpacity="0" />
+              </linearGradient>
+
+              <linearGradient id="windowAmbientSpill" x1="90%" y1="15%" x2="0%" y2="80%">
+                <stop offset="0%" stopColor="#ff9a28" stopOpacity="0.22" />
+                <stop offset="35%" stopColor="#ff5710" stopOpacity="0.09" />
+                <stop offset="75%" stopColor="#cc3500" stopOpacity="0.02" />
+                <stop offset="100%" stopColor="#7a1800" stopOpacity="0" />
+              </linearGradient>
+
+              <filter id="beamBlurFilter" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="8" />
+              </filter>
+
+              <filter id="softSpillBlurFilter" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur stdDeviation="20" />
+              </filter>
+            </>
+          )}
+
+          {ambientType === 'cyanOffice' && (
+            <radialGradient id="cyanAmbientGlow" cx="45%" cy="55%" r="60%">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.28" />
+              <stop offset="45%" stopColor="#0284c7" stopOpacity="0.14" />
+              <stop offset="100%" stopColor="#0369a1" stopOpacity="0" />
+            </radialGradient>
+          )}
+          {ambientType === 'warmDesk' && (
+            <radialGradient id="warmAmbientGlow" cx="65%" cy="50%" r="55%">
+              <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.24" />
+              <stop offset="45%" stopColor="#d97706" stopOpacity="0.11" />
+              <stop offset="100%" stopColor="#92400e" stopOpacity="0" />
+            </radialGradient>
+          )}
+          {ambientType === 'softIndigo' && (
+            <radialGradient id="indigoAmbientGlow" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stopColor="#818cf8" stopOpacity="0.22" />
+              <stop offset="45%" stopColor="#4f46e5" stopOpacity="0.09" />
+              <stop offset="100%" stopColor="#3730a3" stopOpacity="0" />
+            </radialGradient>
+          )}
         </defs>
 
         {/*
