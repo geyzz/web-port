@@ -1589,6 +1589,18 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
   const targetLookAt = useRef(ROOM_STATIONS.room.targetPos.clone());
   const targetFov = useRef(ROOM_STATIONS.room.fov);
   const isTransitioning = useRef(false);
+  const flightState = useRef({
+    active: false,
+    startTime: 0,
+    duration: 950,
+    startPos: new THREE.Vector3(),
+    endPos: new THREE.Vector3(),
+    startLookAt: new THREE.Vector3(),
+    endLookAt: new THREE.Vector3(),
+    startFov: 60,
+    endFov: 60,
+    targetLimits: STATION_LIMITS.room,
+  });
   const monitorMeshRef = useRef(null);
   const portfolioTextureRef = useRef(null);
   const certificatesTextureRef = useRef(null);
@@ -1624,26 +1636,59 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     }
     const station = ROOM_STATIONS[stationKey];
     if (station) {
+      const curCam = cameraRef.current;
+      const curControls = controlsRef.current;
       const limits = STATION_LIMITS[stationKey] || STATION_LIMITS.room;
-      if (controlsRef.current) {
-        controlsRef.current.minDistance = limits.minDistance;
-        controlsRef.current.maxDistance = limits.maxDistance;
-      }
+
+      // 1. Current position & target ("from here")
+      const startCam = curCam ? curCam.position.clone() : ROOM_STATIONS.room.camPos.clone();
+      const startLook = curControls ? curControls.target.clone() : ROOM_STATIONS.room.targetPos.clone();
+      const startFov = curCam ? curCam.fov : 60;
+
+      // 2. Destination position & target ("to there")
+      const endCamPos = new THREE.Vector3();
+      let endFov = station.fov ?? 58;
       if (stationKey === 'room') {
         const isPortrait = (containerSizeRef.current.w || window.innerWidth) < (containerSizeRef.current.h || window.innerHeight);
         if (isPortrait) {
-          targetCamPos.current.set(0.65, 7.05, -0.25);
-          targetFov.current = 62;
+          endCamPos.set(0.65, 7.05, -0.25);
+          endFov = 62;
         } else {
-          targetCamPos.current.copy(station.camPos);
-          targetFov.current = station.fov ?? 60;
+          endCamPos.copy(station.camPos);
+          endFov = station.fov ?? 60;
         }
       } else {
-        targetCamPos.current.copy(station.camPos);
-        targetFov.current = station.fov ?? 58;
+        endCamPos.copy(station.camPos);
+        endFov = station.fov ?? 58;
       }
-      targetLookAt.current.copy(station.targetPos);
+      const endLookAt = station.targetPos.clone();
+
+      // 3. Temporarily disable OrbitControls and distance clamping during flight
+      // This guarantees zero skipped frames, zero snapping, and pure continuous motion!
+      if (curControls) {
+        curControls.enabled = false;
+        curControls.minDistance = 0.01;
+        curControls.maxDistance = 100.0;
+      }
+
+      // Proportional travel duration: min 850ms, max 1150ms for realistic, cinematic travel
+      const distance = startCam.distanceTo(endCamPos);
+      const duration = Math.min(Math.max(distance * 280, 850), 1150);
+
+      flightState.current = {
+        active: true,
+        startTime: performance.now(),
+        duration,
+        startPos: startCam,
+        endPos: endCamPos,
+        startLookAt: startLook,
+        endLookAt: endLookAt,
+        startFov,
+        endFov,
+        targetLimits: limits,
+      };
       isTransitioning.current = true;
+
       if (rendererRef.current) {
         rendererRef.current.shadowMap.needsUpdate = true;
       }
@@ -2288,7 +2333,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     };
 
     const handleClick = () => {
-      if (isPausedRef.current) return;
+      if (isPausedRef.current || flightState.current.active) return;
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(interactiveMeshesRef.current, false);
       if (intersects.length > 0) {
@@ -2341,7 +2386,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     const projBadgeVec = new THREE.Vector3();
     const projTargetVec = new THREE.Vector3();
 
-    // 8. Animation Loop with Smooth Camera Lerp & Active Collision Avoidance
+    // 8. Animation Loop with Continuous Cinematic Camera Flight & Collision Avoidance
     let animationId;
     const animate = () => {
       animationId = requestAnimationFrame(animate);
@@ -2349,32 +2394,52 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
       // Instantly suspend 3D GPU render loop when viewing the live web portfolio
       if (isPausedRef.current) return;
 
-      if (isTransitioning.current) {
-        camera.position.lerp(targetCamPos.current, 0.055);
-        controls.target.lerp(targetLookAt.current, 0.055);
+      if (flightState.current.active) {
+        const flight = flightState.current;
+        const now = performance.now();
+        const elapsed = now - flight.startTime;
+        const rawT = Math.min(Math.max(elapsed / flight.duration, 0), 1);
 
-        // Smoothly lerp FOV for per-station zoom feel
-        const fovDiff = targetFov.current - camera.fov;
-        if (Math.abs(fovDiff) > 0.05) {
-          camera.fov += fovDiff * 0.055;
-          camera.updateProjectionMatrix();
-        }
+        // Smooth cubic ease-in-out: starts gently with 0 jerk from exact current position,
+        // glides smoothly across 3D space, and cushions to a rest at destination ("from here to there")
+        const ease = rawT < 0.5
+          ? 4 * rawT * rawT * rawT
+          : 1 - Math.pow(-2 * rawT + 2, 3) / 2;
 
-        if (
-          camera.position.distanceTo(targetCamPos.current) < 0.02 &&
-          controls.target.distanceTo(targetLookAt.current) < 0.02
-        ) {
+        camera.position.lerpVectors(flight.startPos, flight.endPos, ease);
+        controls.target.lerpVectors(flight.startLookAt, flight.endLookAt, ease);
+
+        camera.fov = flight.startFov + (flight.endFov - flight.startFov) * ease;
+        camera.updateProjectionMatrix();
+        camera.lookAt(controls.target);
+
+        if (rawT >= 1) {
+          flight.active = false;
           isTransitioning.current = false;
-          renderer.shadowMap.needsUpdate = true;
+
+          camera.position.copy(flight.endPos);
+          controls.target.copy(flight.endLookAt);
+          camera.fov = flight.endFov;
+          camera.updateProjectionMatrix();
+
+          // Flight complete: safely apply station min/max limits & re-enable OrbitControls
+          controls.minDistance = flight.targetLimits.minDistance;
+          controls.maxDistance = flight.targetLimits.maxDistance;
+          controls.enabled = true;
+          controls.update();
+
+          if (renderer.shadowMap) {
+            renderer.shadowMap.needsUpdate = true;
+          }
         }
+      } else {
+        controls.update();
+
+        // Enforce strict interior room boundaries only during free orbit exploration (not during flight)
+        camera.position.x = Math.max(-2.75, Math.min(1.82, camera.position.x));
+        camera.position.y = Math.max(5.35, Math.min(7.55, camera.position.y));
+        camera.position.z = Math.max(-1.95, Math.min(1.85, camera.position.z));
       }
-
-      controls.update();
-
-      // Enforce strict interior room boundaries: camera can never exit the room (back wall is at X = 2.031)
-      camera.position.x = Math.max(-2.75, Math.min(1.82, camera.position.x));
-      camera.position.y = Math.max(5.35, Math.min(7.55, camera.position.y));
-      camera.position.z = Math.max(-1.95, Math.min(1.85, camera.position.z));
 
       renderer.render(scene, camera);
 
@@ -2542,9 +2607,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
       cachedDomRectRef.current = renderer.domElement.getBoundingClientRect();
       const isPortraitNow = w < h;
       if (activeStationRef.current === 'room') {
-        camera.fov = isPortraitNow ? 58 : ROOM_STATIONS.room.fov;
-        if (isPortraitNow && !isTransitioning.current) {
-          camera.position.set(-0.65, 6.95, -0.65);
+        camera.fov = isPortraitNow ? 62 : ROOM_STATIONS.room.fov;
+        if (isPortraitNow && !flightState.current.active) {
+          camera.position.set(0.65, 7.05, -0.25);
         }
       }
       camera.aspect = w / h;
