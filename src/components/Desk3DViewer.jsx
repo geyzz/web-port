@@ -71,6 +71,14 @@ const ROOM_STATIONS = {
   },
 };
 
+const STATION_LIMITS = {
+  room: { minDistance: 1.5, maxDistance: 3.7 },
+  portfolio: { minDistance: 0.7, maxDistance: 1.9 },
+  techstack: { minDistance: 0.35, maxDistance: 0.95 },
+  aboutme: { minDistance: 0.4, maxDistance: 1.1 },
+  resume: { minDistance: 0.5, maxDistance: 1.4 },
+};
+
 const CALLOUT_CONFIG = [
   {
     id: 'portfolio',
@@ -1615,6 +1623,11 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     }
     const station = ROOM_STATIONS[stationKey];
     if (station) {
+      const limits = STATION_LIMITS[stationKey] || STATION_LIMITS.room;
+      if (controlsRef.current) {
+        controlsRef.current.minDistance = limits.minDistance;
+        controlsRef.current.maxDistance = limits.maxDistance;
+      }
       if (stationKey === 'room') {
         const isPortrait = (containerSizeRef.current.w || window.innerWidth) < (containerSizeRef.current.h || window.innerHeight);
         if (isPortrait) {
@@ -1681,15 +1694,18 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     currentMount.appendChild(renderer.domElement);
     cachedDomRectRef.current = renderer.domElement.getBoundingClientRect();
 
-    // 4. OrbitControls
+    // 4. OrbitControls with STRICT Room Containment & 360 Viewing
     const controls = new OrbitControls(camera, renderer.domElement);
     controlsRef.current = controls;
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
     controls.target.copy(ROOM_STATIONS.room.targetPos);
-    controls.minDistance = 0.05;
-    controls.maxDistance = 4.5;
-    controls.maxPolarAngle = Math.PI - 0.12;
+    controls.enablePan = false; // Strictly prevent panning outside room boundaries
+    controls.minDistance = STATION_LIMITS.room.minDistance;
+    controls.maxDistance = STATION_LIMITS.room.maxDistance;
+    controls.minPolarAngle = Math.PI * 0.16; // Prevent flipping above ceiling
+    controls.maxPolarAngle = Math.PI * 0.52; // Prevent sinking below floor (keeps camera above ground)
+    controls.enableRotate = true; // Full 360-degree rotation around designated destination
 
     // 5. WARM, VIBRANT ARCHITECTURAL STUDIO LIGHTING (Reliable 100% illumination, zero black-outs)
     // A. Warm general ambient light guaranteeing all meshes are visible & textured
@@ -2353,6 +2369,12 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
       }
 
       controls.update();
+
+      // Enforce strict interior room boundaries: camera can never exit the room
+      camera.position.x = Math.max(-2.75, Math.min(0.88, camera.position.x));
+      camera.position.y = Math.max(5.35, Math.min(7.55, camera.position.y));
+      camera.position.z = Math.max(-1.95, Math.min(1.85, camera.position.z));
+
       renderer.render(scene, camera);
 
       // Project 3D callout badges & glowing pointer lines (only active when in 'room' view)
