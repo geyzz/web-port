@@ -31,6 +31,7 @@ export default function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [stringHovered, setStringHovered] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
   const [isMobileScreen, setIsMobileScreen] = useState(
     typeof window !== 'undefined'
       ? window.innerWidth < 768 || (window.innerHeight < 520 && window.innerWidth < 1024)
@@ -53,6 +54,18 @@ export default function App() {
       window.removeEventListener('orientationchange', handleResize);
     };
   }, []);
+
+  // Close mobile dropdown when tapping outside
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleOutsideClick = (e) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, [mobileMenuOpen]);
 
   // Contact Form State (Matching Web Portfolio Format)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -459,12 +472,12 @@ export default function App() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          flexWrap: 'wrap',
+          flexWrap: 'nowrap',
           gap: '12px',
         }}
       >
-        <div style={{ position: 'relative', zIndex: 60 }}>
-          {/* Glassmorphism Logo Badge */}
+        <div style={{ position: 'relative', zIndex: 60, display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+          {/* Glassmorphism Logo Badge (Logo Name Div) */}
           <div
             className="glass-logo-badge"
             style={{
@@ -484,6 +497,7 @@ export default function App() {
                 ? '0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 115, 30, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.22)'
                 : '0 8px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
               transition: 'all 0.35s ease',
+              flexShrink: 0,
             }}
           >
             {/* Stylized Modern Brand Icon */}
@@ -539,6 +553,138 @@ export default function App() {
               </span>
             </div>
           </div>
+
+          {/* Menu Option Icon directly on the right side of the logo name div */}
+          {isMobileScreen && (
+            <div ref={mobileMenuRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                aria-label="Toggle Navigation Menu"
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  padding: 0,
+                  backgroundColor: mobileMenuOpen ? 'rgba(255, 77, 21, 0.25)' : 'rgba(18, 22, 32, 0.65)',
+                  border: mobileMenuOpen ? '1.5px solid #ff4d15' : '1.5px solid rgba(255, 255, 255, 0.16)',
+                  borderRadius: '12px',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
+                  transition: 'all 0.2s ease',
+                  flexShrink: 0,
+                }}
+              >
+                {mobileMenuOpen ? <X size={18} color="#ff7728" /> : <Menu size={18} color="#ff7728" />}
+              </button>
+
+              {/* Mobile Dropdown Menu with Inquiry, Web Portfolio & 3D Studio */}
+              {mobileMenuOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    left: 0,
+                    zIndex: 100,
+                    minWidth: '185px',
+                    backgroundColor: 'rgba(16, 20, 28, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '14px',
+                    padding: '8px',
+                    boxShadow: '0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(255, 77, 21, 0.15)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px',
+                    animation: 'fadeInMenu 0.18s ease-out',
+                  }}
+                >
+                  {/* Inquiry */}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setModalOpen(true);
+                    }}
+                    style={{
+                      padding: '10px 14px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '9px',
+                      color: '#ffffff',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      textAlign: 'left',
+                      transition: 'all 0.18s ease',
+                    }}
+                  >
+                    <Mail size={15} color="#ff7728" />
+                    <span>Inquiry</span>
+                  </button>
+
+                  {/* Web Portfolio */}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setPortfolioWebOpen(true);
+                    }}
+                    style={{
+                      padding: '10px 14px',
+                      backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      borderRadius: '9px',
+                      color: '#38bdf8',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      textAlign: 'left',
+                      transition: 'all 0.18s ease',
+                    }}
+                  >
+                    <Folder size={15} />
+                    <span>Web Portfolio ↗</span>
+                  </button>
+
+                  {/* 3D Studio */}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setDeskViewerOpen(true);
+                    }}
+                    style={{
+                      padding: '10px 14px',
+                      backgroundColor: 'rgba(255, 77, 21, 0.12)',
+                      border: '1px solid rgba(255, 77, 21, 0.35)',
+                      borderRadius: '9px',
+                      color: '#ff8a5c',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      textAlign: 'left',
+                      transition: 'all 0.18s ease',
+                    }}
+                  >
+                    <Box size={15} />
+                    <span>3D Studio ↗</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Interactive Nightstand Pull-String Connected Directly to Logo Name */}
           {(() => {
@@ -762,136 +908,8 @@ export default function App() {
           })()}
         </div>
 
-        {/* Navigation Bar (Mobile Menu Button vs Desktop Navigation) */}
-        {isMobileScreen ? (
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              aria-label="Toggle Navigation Menu"
-              style={{
-                width: '38px',
-                height: '38px',
-                padding: 0,
-                backgroundColor: mobileMenuOpen ? 'rgba(255, 77, 21, 0.25)' : 'rgba(25, 30, 40, 0.75)',
-                border: mobileMenuOpen ? '1.5px solid #ff4d15' : '1px solid rgba(255, 255, 255, 0.16)',
-                borderRadius: '50%',
-                color: '#ffffff',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {mobileMenuOpen ? <X size={18} color="#ff7728" /> : <Menu size={18} color="#ff7728" />}
-            </button>
-
-            {/* Mobile Dropdown Menu with Inquiry & Web Portfolio */}
-            {mobileMenuOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  zIndex: 100,
-                  minWidth: '185px',
-                  backgroundColor: 'rgba(16, 20, 28, 0.94)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: '14px',
-                  padding: '8px',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(255, 77, 21, 0.15)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px',
-                  animation: 'fadeInMenu 0.18s ease-out',
-                }}
-              >
-                {/* Inquiry */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setModalOpen(true);
-                  }}
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '9px',
-                    color: '#f1f5f9',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    textAlign: 'left',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
-                  <Mail size={15} color="#ff7728" />
-                  <span>Inquiry</span>
-                </button>
-
-                {/* Web Portfolio */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setPortfolioWebOpen(true);
-                  }}
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                    border: '1px solid rgba(56, 189, 248, 0.35)',
-                    borderRadius: '9px',
-                    color: '#38bdf8',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    textAlign: 'left',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
-                  <Folder size={15} />
-                  <span>Web Portfolio ↗</span>
-                </button>
-
-                {/* 3D Studio */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setDeskViewerOpen(true);
-                  }}
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(255, 77, 21, 0.12)',
-                    border: '1px solid rgba(255, 77, 21, 0.35)',
-                    borderRadius: '9px',
-                    color: '#ff8a5c',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    textAlign: 'left',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
-                  <Box size={15} />
-                  <span>3D Studio ↗</span>
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
+        {/* Desktop Navigation */}
+        {!isMobileScreen && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1.5vw, 10px)', flexWrap: 'nowrap' }}>
             {/* Inquiry Button */}
             <button
