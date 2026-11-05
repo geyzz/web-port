@@ -33,9 +33,9 @@ const ROOM_STATIONS = {
   room: {
     id: 'room',
     name: 'Studio Room',
-    camPos: new THREE.Vector3(0.85, 6.22, 0.08),
+    camPos: new THREE.Vector3(1.50, 6.38, 0.08),
     targetPos: new THREE.Vector3(-2.80, 5.88, 0.08),
-    fov: 58,
+    fov: 60,
   },
   portfolio: {
     id: 'portfolio',
@@ -72,7 +72,7 @@ const ROOM_STATIONS = {
 };
 
 const STATION_LIMITS = {
-  room: { minDistance: 1.5, maxDistance: 3.7 },
+  room: { minDistance: 1.5, maxDistance: 4.6 },
   portfolio: { minDistance: 0.7, maxDistance: 1.9 },
   techstack: { minDistance: 0.35, maxDistance: 0.95 },
   aboutme: { minDistance: 0.4, maxDistance: 1.1 },
@@ -1631,11 +1631,11 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
       if (stationKey === 'room') {
         const isPortrait = (containerSizeRef.current.w || window.innerWidth) < (containerSizeRef.current.h || window.innerHeight);
         if (isPortrait) {
-          targetCamPos.current.set(-0.65, 6.95, -0.65);
-          targetFov.current = 58;
+          targetCamPos.current.set(0.65, 7.05, -0.25);
+          targetFov.current = 62;
         } else {
           targetCamPos.current.copy(station.camPos);
-          targetFov.current = station.fov ?? 46;
+          targetFov.current = station.fov ?? 60;
         }
       } else {
         targetCamPos.current.copy(station.camPos);
@@ -1665,10 +1665,10 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     scene.background = new THREE.Color(0x06080b);
 
     // 2. Camera Setup (Responsive Portrait framing on phones)
-    const initialFov = isPortrait ? 58 : ROOM_STATIONS.room.fov;
+    const initialFov = isPortrait ? 62 : ROOM_STATIONS.room.fov;
     const camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.05, 50);
     if (isPortrait) {
-      camera.position.set(-0.65, 6.95, -0.65);
+      camera.position.set(0.65, 7.05, -0.25);
     } else {
       camera.position.copy(ROOM_STATIONS.room.camPos);
     }
@@ -2370,8 +2370,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
       controls.update();
 
-      // Enforce strict interior room boundaries: camera can never exit the room
-      camera.position.x = Math.max(-2.75, Math.min(0.88, camera.position.x));
+      // Enforce strict interior room boundaries: camera can never exit the room (back wall is at X = 2.031)
+      camera.position.x = Math.max(-2.75, Math.min(1.82, camera.position.x));
       camera.position.y = Math.max(5.35, Math.min(7.55, camera.position.y));
       camera.position.z = Math.max(-1.95, Math.min(1.85, camera.position.z));
 
