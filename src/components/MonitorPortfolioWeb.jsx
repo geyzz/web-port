@@ -2055,49 +2055,10 @@ function SmoothParallaxBlock({
 
 const ParallaxSectionBlock = SmoothParallaxBlock;
 
-// ── SCROLL-SCRUBBED TECH STACK BOOK STACK (Left-Edge Stepped Books Sized by Their Names, Stacking Bottom-to-Top) ──
+// ── PERMANENTLY STACKED TECH STACK BOOKSHELF (All 16 Volumes Stacked & Steady On Normal Scroll) ──
 function ParallaxBookshelf({ techStackItems }) {
-  const trackRef = useRef(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isPinned, setIsPinned] = useState(false);
+  const sectionRef = useRef(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
-  const [strengthTab, setStrengthTab] = useState('technical');
-
-  useEffect(() => {
-    let rafId = null;
-
-    const computeProgress = () => {
-      const el = trackRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight || 800;
-
-      const pinTop = 64;
-      const totalLockedDistance = Math.max(1, rect.height - (vh - pinTop));
-      const scrolledWhilePinned = pinTop - rect.top;
-
-      const currentlyPinned = scrolledWhilePinned >= -8 && scrolledWhilePinned <= totalLockedDistance + 8;
-      setIsPinned(currentlyPinned);
-
-      const raw = Math.max(0, Math.min(1, scrolledWhilePinned / totalLockedDistance));
-      setScrollProgress(raw);
-    };
-
-    const onScroll = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(computeProgress);
-    };
-
-    computeProgress();
-    window.addEventListener('scroll', onScroll, { capture: true, passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      window.removeEventListener('scroll', onScroll, { capture: true });
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
 
   // Ordered strictly according to visual size from Bottom (idx 0 = Widest) to Top (idx 15 = Smallest)
   // Color palette cycles through Navy Blue, Dark Grey, Grey, and Light Grey
@@ -2230,28 +2191,24 @@ function ParallaxBookshelf({ techStackItems }) {
   ];
 
   const totalBooks = orderedBooks.length;
-  const bookPhaseProgress = Math.max(0, Math.min(1, (scrollProgress - 0.02) / 0.78));
-  const floatBookIndex = bookPhaseProgress * totalBooks;
-  const stackedCount = Math.min(totalBooks, Math.floor(floatBookIndex + 0.06));
   const activeBook =
     hoveredIdx !== null
       ? orderedBooks[hoveredIdx]
-      : orderedBooks[Math.min(totalBooks - 1, Math.max(0, stackedCount - 1))];
+      : orderedBooks[0]; // Default to foundational React Native or currently selected
 
   return (
     <div
-      ref={trackRef}
+      ref={sectionRef}
       style={{
         position: 'relative',
-        height: '380vh',
+        width: '100%',
+        paddingTop: '20px',
+        paddingBottom: '32px',
       }}
     >
       <div
         style={{
-          position: 'sticky',
-          top: '64px',
-          paddingTop: '8px',
-          paddingBottom: '20px',
+          width: '100%',
         }}
       >
         {/* ── TWO-COLUMN FULL-BLEED LEFT STACK + RIGHT EDITORIAL CONTENT ── */}
@@ -2295,16 +2252,11 @@ function ParallaxBookshelf({ techStackItems }) {
             {/* 16 Level Books Graduated by Size from Bottom (idx 0 = Widest) to Top (idx 15 = Smallest) */}
             {orderedBooks.map((book, idx) => {
               const isHovered = hoveredIdx === idx;
-              const itemProgress = Math.max(0, Math.min(1, floatBookIndex - idx));
-              const isRevealed = itemProgress > 0.03;
-              const isLanding = itemProgress > 0.03 && itemProgress < 0.95;
-
               const bookHeight = 34;
               const pal = bookPalettes[book.palette] || bookPalettes.navy;
 
-              // Straight, level slide & drop motion (0deg tilt)
-              const dropY = (1 - itemProgress) * -28;
-              const slideX = (1 - itemProgress) * -80;
+              // Permanently stacked in natural scroll flow; slides outward slightly on hover/tap
+              const slideX = isHovered ? 14 : 0;
 
               // Strictly decreasing minimum width + right padding by index so every book is ordered according to size!
               const minBookWidth = 515 - idx * 17;
@@ -2316,6 +2268,7 @@ function ParallaxBookshelf({ techStackItems }) {
                   title={`${book.label} — ${book.category}`}
                   onMouseEnter={() => setHoveredIdx(idx)}
                   onMouseLeave={() => setHoveredIdx(null)}
+                  onClick={() => setHoveredIdx(idx)}
                   style={{
                     width: 'fit-content',
                     minWidth: `min(${minBookWidth}px, 90vw)`,
@@ -2329,18 +2282,14 @@ function ParallaxBookshelf({ techStackItems }) {
                     borderRadius: '0 8px 8px 0',
                     position: 'relative',
                     zIndex: isHovered ? 30 : idx + 2,
-                    cursor: isRevealed ? 'pointer' : 'default',
-                    pointerEvents: isRevealed ? 'auto' : 'none',
-                    opacity: itemProgress,
-                    transform: isHovered
-                      ? 'translate3d(14px, 0px, 0)'
-                      : `translate3d(${slideX}px, ${dropY}px, 0)`,
-                    transition: isHovered
-                      ? 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease'
-                      : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s ease-out, box-shadow 0.2s ease',
+                    cursor: 'pointer',
+                    pointerEvents: 'auto',
+                    opacity: 1,
+                    transform: `translate3d(${slideX}px, 0, 0)`,
+                    transition: 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease',
                     boxShadow:
-                      isHovered || isLanding
-                        ? '10px 12px 26px rgba(15, 27, 43, 0.26)'
+                      isHovered
+                        ? '12px 14px 30px rgba(15, 27, 43, 0.32)'
                         : '4px 6px 14px rgba(15, 27, 43, 0.14)',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -2485,7 +2434,7 @@ function ParallaxBookshelf({ techStackItems }) {
                   alignItems: 'center',
                   gap: '10px',
                   backgroundColor: BG_SURFACE,
-                  border: `1px solid ${isPinned ? BORDER_STRONG : BORDER_SUBTLE}`,
+                  border: `1px solid ${BORDER_STRONG}`,
                   padding: '8px 14px',
                   borderRadius: '10px',
                   fontSize: '11px',
@@ -2502,15 +2451,11 @@ function ParallaxBookshelf({ techStackItems }) {
                   }}
                 />
                 <span style={{ fontWeight: '800', fontFamily: 'monospace' }}>
-                  {String(stackedCount).padStart(2, '0')} / {String(totalBooks).padStart(2, '0')} BOOKS
+                  16 / 16 BOOKS
                 </span>
                 <span style={{ color: TEXT_MUTED }}>·</span>
                 <span style={{ fontWeight: '600', color: TEXT_SECONDARY }}>
-                  {stackedCount === 0
-                    ? '16 Technical Volumes'
-                    : stackedCount < totalBooks
-                      ? `Active: ${activeBook?.label}`
-                      : 'All 16 Volumes Stacked'}
+                  {hoveredIdx !== null ? `Active: ${activeBook?.label}` : 'All 16 Volumes Stacked'}
                 </span>
               </div>
             </div>
@@ -2582,7 +2527,7 @@ function ParallaxBookshelf({ techStackItems }) {
                   flexShrink: 0,
                 }}
               >
-                {Math.round(bookPhaseProgress * 100)}%
+                100% READY
               </div>
             </div>
 
@@ -2596,8 +2541,6 @@ function ParallaxBookshelf({ techStackItems }) {
             >
               {capabilityCards.map((card, i) => {
                 const Icon = card.icon;
-                const cardStart = 0.5 + i * 0.08;
-                const cardProg = Math.max(0, Math.min(1, (scrollProgress - cardStart) / 0.14));
                 return (
                   <div
                     key={i}
@@ -2610,9 +2553,9 @@ function ParallaxBookshelf({ techStackItems }) {
                       flexDirection: 'column',
                       gap: '8px',
                       boxShadow: '0 12px 30px rgba(20, 21, 21, 0.04)',
-                      opacity: Math.max(0.3, cardProg),
-                      transform: `translate3d(0, ${(1 - cardProg) * 18}px, 0)`,
-                      transition: 'transform 0.22s ease-out, opacity 0.22s ease-out',
+                      opacity: 1,
+                      transform: 'translate3d(0, 0, 0)',
+                      transition: 'transform 0.22s ease-out, box-shadow 0.22s ease-out',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
