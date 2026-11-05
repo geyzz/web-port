@@ -245,15 +245,14 @@ function Centerpiece3DFolder({ onScrollToProjects }) {
         title="Click folder to explore Selected Works"
         style={{
           position: 'relative',
-          width: 'min(440px, calc(100vw - 36px))',
-          height: 'min(375px, calc((100vw - 36px) * 0.85))',
+          width: 'min(440px, calc(100vw - 40px))',
+          height: 'min(375px, calc((100vw - 40px) * 0.85))',
           maxWidth: '440px',
           maxHeight: '375px',
           cursor: 'pointer',
           perspective: '1200px',
           transformStyle: 'preserve-3d',
-          transform: `scale(min(1, calc((100vw - 36px) / 440))) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.03 : 1})`,
-          transformOrigin: 'center center',
+          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.03 : 1})`,
           transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1)',
           userSelect: 'none',
         }}
@@ -549,6 +548,7 @@ function Centerpiece3DFolder({ onScrollToProjects }) {
 
       {/* ── FLOATING FROSTED GLASS CALLOUT PILL 1 (Matching "● Intelligence" in Reference Image) ── */}
       <div
+        className="folder-callout-pill"
         style={{
           position: 'absolute',
           top: '52px',
@@ -585,6 +585,7 @@ function Centerpiece3DFolder({ onScrollToProjects }) {
 
       {/* ── FLOATING FROSTED GLASS CALLOUT PILL 2 (Matching "● Complete Unpredictability" in Reference Image) ── */}
       <div
+        className="folder-callout-pill"
         style={{
           position: 'absolute',
           bottom: '60px',
@@ -1118,6 +1119,7 @@ function TabletGadget({ project }) {
 
             {/* White Curved Trapezoid Center Nav (.nav-trapezoid) */}
             <div
+              className="tablet-nav-trapezoid"
               style={{
                 background: '#F3F4F6',
                 padding: '5px 18px 6px',
@@ -1162,19 +1164,19 @@ function TabletGadget({ project }) {
             style={{
               position: 'relative',
               zIndex: 3,
-              padding: '18px 18px 0',
-              maxWidth: '58%',
+              padding: 'clamp(10px, 2.5vw, 18px) clamp(10px, 2.5vw, 18px) 0',
+              maxWidth: 'clamp(62%, 70%, 82%)',
             }}
           >
             <div
               style={{
-                fontSize: '17px',
+                fontSize: 'clamp(12px, 2.6vw, 17px)',
                 fontWeight: '900',
                 color: '#3D3B36',
-                lineHeight: 1.06,
+                lineHeight: 1.08,
                 letterSpacing: '-0.01em',
                 textShadow: '0 2px 12px rgba(243, 244, 246, 0.95)',
-                marginBottom: '6px',
+                marginBottom: '4px',
               }}
             >
               Find A Property
@@ -1183,12 +1185,16 @@ function TabletGadget({ project }) {
             </div>
             <div
               style={{
-                fontSize: '7.5px',
+                fontSize: 'clamp(6.5px, 1.4vw, 7.5px)',
                 fontWeight: '600',
                 color: '#3D3B36',
-                lineHeight: 1.45,
+                lineHeight: 1.4,
                 textShadow: '0 1px 8px rgba(243, 244, 246, 0.95)',
-                marginBottom: '10px',
+                marginBottom: '8px',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
               }}
             >
               Discover prime residential lots and modern estates set in peaceful, thriving communities.
@@ -1197,11 +1203,11 @@ function TabletGadget({ project }) {
             <div
               style={{
                 display: 'inline-block',
-                padding: '5px 16px',
+                padding: '4px 12px',
                 borderRadius: '999px',
                 background: 'linear-gradient(180deg, #567640 0%, #486435 55%, #3D562C 100%)',
                 color: '#F3F4F6',
-                fontSize: '8px',
+                fontSize: 'clamp(6.5px, 1.4vw, 8px)',
                 fontWeight: '700',
                 boxShadow: '0 1.5px 0 #314623, 0 6px 14px rgba(42, 60, 30, 0.45)',
               }}
@@ -1214,14 +1220,14 @@ function TabletGadget({ project }) {
           <div
             style={{
               position: 'absolute',
-              left: '14px',
-              right: '14px',
-              bottom: '10px',
+              left: 'clamp(8px, 2vw, 14px)',
+              right: 'clamp(8px, 2vw, 14px)',
+              bottom: 'clamp(6px, 1.5vw, 10px)',
               zIndex: 4,
               display: 'flex',
               alignItems: 'flex-end',
               justifyContent: 'space-between',
-              gap: '10px',
+              gap: '8px',
             }}
           >
             {/* 3 Hero Features: Quality Estates, Prime Locations, Trusted Ownership */}
@@ -1382,8 +1388,8 @@ function TabletGadget({ project }) {
                 key={scr.label}
                 onClick={() => setPlanedScreen(idx)}
                 style={{
-                  width: isCenter ? '116px' : '92px',
-                  height: isCenter ? '218px' : '182px',
+                  width: isCenter ? 'clamp(76px, 28%, 116px)' : 'clamp(60px, 22%, 92px)',
+                  height: isCenter ? 'clamp(145px, 88%, 218px)' : 'clamp(120px, 74%, 182px)',
                   borderRadius: '14px',
                   padding: '3px',
                   background: isCenter
@@ -1442,8 +1448,8 @@ function TabletGadget({ project }) {
         {/* Left: HAUtogo Flutter Mobile Home Screen (mainPage.dart) */}
         <div
           style={{
-            width: '148px',
-            height: '216px',
+            width: 'clamp(95px, 44%, 148px)',
+            height: 'clamp(145px, 92%, 216px)',
             borderRadius: '16px',
             backgroundColor: '#f7f4f0',
             border: '2.5px solid #EFBF04',
@@ -1615,7 +1621,7 @@ function TabletGadget({ project }) {
         <div
           style={{
             flex: 1,
-            height: '206px',
+            height: 'clamp(140px, 90%, 206px)',
             borderRadius: '12px',
             overflow: 'hidden',
             border: '1px solid rgba(239, 191, 4, 0.35)',
@@ -1623,6 +1629,7 @@ function TabletGadget({ project }) {
             display: 'flex',
             flexDirection: 'column',
             boxShadow: '0 14px 28px rgba(0, 0, 0, 0.45)',
+            minWidth: 0,
           }}
         >
           <div
@@ -1673,7 +1680,9 @@ function TabletGadget({ project }) {
         position: 'relative',
         width: '100%',
         maxWidth: '470px',
-        padding: '12px',
+        padding: 'clamp(4px, 1.5vw, 12px)',
+        boxSizing: 'border-box',
+        margin: '0 auto',
       }}
     >
       {/* Floating Callout Pill on Tablet Corner */}
@@ -1681,21 +1690,22 @@ function TabletGadget({ project }) {
         style={{
           position: 'absolute',
           top: '-4px',
-          right: '0px',
+          right: 'clamp(4px, 1.5vw, 10px)',
           zIndex: 10,
-          backgroundColor: 'rgba(244, 244, 243, 0.88)',
+          backgroundColor: 'rgba(244, 244, 243, 0.92)',
           backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
           border: `1px solid ${BORDER_SUBTLE}`,
           borderRadius: '8px',
-          padding: '8px 14px',
+          padding: '6px 12px',
           boxShadow: '0 10px 24px rgba(22, 38, 59, 0.08)',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '6px',
         }}
       >
         <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: NAVY_PRIMARY }} />
-        <span style={{ fontSize: '10.5px', fontWeight: '700', color: TEXT_PRIMARY }}>
+        <span style={{ fontSize: '10px', fontWeight: '700', color: TEXT_PRIMARY }}>
           {project.category.split('·')[0].trim()}
         </span>
       </div>
@@ -1704,11 +1714,13 @@ function TabletGadget({ project }) {
       <div
         style={{
           position: 'relative',
-          borderRadius: '22px',
-          padding: '12px',
+          borderRadius: 'clamp(14px, 3vw, 22px)',
+          padding: 'clamp(6px, 1.6vw, 12px)',
           background: 'linear-gradient(145deg, #2a2c2b 0%, #141515 100%)',
           border: '1px solid rgba(20, 21, 21, 0.85)',
           boxShadow: '0 28px 60px rgba(20, 21, 21, 0.18)',
+          width: '100%',
+          boxSizing: 'border-box',
         }}
       >
         {/* Screen Viewport */}
@@ -1716,7 +1728,7 @@ function TabletGadget({ project }) {
           style={{
             width: '100%',
             aspectRatio: '16 / 10.4',
-            borderRadius: '13px',
+            borderRadius: 'clamp(8px, 1.8vw, 13px)',
             overflow: 'hidden',
             position: 'relative',
             background: `linear-gradient(145deg, ${project.bgFrom} 0%, ${project.bgTo} 100%)`,
@@ -1731,17 +1743,19 @@ function TabletGadget({ project }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '6px 14px',
+              padding: 'clamp(4px, 1vw, 6px) clamp(8px, 2vw, 14px)',
               backgroundColor: 'rgba(10, 11, 11, 0.72)',
               borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-              fontSize: '9.5px',
+              fontSize: 'clamp(7.5px, 1.3vw, 9.5px)',
               color: '#d8dcdb',
               fontFamily: 'monospace',
               flexShrink: 0,
             }}
           >
             <span>ARCHIVE // {project.number}</span>
-            <span>{project.title.toUpperCase()} — HOMEPAGE PREVIEW</span>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
+              {project.title.toUpperCase()} — HOMEPAGE PREVIEW
+            </span>
             <span>LIVE</span>
           </div>
 
@@ -1791,6 +1805,7 @@ function AscendingProjectCard({ project, index }) {
   return (
     <div
       ref={cardRef}
+      className="portfolio-project-card"
       style={{
         opacity,
         transform: `translate3d(0, ${translateY}, 0) scale(${scale})`,
@@ -1801,16 +1816,18 @@ function AscendingProjectCard({ project, index }) {
         backgroundColor: BG_SURFACE,
         border: `1px solid ${BORDER_SUBTLE}`,
         borderRadius: '24px',
-        padding: 'clamp(28px, 4vw, 48px)',
+        padding: 'clamp(18px, 3.5vw, 44px)',
         boxShadow: '0 20px 50px rgba(20, 21, 21, 0.05)',
         display: 'flex',
         flexDirection: isEven ? 'row' : 'row-reverse',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '48px',
+        gap: 'clamp(24px, 4vw, 48px)',
         flexWrap: 'wrap',
         position: 'relative',
         overflow: 'hidden',
+        width: '100%',
+        boxSizing: 'border-box',
       }}
     >
       {/* Subtle Giant Watermark Number in Background Corner (Matching Reference DC Watermark Style) */}
@@ -1834,8 +1851,12 @@ function AscendingProjectCard({ project, index }) {
 
       {/* 1. TABLET GADGET */}
       <div
+        className="tablet-column"
         style={{
-          flex: '1 1 430px',
+          flex: '1 1 min(100%, 460px)',
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0,
           display: 'flex',
           justifyContent: 'center',
           transform: visible ? 'translateY(0)' : 'translateY(36px)',
@@ -1848,9 +1869,12 @@ function AscendingProjectCard({ project, index }) {
 
       {/* 2. FORMAL PROJECT SPECIFICATION */}
       <div
+        className="spec-column"
         style={{
-          flex: '1 1 380px',
-          minWidth: '280px',
+          flex: '1 1 min(100%, 380px)',
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0,
           position: 'relative',
           zIndex: 2,
           transform: visible ? 'translateY(0)' : 'translateY(48px)',
@@ -2316,6 +2340,7 @@ function ParallaxBookshelf({ techStackItems }) {
         >
           {/* ── LEFT SIDE: BOOKS ORDERED BY SIZE & COLORED IN NAVY BLUE, DARK GREY, GREY, LIGHT GREY ── */}
           <div
+            className="techstack-books-container"
             style={{
               marginLeft: 'calc(-1 * clamp(0px, 3.5vw, 64px))',
               position: 'relative',
@@ -3841,7 +3866,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
             padding: '6px clamp(10px, 1.6vw, 18px) 6px 10px',
             borderRadius: '100px',
             boxShadow: '0 10px 30px rgba(22, 38, 59, 0.06)',
-            maxWidth: 'calc(100% - 78px)',
+            maxWidth: '100%',
             overflow: 'hidden',
           }}
         >

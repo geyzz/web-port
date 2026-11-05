@@ -27,11 +27,24 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deskViewerOpen, setDeskViewerOpen] = useState(false);
   const [portfolioWebOpen, setPortfolioWebOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
   const [pullPos, setPullPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [stringHovered, setStringHovered] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobileScreen, setIsMobileScreen] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      setIsMobileScreen(isMobile);
+      if (!isMobile) {
+        setMobileMenuOpen(false);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Contact Form State (Matching Web Portfolio Format)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -283,18 +296,6 @@ export default function App() {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
-
-  // Close header menu when tapping outside
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleOutsideClick = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener('pointerdown', handleOutsideClick);
-    return () => document.removeEventListener('pointerdown', handleOutsideClick);
-  }, [menuOpen]);
 
   // High-performance hardware-accelerated mouse parallax (Zero React state re-renders!)
   useEffect(() => {
@@ -758,178 +759,237 @@ export default function App() {
           })()}
         </div>
 
-        {/* Navigation Bar: Consolidated Glassmorphism Menu Option */}
-        <div ref={menuRef} style={{ position: 'relative', zIndex: 80 }}>
-          <button
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Navigation Menu"
-            style={{
-              padding: '7px 16px',
-              backgroundColor: menuOpen ? 'rgba(255, 77, 21, 0.22)' : 'rgba(20, 25, 36, 0.75)',
-              border: menuOpen
-                ? '1.5px solid rgba(255, 77, 21, 0.65)'
-                : '1.5px solid rgba(255, 255, 255, 0.16)',
-              borderRadius: '12px',
-              color: '#ffffff',
-              fontSize: '13px',
-              fontWeight: '700',
-              letterSpacing: '0.03em',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              boxShadow: menuOpen ? '0 0 20px rgba(255, 77, 21, 0.35)' : '0 4px 18px rgba(0,0,0,0.4)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!menuOpen) {
-                e.currentTarget.style.borderColor = 'rgba(255, 77, 21, 0.5)';
-                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!menuOpen) {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
-                e.currentTarget.style.backgroundColor = 'rgba(20, 25, 36, 0.75)';
-              }
-            }}
-          >
-            {menuOpen ? <X size={15} color="#ff4d15" /> : <Menu size={15} color="#ff7728" />}
-            <span>Menu</span>
-          </button>
-
-          {/* Glass Dropdown Panel (3D Studio, Web Portfolio, Get in Touch) */}
-          {menuOpen && (
-            <div
+        {/* Navigation Bar (Mobile Menu Button vs Desktop Navigation) */}
+        {isMobileScreen ? (
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              aria-label="Toggle Navigation Menu"
               style={{
-                position: 'absolute',
-                top: 'calc(100% + 8px)',
-                right: 0,
-                width: 'clamp(215px, 64vw, 255px)',
-                backgroundColor: 'rgba(14, 18, 26, 0.96)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1.5px solid rgba(255, 77, 21, 0.35)',
-                borderRadius: '16px',
-                padding: '8px',
-                boxShadow: '0 20px 48px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 77, 21, 0.18)',
-                zIndex: 100,
+                padding: '7px 15px',
+                backgroundColor: mobileMenuOpen ? 'rgba(255, 77, 21, 0.25)' : 'rgba(25, 30, 40, 0.75)',
+                border: mobileMenuOpen ? '1.5px solid #ff4d15' : '1px solid rgba(255, 255, 255, 0.16)',
+                borderRadius: '100px',
+                color: '#ffffff',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
+                alignItems: 'center',
+                gap: '7px',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
+                transition: 'all 0.2s ease',
               }}
             >
-              {/* 1. Enter 3D Studio */}
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  setDeskViewerOpen(true);
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(255, 77, 21, 0.35)',
-                  backgroundColor: 'rgba(255, 77, 21, 0.14)',
-                  color: '#ff8a5c',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  transition: 'all 0.18s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#ff4d15';
-                  e.currentTarget.style.color = '#ffffff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.14)';
-                  e.currentTarget.style.color = '#ff8a5c';
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Box size={16} />
-                  <span>3D Studio</span>
-                </div>
-                <span style={{ fontSize: '14px' }}>↗</span>
-              </button>
+              {mobileMenuOpen ? <X size={15} color="#ff7728" /> : <Menu size={15} color="#ff7728" />}
+              <span>Menu</span>
+            </button>
 
-              {/* 2. Web Portfolio */}
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  setPortfolioWebOpen(true);
-                }}
+            {/* Mobile Dropdown Menu with Inquiry & Web Portfolio */}
+            {mobileMenuOpen && (
+              <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(56, 189, 248, 0.35)',
-                  backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                  color: '#38bdf8',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  transition: 'all 0.18s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#0284c7';
-                  e.currentTarget.style.color = '#ffffff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
-                  e.currentTarget.style.color = '#38bdf8';
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Folder size={16} />
-                  <span>Web Portfolio</span>
-                </div>
-                <span style={{ fontSize: '14px' }}>↗</span>
-              </button>
-
-              {/* 3. Get in Touch */}
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  setModalOpen(true);
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  zIndex: 100,
+                  minWidth: '185px',
+                  backgroundColor: 'rgba(16, 20, 28, 0.94)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.12)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                  color: '#cbd5e1',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.18s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
-                  e.currentTarget.style.color = '#ffffff';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
-                  e.currentTarget.style.color = '#cbd5e1';
+                  borderRadius: '14px',
+                  padding: '8px',
+                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(255, 77, 21, 0.15)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px',
+                  animation: 'fadeInMenu 0.18s ease-out',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Mail size={16} color="#ff7728" />
-                  <span>Get in Touch</span>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
+                {/* Inquiry */}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setModalOpen(true);
+                  }}
+                  style={{
+                    padding: '10px 14px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '9px',
+                    color: '#f1f5f9',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    textAlign: 'left',
+                    transition: 'all 0.18s ease',
+                  }}
+                >
+                  <Mail size={15} color="#ff7728" />
+                  <span>Inquiry</span>
+                </button>
+
+                {/* Web Portfolio */}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setPortfolioWebOpen(true);
+                  }}
+                  style={{
+                    padding: '10px 14px',
+                    backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                    borderRadius: '9px',
+                    color: '#38bdf8',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    textAlign: 'left',
+                    transition: 'all 0.18s ease',
+                  }}
+                >
+                  <Folder size={15} />
+                  <span>Web Portfolio ↗</span>
+                </button>
+
+                {/* 3D Studio */}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setDeskViewerOpen(true);
+                  }}
+                  style={{
+                    padding: '10px 14px',
+                    backgroundColor: 'rgba(255, 77, 21, 0.12)',
+                    border: '1px solid rgba(255, 77, 21, 0.35)',
+                    borderRadius: '9px',
+                    color: '#ff8a5c',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    textAlign: 'left',
+                    transition: 'all 0.18s ease',
+                  }}
+                >
+                  <Box size={15} />
+                  <span>3D Studio ↗</span>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1.5vw, 10px)', flexWrap: 'nowrap' }}>
+            {/* Inquiry Button */}
+            <button
+              onClick={() => setModalOpen(true)}
+              style={{
+                padding: '6px clamp(10px, 1.8vw, 16px)',
+                backgroundColor: 'rgba(25, 30, 40, 0.75)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: '100px',
+                color: '#e0e4ec',
+                fontSize: 'clamp(11px, 1.2vw, 12px)',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backdropFilter: 'blur(12px)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 77, 21, 0.5)';
+                e.currentTarget.style.color = '#ffffff';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                e.currentTarget.style.color = '#e0e4ec';
+                e.currentTarget.style.backgroundColor = 'rgba(25, 30, 40, 0.75)';
+              }}
+            >
+              <Mail size={13} color="#ff7728" />
+              <span style={{ display: 'inline' }}>Inquiry</span>
+            </button>
+
+            {/* Web Portfolio Preview Button */}
+            <button
+              onClick={() => setPortfolioWebOpen(true)}
+              style={{
+                padding: '6px clamp(10px, 1.8vw, 16px)',
+                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                border: '1px solid rgba(56, 189, 248, 0.45)',
+                borderRadius: '100px',
+                color: '#38bdf8',
+                fontSize: 'clamp(11px, 1.2vw, 12px)',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#0284c7';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.15)';
+                e.currentTarget.style.color = '#38bdf8';
+              }}
+            >
+              <Folder size={13} />
+              <span>Web Portfolio ↗</span>
+            </button>
+
+            {/* 3D Studio Entrance */}
+            <button
+              onClick={() => setDeskViewerOpen(true)}
+              style={{
+                padding: '6px clamp(10px, 1.8vw, 16px)',
+                backgroundColor: 'rgba(255, 77, 21, 0.15)',
+                border: '1px solid rgba(255, 77, 21, 0.45)',
+                borderRadius: '100px',
+                color: '#ff8a5c',
+                fontSize: 'clamp(11px, 1.2vw, 12px)',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#ff4d15';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
+                e.currentTarget.style.color = '#ff8a5c';
+              }}
+            >
+              <Box size={13} />
+              <span>3D Studio ↗</span>
+            </button>
+          </div>
+        )}
       </header>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -944,13 +1004,12 @@ export default function App() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          marginLeft: 'clamp(0px, 5vw, 100px)',
-          padding: 'clamp(20px, 4vh, 40px) clamp(16px, 4vw, 40px)',
           maxWidth: '680px',
         }}
       >
         {/* Candidate Eyebrow */}
         <div
+          className="hero-eyebrow"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -984,6 +1043,7 @@ export default function App() {
 
         {/* Main Headline: FRONT-END DEVELOPER */}
         <h1
+          className="hero-title"
           style={{
             fontSize: 'clamp(28px, 5.5vw, 52px)',
             fontWeight: '900',
@@ -1001,6 +1061,7 @@ export default function App() {
 
         {/* Cinematic Tagline: A different perspective. */}
         <h2
+          className="hero-tagline"
           style={{
             fontSize: 'clamp(20px, 2.4vw, 26px)',
             fontWeight: '600',
@@ -1016,6 +1077,7 @@ export default function App() {
 
         {/* Short Introduction */}
         <p
+          className="hero-desc"
           style={{
             fontSize: '16px',
             lineHeight: 1.65,
@@ -1028,8 +1090,8 @@ export default function App() {
           Exploring the intersection of design, technology, and creativity. Building interactive experiences, one idea at a time.
         </p>
 
-        {/* Action Buttons: Enter 3D Studio ↗ & Web Portfolio ↗ */}
-        <div className="hero-action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+        {/* Action Button: Enter 3D Studio ↗ ONLY */}
+        <div className="hero-actions" style={{ display: 'flex', alignItems: 'center' }}>
           <button
             onClick={() => setDeskViewerOpen(true)}
             style={{
@@ -1061,40 +1123,6 @@ export default function App() {
             <span>Enter 3D Studio</span>
             <span style={{ fontSize: '16px', marginLeft: '2px' }}>↗</span>
           </button>
-
-          <button
-            onClick={() => setPortfolioWebOpen(true)}
-            style={{
-              padding: '13px 22px',
-              backgroundColor: 'rgba(56, 189, 248, 0.12)',
-              color: '#38bdf8',
-              border: '1px solid rgba(56, 189, 248, 0.45)',
-              borderRadius: '10px',
-              fontSize: '14px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 16px rgba(56, 189, 248, 0.14)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#0284c7';
-              e.currentTarget.style.color = '#ffffff';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
-              e.currentTarget.style.color = '#38bdf8';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            <Folder size={16} />
-            <span>Web Portfolio</span>
-            <span style={{ fontSize: '15px' }}>↗</span>
-          </button>
         </div>
       </main>
 
@@ -1102,7 +1130,6 @@ export default function App() {
           5. FOOTER / CONTACT & BRANDING (Gaze.d)
       ───────────────────────────────────────────────────────────── */}
       <footer
-        className="landing-footer"
         style={{
           position: 'relative',
           zIndex: 30,
@@ -1114,7 +1141,7 @@ export default function App() {
           gap: '12px',
         }}
       >
-        <div className="landing-footer-branding" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '14px', fontWeight: '700', color: '#ffffff' }}>Gaze</span>
           <span style={{ fontSize: '14px', fontWeight: '700', color: '#ff4d15' }}>.d</span>
           <span style={{ fontSize: '13px', color: '#64748b' }}>•</span>
@@ -1123,7 +1150,6 @@ export default function App() {
 
         <div
           onClick={handleCopyEmail}
-          className="landing-footer-email-btn"
           style={{
             cursor: 'pointer',
             textAlign: 'right',
