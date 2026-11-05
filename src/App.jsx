@@ -31,11 +31,15 @@ export default function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [stringHovered, setStringHovered] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isMobileScreen, setIsMobileScreen] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [isMobileScreen, setIsMobileScreen] = useState(
+    typeof window !== 'undefined'
+      ? window.innerWidth < 768 || (window.innerHeight < 520 && window.innerWidth < 1024)
+      : false
+  );
 
   useEffect(() => {
     const handleResize = () => {
-      const isMobile = window.innerWidth < 768;
+      const isMobile = window.innerWidth < 768 || (window.innerHeight < 520 && window.innerWidth < 1024);
       setIsMobileScreen(isMobile);
       if (!isMobile) {
         setMobileMenuOpen(false);
@@ -43,7 +47,11 @@ export default function App() {
     };
     handleResize();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
   // Contact Form State (Matching Web Portfolio Format)
@@ -426,18 +434,13 @@ export default function App() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. ATMOSPHERIC AMBIENT GLOW ON HERO (REDUCED MOVIE-LIKE INTENSITY)
+          2. ATMOSPHERIC AMBIENT GLOW ON HERO (POSITIONED OVER HERO DIV)
       ───────────────────────────────────────────────────────────── */}
       {lightOn && (
         <div
+          className="hero-light-glow"
           style={{
             position: 'absolute',
-            top: '20%',
-            left: '5%',
-            width: '800px',
-            height: '650px',
-            borderRadius: '50%',
-            background: 'radial-gradient(ellipse at center, rgba(255, 115, 30, 0.08) 0%, rgba(255, 75, 20, 0.02) 45%, transparent 70%)',
             pointerEvents: 'none',
             zIndex: 10,
             transition: 'opacity 0.4s ease',
@@ -766,25 +769,24 @@ export default function App() {
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               aria-label="Toggle Navigation Menu"
               style={{
-                padding: '7px 15px',
+                width: '38px',
+                height: '38px',
+                padding: 0,
                 backgroundColor: mobileMenuOpen ? 'rgba(255, 77, 21, 0.25)' : 'rgba(25, 30, 40, 0.75)',
                 border: mobileMenuOpen ? '1.5px solid #ff4d15' : '1px solid rgba(255, 255, 255, 0.16)',
-                borderRadius: '100px',
+                borderRadius: '50%',
                 color: '#ffffff',
-                fontSize: '12px',
-                fontWeight: '700',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '7px',
+                justifyContent: 'center',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
                 transition: 'all 0.2s ease',
               }}
             >
-              {mobileMenuOpen ? <X size={15} color="#ff7728" /> : <Menu size={15} color="#ff7728" />}
-              <span>Menu</span>
+              {mobileMenuOpen ? <X size={18} color="#ff7728" /> : <Menu size={18} color="#ff7728" />}
             </button>
 
             {/* Mobile Dropdown Menu with Inquiry & Web Portfolio */}

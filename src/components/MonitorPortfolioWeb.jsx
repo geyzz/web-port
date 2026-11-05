@@ -2125,6 +2125,29 @@ function ParallaxBookshelf({ techStackItems }) {
   const [isPinned, setIsPinned] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
+  const [viewportDims, setViewportDims] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800,
+  }));
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportDims({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
+
+  const isShortLandscape = viewportDims.height <= 520 && viewportDims.width > viewportDims.height;
+  const isCompactHeight = viewportDims.height <= 660;
+
   useEffect(() => {
     let rafId = null;
 
@@ -2134,7 +2157,7 @@ function ParallaxBookshelf({ techStackItems }) {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight || 800;
 
-      const pinTop = 64;
+      const pinTop = isShortLandscape ? 40 : 64;
       const totalLockedDistance = Math.max(1, rect.height - (vh - pinTop));
       const scrolledWhilePinned = pinTop - rect.top;
 
@@ -2317,15 +2340,15 @@ function ParallaxBookshelf({ techStackItems }) {
       ref={trackRef}
       style={{
         position: 'relative',
-        height: 'clamp(180vh, 210vh, 240vh)',
+        height: isShortLandscape ? 'clamp(150vh, 180vh, 200vh)' : 'clamp(180vh, 210vh, 240vh)',
       }}
     >
       <div
         style={{
           position: 'sticky',
-          top: '64px',
-          paddingTop: '8px',
-          paddingBottom: '24px',
+          top: isShortLandscape ? '40px' : '64px',
+          paddingTop: isShortLandscape ? '2px' : '8px',
+          paddingBottom: isShortLandscape ? '8px' : '24px',
           width: '100%',
         }}
       >
@@ -2333,22 +2356,28 @@ function ParallaxBookshelf({ techStackItems }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-            gap: 'clamp(28px, 4vw, 56px)',
-            alignItems: 'end',
+            gridTemplateColumns: isShortLandscape
+              ? 'minmax(270px, 1.15fr) minmax(280px, 1.35fr)'
+              : 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+            gap: isShortLandscape ? 'clamp(14px, 2.5vw, 24px)' : 'clamp(28px, 4vw, 56px)',
+            alignItems: isShortLandscape ? 'center' : 'end',
           }}
         >
           {/* ── LEFT SIDE: BOOKS ORDERED BY SIZE & COLORED IN NAVY BLUE, DARK GREY, GREY, LIGHT GREY ── */}
           <div
             className="techstack-books-container"
             style={{
-              marginLeft: 'calc(-1 * clamp(0px, 3.5vw, 64px))',
+              marginLeft: isShortLandscape ? '0' : 'calc(-1 * clamp(0px, 3.5vw, 64px))',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column-reverse',
               alignItems: 'flex-start',
               justifyContent: 'flex-start',
-              minHeight: '568px',
+              minHeight: isShortLandscape
+                ? `${18 * totalBooks + 16}px`
+                : isCompactHeight
+                ? `${26 * totalBooks + 24}px`
+                : '568px',
               paddingBottom: '4px',
               userSelect: 'none',
               maxWidth: '100%',
@@ -2356,11 +2385,11 @@ function ParallaxBookshelf({ techStackItems }) {
             }}
           >
             {/* Architectural Navy-Charcoal Plinth / Base Support at the Bottom */}
-            <div style={{ width: '535px', maxWidth: '92vw', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ width: isShortLandscape ? 'min(290px, 44vw)' : '535px', maxWidth: '92vw', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div
                 style={{
                   width: '100%',
-                  height: '12px',
+                  height: isShortLandscape ? '8px' : '12px',
                   borderRadius: '0 6px 6px 0',
                   background: 'linear-gradient(180deg, #1b2c42 0%, #0f1b2b 100%)',
                   boxShadow: '0 14px 30px rgba(15, 27, 43, 0.26)',
@@ -2375,18 +2404,26 @@ function ParallaxBookshelf({ techStackItems }) {
               const isRevealed = itemProgress > 0.04;
               const isLanding = itemProgress > 0.04 && itemProgress < 0.96;
 
-              const bookHeight = 34;
+              const bookHeight = isShortLandscape
+                ? Math.max(16, Math.min(20, Math.floor((viewportDims.height - 100) / totalBooks)))
+                : isCompactHeight
+                ? 26
+                : 34;
               const pal = bookPalettes[book.palette] || bookPalettes.navy;
 
               // Parallax motion: drops down and slides in on scroll down; stays stacked until scrolled off-screen
-              const dropY = (1 - itemProgress) * -28;
-              const slideX = isHovered ? 14 : (1 - itemProgress) * -80;
+              const dropY = (1 - itemProgress) * (isShortLandscape ? -16 : -28);
+              const slideX = isHovered ? (isShortLandscape ? 8 : 14) : (1 - itemProgress) * (isShortLandscape ? -50 : -80);
               // Smooth progressive fade as volumes descend and restack
               const opacity = isRevealed ? Math.min(1, itemProgress * 2.2) : 0;
 
               // Strictly decreasing minimum width + right padding by index so every book is ordered according to size!
-              const minBookWidth = 515 - idx * 17;
-              const extraRightPad = Math.max(8, (15 - idx) * 6);
+              const minBookWidth = isShortLandscape
+                ? Math.max(160, 280 - idx * 8)
+                : viewportDims.width < 600
+                ? Math.max(200, 360 - idx * 11)
+                : 515 - idx * 17;
+              const extraRightPad = isShortLandscape ? Math.max(4, (15 - idx) * 3) : Math.max(8, (15 - idx) * 6);
 
               return (
                 <div
@@ -2412,7 +2449,7 @@ function ParallaxBookshelf({ techStackItems }) {
                     pointerEvents: isRevealed ? 'auto' : 'none',
                     opacity: opacity,
                     transform: isHovered
-                      ? 'translate3d(14px, 0px, 0)'
+                      ? `translate3d(${isShortLandscape ? 8 : 14}px, 0px, 0)`
                       : `translate3d(${slideX}px, ${dropY}px, 0)`,
                     transition: isHovered
                       ? 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease'
@@ -2424,8 +2461,8 @@ function ParallaxBookshelf({ techStackItems }) {
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: '14px',
-                    padding: `0 16px 0 clamp(28px, 4vw, 48px)`,
+                    gap: isShortLandscape ? '8px' : '14px',
+                    padding: isShortLandscape ? '0 10px 0 16px' : `0 16px 0 clamp(28px, 4vw, 48px)`,
                     boxSizing: 'border-box',
                     whiteSpace: 'nowrap',
                   }}
@@ -2434,24 +2471,24 @@ function ParallaxBookshelf({ techStackItems }) {
                   <div
                     style={{
                       position: 'absolute',
-                      left: '14px',
+                      left: isShortLandscape ? '8px' : '14px',
                       top: 0,
                       bottom: 0,
-                      width: '3px',
+                      width: isShortLandscape ? '2px' : '3px',
                       backgroundColor: pal.seam,
                     }}
                   />
 
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: isShortLandscape ? '8px' : '14px' }}>
                     {/* Roman Numeral Volume */}
                     <span
                       style={{
                         fontFamily: SERIF_FONT,
-                        fontSize: '10px',
+                        fontSize: isShortLandscape ? '8px' : '10px',
                         fontWeight: '700',
                         letterSpacing: '0.08em',
                         opacity: 0.72,
-                        minWidth: '24px',
+                        minWidth: isShortLandscape ? '16px' : '24px',
                       }}
                     >
                       {romanNumerals[idx % romanNumerals.length]}
@@ -2460,9 +2497,9 @@ function ParallaxBookshelf({ techStackItems }) {
                     {/* Tech Stack Icon */}
                     <div
                       style={{
-                        width: '22px',
-                        height: '22px',
-                        borderRadius: '5px',
+                        width: isShortLandscape ? '17px' : '22px',
+                        height: isShortLandscape ? '17px' : '22px',
+                        borderRadius: isShortLandscape ? '3px' : '5px',
                         backgroundColor: pal.iconBg,
                         display: 'flex',
                         alignItems: 'center',
@@ -2470,16 +2507,20 @@ function ParallaxBookshelf({ techStackItems }) {
                         flexShrink: 0,
                       }}
                     >
-                      <TechSvgIcon name={book.label} size={13} color={pal.text} />
+                      <TechSvgIcon name={book.label} size={isShortLandscape ? 10 : 13} color={pal.text} />
                     </div>
 
                     {/* Book Name */}
                     <span
                       style={{
                         fontFamily: DISPLAY_FONT,
-                        fontSize: 'clamp(15.5px, 1.7vw, 20px)',
+                        fontSize: isShortLandscape
+                          ? '11px'
+                          : isCompactHeight
+                          ? '13.5px'
+                          : 'clamp(15.5px, 1.7vw, 20px)',
                         fontWeight: '800',
-                        letterSpacing: '0.13em',
+                        letterSpacing: isShortLandscape ? '0.07em' : '0.13em',
                         textTransform: 'uppercase',
                         paddingRight: `${extraRightPad}px`,
                       }}
@@ -2492,8 +2533,8 @@ function ParallaxBookshelf({ techStackItems }) {
                   {pal.showPages ? (
                     <div
                       style={{
-                        width: '22px',
-                        height: `${bookHeight - 8}px`,
+                        width: isShortLandscape ? '14px' : '22px',
+                        height: `${Math.max(8, bookHeight - (isShortLandscape ? 4 : 8))}px`,
                         borderRadius: '2px',
                         background:
                           'repeating-linear-gradient(180deg, #f6f5f1 0px, #f6f5f1 2px, #dcdad2 2px, #dcdad2 4px)',
@@ -2504,8 +2545,8 @@ function ParallaxBookshelf({ techStackItems }) {
                   ) : (
                     <div
                       style={{
-                        width: '4px',
-                        height: `${bookHeight - 12}px`,
+                        width: isShortLandscape ? '3px' : '4px',
+                        height: `${Math.max(6, bookHeight - (isShortLandscape ? 6 : 12))}px`,
                         borderRadius: '2px',
                         backgroundColor: pal.seam,
                         flexShrink: 0,
@@ -2518,7 +2559,7 @@ function ParallaxBookshelf({ techStackItems }) {
           </div>
 
           {/* ── RIGHT SIDE: SECTION HEADER + ACTIVE MONOGRAPH DOSSIER + 4 CORE CAPABILITY CARDS ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', paddingBottom: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isShortLandscape ? '10px' : '18px', paddingBottom: isShortLandscape ? '4px' : '12px' }}>
             {/* Formal Section Header */}
             <div
               style={{
@@ -2526,15 +2567,15 @@ function ParallaxBookshelf({ techStackItems }) {
                 alignItems: 'flex-end',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-                gap: '12px',
+                gap: isShortLandscape ? '6px' : '12px',
                 borderBottom: `1px solid ${BORDER_SUBTLE}`,
-                paddingBottom: '14px',
+                paddingBottom: isShortLandscape ? '8px' : '14px',
               }}
             >
               <div>
                 <div
                   style={{
-                    fontSize: '11px',
+                    fontSize: isShortLandscape ? '9.5px' : '11px',
                     fontWeight: '700',
                     letterSpacing: '0.18em',
                     color: TEXT_MUTED,
@@ -2546,10 +2587,10 @@ function ParallaxBookshelf({ techStackItems }) {
                 <h2
                   style={{
                     fontFamily: DISPLAY_FONT,
-                    fontSize: 'clamp(30px, 3.8vw, 44px)',
+                    fontSize: isShortLandscape ? '24px' : 'clamp(30px, 3.8vw, 44px)',
                     fontWeight: '800',
                     letterSpacing: '-0.03em',
-                    margin: '4px 0 0',
+                    margin: isShortLandscape ? '2px 0 0' : '4px 0 0',
                     color: TEXT_PRIMARY,
                   }}
                 >
@@ -2562,12 +2603,12 @@ function ParallaxBookshelf({ techStackItems }) {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '10px',
+                  gap: isShortLandscape ? '6px' : '10px',
                   backgroundColor: BG_SURFACE,
                   border: `1px solid ${BORDER_STRONG}`,
-                  padding: '8px 14px',
+                  padding: isShortLandscape ? '5px 10px' : '8px 14px',
                   borderRadius: '10px',
-                  fontSize: '11px',
+                  fontSize: isShortLandscape ? '9.5px' : '11px',
                   color: TEXT_PRIMARY,
                   boxShadow: '0 8px 24px rgba(20, 21, 21, 0.06)',
                 }}
@@ -2600,21 +2641,21 @@ function ParallaxBookshelf({ techStackItems }) {
               style={{
                 background: 'linear-gradient(135deg, #1e324c 0%, #142235 60%, #0f1a28 100%)',
                 color: '#f4f6f8',
-                borderRadius: '20px',
-                padding: '20px 24px',
+                borderRadius: isShortLandscape ? '14px' : '20px',
+                padding: isShortLandscape ? '10px 16px' : '20px 24px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '16px',
+                gap: '12px',
                 boxShadow: '0 16px 36px rgba(15, 26, 40, 0.18)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: isShortLandscape ? '10px' : '14px' }}>
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '12px',
+                    width: isShortLandscape ? '32px' : '44px',
+                    height: isShortLandscape ? '32px' : '44px',
+                    borderRadius: isShortLandscape ? '8px' : '12px',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.18)',
                     display: 'flex',
@@ -2623,17 +2664,17 @@ function ParallaxBookshelf({ techStackItems }) {
                     flexShrink: 0,
                   }}
                 >
-                  <TechSvgIcon name={activeBook?.label || 'React Native'} size={22} color="#f4f4f3" />
+                  <TechSvgIcon name={activeBook?.label || 'React Native'} size={isShortLandscape ? 16 : 22} color="#f4f4f3" />
                 </div>
                 <div>
                   <div
                     style={{
-                      fontSize: '9.5px',
+                      fontSize: isShortLandscape ? '8.5px' : '9.5px',
                       fontWeight: '700',
                       letterSpacing: '0.16em',
                       color: '#a8acab',
                       textTransform: 'uppercase',
-                      marginBottom: '2px',
+                      marginBottom: '1px',
                     }}
                   >
                     ACTIVE VOLUME // {activeBook?.category || 'Mobile'}
@@ -2641,7 +2682,7 @@ function ParallaxBookshelf({ techStackItems }) {
                   <div
                     style={{
                       fontFamily: DISPLAY_FONT,
-                      fontSize: '19px',
+                      fontSize: isShortLandscape ? '15px' : '19px',
                       fontWeight: '800',
                       letterSpacing: '-0.02em',
                     }}
@@ -2653,10 +2694,10 @@ function ParallaxBookshelf({ techStackItems }) {
 
               <div
                 style={{
-                  padding: '6px 12px',
+                  padding: isShortLandscape ? '4px 8px' : '6px 12px',
                   borderRadius: '100px',
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  fontSize: '10.5px',
+                  fontSize: isShortLandscape ? '9px' : '10.5px',
                   fontWeight: '700',
                   fontFamily: 'monospace',
                   flexShrink: 0,
@@ -2670,8 +2711,8 @@ function ParallaxBookshelf({ techStackItems }) {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                gap: '14px',
+                gridTemplateColumns: isShortLandscape ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(210px, 1fr))',
+                gap: isShortLandscape ? '8px' : '14px',
               }}
             >
               {capabilityCards.map((card, i) => {
@@ -2684,23 +2725,23 @@ function ParallaxBookshelf({ techStackItems }) {
                     style={{
                       backgroundColor: BG_SURFACE,
                       border: `1px solid ${BORDER_SUBTLE}`,
-                      borderRadius: '18px',
-                      padding: '20px 22px',
+                      borderRadius: isShortLandscape ? '12px' : '18px',
+                      padding: isShortLandscape ? '8px 12px' : '20px 22px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '8px',
+                      gap: isShortLandscape ? '4px' : '8px',
                       boxShadow: '0 12px 30px rgba(20, 21, 21, 0.04)',
                       opacity: Math.max(0.65, cardProg),
-                      transform: `translate3d(0, ${(1 - cardProg) * 14}px, 0)`,
+                      transform: `translate3d(0, ${(1 - cardProg) * (isShortLandscape ? 8 : 14)}px, 0)`,
                       transition: 'transform 0.22s ease-out, opacity 0.22s ease-out, box-shadow 0.22s ease-out',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div
                         style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '9px',
+                          width: isShortLandscape ? '24px' : '34px',
+                          height: isShortLandscape ? '24px' : '34px',
+                          borderRadius: isShortLandscape ? '6px' : '9px',
                           backgroundColor: BG_MAIN,
                           border: `1px solid ${BORDER_SUBTLE}`,
                           display: 'flex',
@@ -2708,12 +2749,12 @@ function ParallaxBookshelf({ techStackItems }) {
                           justifyContent: 'center',
                         }}
                       >
-                        <Icon size={16} color={TEXT_PRIMARY} />
+                        <Icon size={isShortLandscape ? 13 : 16} color={TEXT_PRIMARY} />
                       </div>
                       <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: NAVY_PRIMARY }} />
                     </div>
-                    <div style={{ fontSize: '14.5px', fontWeight: '800', color: TEXT_PRIMARY }}>{card.title}</div>
-                    <div style={{ fontSize: '12px', color: TEXT_SECONDARY, lineHeight: 1.55 }}>{card.desc}</div>
+                    <div style={{ fontSize: isShortLandscape ? '12px' : '14.5px', fontWeight: '800', color: TEXT_PRIMARY }}>{card.title}</div>
+                    <div style={{ fontSize: isShortLandscape ? '10px' : '12px', color: TEXT_SECONDARY, lineHeight: isShortLandscape ? 1.35 : 1.55 }}>{card.desc}</div>
                   </div>
                 );
               })}
@@ -3841,6 +3882,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
           STICKY TOP BAR (With Navy Blue Active Pill Accent)
       ════════════════════════════════════════════════════════════════ */}
       <header
+        className="portfolio-sticky-header"
         style={{
           position: 'sticky',
           top: 0,

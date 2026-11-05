@@ -174,17 +174,17 @@ function FourPanelWindow({
                 <stop offset="100%" stopColor="#2255a4" />
               </linearGradient>
 
-              <linearGradient id="windowVolumetricBeam" x1="90%" y1="15%" x2="0%" y2="75%">
-                <stop offset="0%" stopColor="#ffb540" stopOpacity="0.42" />
-                <stop offset="25%" stopColor="#ff7a18" stopOpacity="0.24" />
+              <linearGradient id="windowVolumetricBeam" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stopColor="#ffb540" stopOpacity="0.45" />
+                <stop offset="25%" stopColor="#ff7a18" stopOpacity="0.25" />
                 <stop offset="55%" stopColor="#d9480f" stopOpacity="0.10" />
                 <stop offset="85%" stopColor="#9a2808" stopOpacity="0.02" />
                 <stop offset="100%" stopColor="#661502" stopOpacity="0" />
               </linearGradient>
 
-              <linearGradient id="windowAmbientSpill" x1="90%" y1="15%" x2="0%" y2="80%">
-                <stop offset="0%" stopColor="#ff9a28" stopOpacity="0.22" />
-                <stop offset="35%" stopColor="#ff5710" stopOpacity="0.09" />
+              <linearGradient id="windowAmbientSpill" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%" stopColor="#ff9a28" stopOpacity="0.24" />
+                <stop offset="35%" stopColor="#ff5710" stopOpacity="0.10" />
                 <stop offset="75%" stopColor="#cc3500" stopOpacity="0.02" />
                 <stop offset="100%" stopColor="#7a1800" stopOpacity="0" />
               </linearGradient>
@@ -565,19 +565,19 @@ function FourPanelWindow({
         )}
 
         {/* 
-            6. VOLUMETRIC LIGHT BEAM (FOLLOWING USER'S GREEN ANGLE TO HERO)
+            6. VOLUMETRIC LIGHT BEAM (CASTING DOWNWARD LIGHT OVER MAIN HERO DIV)
         */}
         {isGlowing && (
           <g style={{ mixBlendMode: 'screen', pointerEvents: 'none' }}>
-            {/* Primary Cinematic Light Beam pointing all  text */}
+            {/* Primary Cinematic Light Beam pointing downward directly over hero container */}
             <polygon
-              points="18,24 308,24 -350,680 -1200,720 -1200,24"
+              points="18,45 308,45 540,780 -180,780"
               fill="url(#windowVolumetricBeam)"
               filter="url(#beamBlurFilter)"
             />
             {/* Secondary Soft Ambient Room Spill over hero area */}
             <polygon
-              points="0,15 320,15 -250,780 -1300,820 -1300,10"
+              points="0,20 320,20 660,920 -300,920"
               fill="url(#windowAmbientSpill)"
               filter="url(#softSpillBlurFilter)"
             />

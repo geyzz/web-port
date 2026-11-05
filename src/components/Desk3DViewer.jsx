@@ -1984,14 +1984,14 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               if (posAttr && uvAttr) {
                 // Front face of Cube.037 faces towards room camera (z < -0.1)
                 // In local space due to -94.2 deg Z rotation:
-                // Horizontally flipped so text reads left-to-right (u = (1 - y) * 0.5)
+                // Correctly un-mirrored so text reads naturally left-to-right (u = (y + 1) * 0.5)
                 // Vertically right-side up (v = (x + 1) * 0.5 with flipY = false on canvas texture)
                 for (let i = 0; i < posAttr.count; i++) {
                   const z = posAttr.getZ(i);
                   if (z < -0.1) {
                     const x = posAttr.getX(i);
                     const y = posAttr.getY(i);
-                    const u = (1 - y) * 0.5;
+                    const u = (y + 1) * 0.5;
                     const v = (x + 1) * 0.5;
                     uvAttr.setXY(i, u, v);
                   } else {

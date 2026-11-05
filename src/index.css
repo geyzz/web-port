@@ -166,8 +166,29 @@ html, body {
   }
 }
 
-/* Mobile Portrait Mode: Right-align text and 3D button to give clear breathing space for the hanging pull chain */
+/* Atmospheric Warm Ambient Hero Glow when window light is on */
+.hero-light-glow {
+  top: 12%;
+  left: 8%;
+  width: min(850px, 90vw);
+  height: 680px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 125, 30, 0.16) 0%, rgba(255, 75, 20, 0.05) 45%, transparent 70%);
+}
+
 @media (max-width: 768px) {
+  .hero-light-glow {
+    top: 18%;
+    left: auto;
+    right: 0%;
+    width: 100vw;
+    height: 540px;
+    background: radial-gradient(ellipse at 75% 45%, rgba(255, 130, 30, 0.22) 0%, rgba(255, 75, 20, 0.08) 50%, transparent 75%);
+  }
+}
+
+/* Mobile Portrait Mode: Right-align text and 3D button to give clear breathing space for the hanging pull chain */
+@media (max-width: 768px), (max-height: 520px) and (orientation: landscape) {
   .hero-main-container {
     margin-left: auto !important;
     margin-right: 0 !important;
@@ -198,6 +219,35 @@ html, body {
   .hero-main-container .hero-actions {
     justify-content: flex-end !important;
     width: 100% !important;
+  }
+}
+
+/* Landscape Mobile and Short Screen Proportions for Landing Page */
+@media (max-height: 520px) {
+  .hero-main-container {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+  .hero-main-container .hero-eyebrow {
+    margin-bottom: 3px !important;
+  }
+  .hero-main-container .hero-title {
+    font-size: clamp(20px, 4.2vw, 30px) !important;
+    margin-bottom: 3px !important;
+  }
+  .hero-main-container .hero-tagline {
+    font-size: clamp(13px, 2vw, 16px) !important;
+    margin-bottom: 5px !important;
+  }
+  .hero-main-container .hero-desc {
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+    margin-bottom: 8px !important;
+    max-width: 480px !important;
+  }
+  .hero-main-container .hero-actions button {
+    padding: 6px 16px !important;
+    font-size: 12px !important;
   }
 }
 
@@ -251,6 +301,19 @@ html, body {
   .techstack-books-container {
     margin-left: 0 !important;
     align-items: center !important;
+  }
+}
+
+/* Landscape Phone Enhancements for Web Portfolio Tech Stack Bookshelf */
+@media (orientation: landscape) and (max-height: 520px) {
+  .techstack-books-container {
+    min-height: 290px !important;
+    margin-left: 0 !important;
+    align-items: flex-start !important;
+  }
+  .portfolio-sticky-header {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
   }
 }
 
