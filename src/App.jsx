@@ -741,18 +741,18 @@ export default function App() {
           })()}
         </div>
 
-        {/* Navigation Bar (Minimal Entrance) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Navigation Bar (Minimal Entrance - Mobile Adaptive) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1.5vw, 10px)', flexWrap: 'nowrap' }}>
           {/* Get in Touch Button */}
           <button
             onClick={() => setModalOpen(true)}
             style={{
-              padding: '7px 16px',
+              padding: '6px clamp(10px, 1.8vw, 16px)',
               backgroundColor: 'rgba(25, 30, 40, 0.75)',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               borderRadius: '100px',
               color: '#e0e4ec',
-              fontSize: '12px',
+              fontSize: 'clamp(11px, 1.2vw, 12px)',
               fontWeight: '600',
               cursor: 'pointer',
               display: 'flex',
@@ -760,6 +760,7 @@ export default function App() {
               gap: '6px',
               backdropFilter: 'blur(12px)',
               transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = 'rgba(255, 77, 21, 0.5)';
@@ -773,19 +774,19 @@ export default function App() {
             }}
           >
             <Mail size={13} color="#ff7728" />
-            <span>Get in Touch</span>
+            <span style={{ display: 'inline' }}>Get in Touch</span>
           </button>
 
           {/* Web Portfolio Preview Button */}
           <button
             onClick={() => setPortfolioWebOpen(true)}
             style={{
-              padding: '6px 16px',
+              padding: '6px clamp(10px, 1.8vw, 16px)',
               backgroundColor: 'rgba(56, 189, 248, 0.15)',
               border: '1px solid rgba(56, 189, 248, 0.45)',
               borderRadius: '100px',
               color: '#38bdf8',
-              fontSize: '12px',
+              fontSize: 'clamp(11px, 1.2vw, 12px)',
               fontWeight: '700',
               cursor: 'pointer',
               display: 'flex',
@@ -793,6 +794,7 @@ export default function App() {
               gap: '6px',
               backdropFilter: 'blur(10px)',
               transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#0284c7';
@@ -811,12 +813,12 @@ export default function App() {
           <button
             onClick={() => setDeskViewerOpen(true)}
             style={{
-              padding: '6px 16px',
+              padding: '6px clamp(10px, 1.8vw, 16px)',
               backgroundColor: 'rgba(255, 77, 21, 0.15)',
               border: '1px solid rgba(255, 77, 21, 0.45)',
               borderRadius: '100px',
               color: '#ff8a5c',
-              fontSize: '12px',
+              fontSize: 'clamp(11px, 1.2vw, 12px)',
               fontWeight: '700',
               cursor: 'pointer',
               display: 'flex',
@@ -824,6 +826,7 @@ export default function App() {
               gap: '6px',
               backdropFilter: 'blur(10px)',
               transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#ff4d15';
@@ -853,7 +856,7 @@ export default function App() {
           flexDirection: 'column',
           justifyContent: 'center',
           marginLeft: 'clamp(0px, 5vw, 100px)',
-          padding: '0 clamp(16px, 4vw, 40px)',
+          padding: 'clamp(20px, 4vh, 40px) clamp(16px, 4vw, 40px)',
           maxWidth: '680px',
         }}
       >

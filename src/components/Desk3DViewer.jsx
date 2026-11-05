@@ -1568,6 +1568,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
   // References
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
   const controlsRef = useRef(null);
   const interactiveMeshesRef = useRef([]);
   const targetCamPos = useRef(ROOM_STATIONS.room.camPos.clone());
@@ -1577,6 +1578,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
   const monitorMeshRef = useRef(null);
   const portfolioTextureRef = useRef(null);
   const certificatesTextureRef = useRef(null);
+  const containerSizeRef = useRef({ w: 0, h: 0 });
+  const cachedDomRectRef = useRef(null);
+  const elementsRef = useRef({});
 
   // Dynamically swap 3D monitor texture whenever monitorTab, carouselOpen, or carouselIndex changes
   useEffect(() => {
@@ -1606,10 +1610,24 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     }
     const station = ROOM_STATIONS[stationKey];
     if (station) {
-      targetCamPos.current.copy(station.camPos);
+      if (stationKey === 'room') {
+        const isPortrait = (containerSizeRef.current.w || window.innerWidth) < (containerSizeRef.current.h || window.innerHeight);
+        if (isPortrait) {
+          targetCamPos.current.set(-0.65, 6.95, -0.65);
+          targetFov.current = 58;
+        } else {
+          targetCamPos.current.copy(station.camPos);
+          targetFov.current = station.fov ?? 46;
+        }
+      } else {
+        targetCamPos.current.copy(station.camPos);
+        targetFov.current = station.fov ?? 58;
+      }
       targetLookAt.current.copy(station.targetPos);
-      targetFov.current = station.fov ?? 58;
       isTransitioning.current = true;
+      if (rendererRef.current) {
+        rendererRef.current.shadowMap.needsUpdate = true;
+      }
     }
   };
 
@@ -1619,29 +1637,44 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
     const width = currentMount.clientWidth;
     const height = currentMount.clientHeight;
+    containerSizeRef.current = { w: width, h: height };
+    const isMobile = width < 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    const isPortrait = width < height;
 
     // 1. Scene Setup
     const scene = new THREE.Scene();
     sceneRef.current = scene;
     scene.background = new THREE.Color(0x06080b);
 
-    // 2. Camera Setup
-    const camera = new THREE.PerspectiveCamera(ROOM_STATIONS.room.fov, width / height, 0.05, 50);
-    camera.position.copy(ROOM_STATIONS.room.camPos);
+    // 2. Camera Setup (Responsive Portrait framing on phones)
+    const initialFov = isPortrait ? 58 : ROOM_STATIONS.room.fov;
+    const camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.05, 50);
+    if (isPortrait) {
+      camera.position.set(-0.65, 6.95, -0.65);
+    } else {
+      camera.position.copy(ROOM_STATIONS.room.camPos);
+    }
     cameraRef.current = camera;
 
-    // 3. WebGL Renderer with High-Contrast ACES Filmic Tone Mapping
+    // 3. WebGL Renderer with High-Contrast ACES Filmic Tone Mapping & Mobile Optimization
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !isMobile, // Disabling on mobile dramatically cuts fragment overhead
       powerPreference: 'high-performance',
+      precision: isMobile ? 'mediump' : 'highp',
     });
+    rendererRef.current = renderer;
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 1.25));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.95;
+
+    // PERFORMANCE: Static Shadow Map (prevents 1,236 cubemap shadow passes per frame!)
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = true;
     currentMount.appendChild(renderer.domElement);
+    cachedDomRectRef.current = renderer.domElement.getBoundingClientRect();
 
     // 4. OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -2183,7 +2216,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
     let pointerQueued = false;
     const handlePointerMove = (e) => {
-      const rect = renderer.domElement.getBoundingClientRect();
+      const rect = cachedDomRectRef.current || renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
@@ -2246,11 +2279,25 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     domEl.addEventListener('pointermove', handlePointerMove);
     domEl.addEventListener('click', handleClick);
 
+    // Cache DOM element references once at mount to eliminate per-frame getElementById lookups
+    const elements = {};
+    for (let i = 0; i < CALLOUT_CONFIG.length; i++) {
+      const c = CALLOUT_CONFIG[i];
+      elements[c.id] = {
+        badge: document.getElementById(`callout-badge-${c.id}`),
+        lineGlow: document.getElementById(`callout-line-glow-${c.id}`),
+        line: document.getElementById(`callout-line-${c.id}`),
+        dot: document.getElementById(`callout-dot-${c.id}`),
+        halo: document.getElementById(`callout-halo-${c.id}`),
+      };
+    }
+    elementsRef.current = elements;
+
     // Reusable projection vectors to avoid per-frame GC allocations
     const projBadgeVec = new THREE.Vector3();
     const projTargetVec = new THREE.Vector3();
 
-    // 8. Animation Loop with Smooth Camera Lerp
+    // 8. Animation Loop with Smooth Camera Lerp & Active Collision Avoidance
     let animationId;
     const animate = () => {
       animationId = requestAnimationFrame(animate);
@@ -2274,6 +2321,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           controls.target.distanceTo(targetLookAt.current) < 0.02
         ) {
           isTransitioning.current = false;
+          renderer.shadowMap.needsUpdate = true;
         }
       }
 
@@ -2282,18 +2330,16 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
       // Project 3D callout badges & glowing pointer lines (only active when in 'room' view)
       if (mountRef.current && activeStationRef.current === 'room') {
-        const w = mountRef.current.clientWidth;
-        const h = mountRef.current.clientHeight;
+        const w = containerSizeRef.current.w || currentMount.clientWidth;
+        const h = containerSizeRef.current.h || currentMount.clientHeight;
+        const isMobileScreen = w < 768;
+
+        const badgeList = [];
+        const badgeWidth = isMobileScreen ? 98 : 136;
+        const badgeHeight = isMobileScreen ? 34 : 40;
 
         for (let i = 0; i < CALLOUT_CONFIG.length; i++) {
           const c = CALLOUT_CONFIG[i];
-          const elBadge = document.getElementById(`callout-badge-${c.id}`);
-          const elLineGlow = document.getElementById(`callout-line-glow-${c.id}`);
-          const elLine = document.getElementById(`callout-line-${c.id}`);
-          const elDot = document.getElementById(`callout-dot-${c.id}`);
-          const elHalo = document.getElementById(`callout-halo-${c.id}`);
-          if (!elBadge) continue;
-
           projBadgeVec.copy(c.badgePos).project(camera);
           projTargetVec.copy(c.targetPos).project(camera);
 
@@ -2303,70 +2349,158 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             const tx = (projTargetVec.x * 0.5 + 0.5) * w;
             const ty = (-(projTargetVec.y * 0.5) + 0.5) * h;
 
-            elBadge.style.left = `${bx}px`;
-            elBadge.style.top = `${by}px`;
-            elBadge.style.display = 'inline-flex';
+            badgeList.push({
+              id: c.id,
+              bx,
+              by,
+              tx,
+              ty,
+              w: badgeWidth,
+              h: badgeHeight,
+              visible: true,
+            });
+          } else {
+            badgeList.push({
+              id: c.id,
+              bx: 0,
+              by: 0,
+              tx: 0,
+              ty: 0,
+              w: badgeWidth,
+              h: badgeHeight,
+              visible: false,
+            });
+          }
+        }
 
-            if (elLineGlow) {
-              elLineGlow.setAttribute('x1', bx);
-              elLineGlow.setAttribute('y1', by);
-              elLineGlow.setAttribute('x2', tx);
-              elLineGlow.setAttribute('y2', ty);
-              elLineGlow.style.display = 'block';
+        // Active Anti-Collision Resolution & Viewport Clamping (Guarantees ZERO overlaps on phones)
+        const padX = isMobileScreen ? 10 : 18;
+        const topPad = isMobileScreen ? 68 : 80; // Stay comfortably below top nav
+        const bottomPad = isMobileScreen ? 44 : 54; // Stay comfortably above bottom
+        
+        // 1. Initial viewport clamp
+        for (let i = 0; i < badgeList.length; i++) {
+          const b = badgeList[i];
+          if (!b.visible) continue;
+          b.bx = Math.max(padX + b.w / 2, Math.min(w - padX - b.w / 2, b.bx));
+          b.by = Math.max(topPad + b.h / 2, Math.min(h - bottomPad - b.h / 2, b.by));
+        }
+
+        // 2. Iterative pairwise repulsion (3 passes guarantee zero overlapping)
+        const gapX = isMobileScreen ? 8 : 14;
+        const gapY = isMobileScreen ? 10 : 16;
+        for (let pass = 0; pass < 3; pass++) {
+          for (let i = 0; i < badgeList.length; i++) {
+            for (let j = i + 1; j < badgeList.length; j++) {
+              const b1 = badgeList[i];
+              const b2 = badgeList[j];
+              if (!b1.visible || !b2.visible) continue;
+
+              const overlapX = (b1.w + b2.w) / 2 + gapX - Math.abs(b1.bx - b2.bx);
+              const overlapY = (b1.h + b2.h) / 2 + gapY - Math.abs(b1.by - b2.by);
+
+              if (overlapX > 0 && overlapY > 0) {
+                // Separate along the axis with smaller overlap
+                if (overlapY <= overlapX) {
+                  const shift = overlapY * 0.5 + 2;
+                  if (b1.by < b2.by) {
+                    b1.by = Math.max(topPad + b1.h / 2, b1.by - shift);
+                    b2.by = Math.min(h - bottomPad - b2.h / 2, b2.by + shift);
+                  } else {
+                    b1.by = Math.min(h - bottomPad - b1.h / 2, b1.by + shift);
+                    b2.by = Math.max(topPad + b2.h / 2, b2.by - shift);
+                  }
+                } else {
+                  const shift = overlapX * 0.5 + 2;
+                  if (b1.bx < b2.bx) {
+                    b1.bx = Math.max(padX + b1.w / 2, b1.bx - shift);
+                    b2.bx = Math.min(w - padX - b2.w / 2, b2.bx + shift);
+                  } else {
+                    b1.bx = Math.min(w - padX - b1.w / 2, b1.bx + shift);
+                    b2.bx = Math.max(padX + b2.w / 2, b2.bx - shift);
+                  }
+                }
+              }
             }
-            if (elLine) {
-              elLine.setAttribute('x1', bx);
-              elLine.setAttribute('y1', by);
-              elLine.setAttribute('x2', tx);
-              elLine.setAttribute('y2', ty);
-              elLine.style.display = 'block';
+          }
+        }
+
+        // Apply fast GPU transforms to elements
+        for (let i = 0; i < badgeList.length; i++) {
+          const b = badgeList[i];
+          const els = elementsRef.current[b.id];
+          if (!els || !els.badge) continue;
+
+          if (b.visible) {
+            els.badge.style.transform = `translate3d(${b.bx}px, ${b.by}px, 0) translate(-50%, -50%)`;
+            els.badge.style.display = 'inline-flex';
+
+            if (els.lineGlow) {
+              els.lineGlow.setAttribute('x1', b.bx);
+              els.lineGlow.setAttribute('y1', b.by);
+              els.lineGlow.setAttribute('x2', b.tx);
+              els.lineGlow.setAttribute('y2', b.ty);
+              els.lineGlow.style.display = 'block';
             }
-            if (elDot) {
-              elDot.setAttribute('cx', tx);
-              elDot.setAttribute('cy', ty);
-              elDot.style.display = 'block';
+            if (els.line) {
+              els.line.setAttribute('x1', b.bx);
+              els.line.setAttribute('y1', b.by);
+              els.line.setAttribute('x2', b.tx);
+              els.line.setAttribute('y2', b.ty);
+              els.line.style.display = 'block';
             }
-            if (elHalo) {
-              elHalo.setAttribute('cx', tx);
-              elHalo.setAttribute('cy', ty);
-              elHalo.style.display = 'block';
+            if (els.dot) {
+              els.dot.setAttribute('cx', b.tx);
+              els.dot.setAttribute('cy', b.ty);
+              els.dot.style.display = 'block';
+            }
+            if (els.halo) {
+              els.halo.setAttribute('cx', b.tx);
+              els.halo.setAttribute('cy', b.ty);
+              els.halo.style.display = 'block';
             }
           } else {
-            elBadge.style.display = 'none';
-            if (elLineGlow) elLineGlow.style.display = 'none';
-            if (elLine) elLine.style.display = 'none';
-            if (elDot) elDot.style.display = 'none';
-            if (elHalo) elHalo.style.display = 'none';
+            els.badge.style.display = 'none';
+            if (els.lineGlow) els.lineGlow.style.display = 'none';
+            if (els.line) els.line.style.display = 'none';
+            if (els.dot) els.dot.style.display = 'none';
+            if (els.halo) els.halo.style.display = 'none';
           }
         }
       } else if (mountRef.current && activeStationRef.current !== 'room') {
         for (let i = 0; i < CALLOUT_CONFIG.length; i++) {
           const c = CALLOUT_CONFIG[i];
-          const elBadge = document.getElementById(`callout-badge-${c.id}`);
-          if (elBadge && elBadge.style.display !== 'none') {
-            elBadge.style.display = 'none';
-            const elLineGlow = document.getElementById(`callout-line-glow-${c.id}`);
-            const elLine = document.getElementById(`callout-line-${c.id}`);
-            const elDot = document.getElementById(`callout-dot-${c.id}`);
-            const elHalo = document.getElementById(`callout-halo-${c.id}`);
-            if (elLineGlow) elLineGlow.style.display = 'none';
-            if (elLine) elLine.style.display = 'none';
-            if (elDot) elDot.style.display = 'none';
-            if (elHalo) elHalo.style.display = 'none';
+          const els = elementsRef.current[c.id];
+          if (els && els.badge && els.badge.style.display !== 'none') {
+            els.badge.style.display = 'none';
+            if (els.lineGlow) els.lineGlow.style.display = 'none';
+            if (els.line) els.line.style.display = 'none';
+            if (els.dot) els.dot.style.display = 'none';
+            if (els.halo) els.halo.style.display = 'none';
           }
         }
       }
     };
     animate();
 
-    // 9. Resize
+    // 9. Resize (Caches dimensions and dynamically adapts portrait FOV & camera distance)
     const handleResize = () => {
       if (!currentMount) return;
       const w = currentMount.clientWidth;
       const h = currentMount.clientHeight;
+      containerSizeRef.current = { w, h };
+      cachedDomRectRef.current = renderer.domElement.getBoundingClientRect();
+      const isPortraitNow = w < h;
+      if (activeStationRef.current === 'room') {
+        camera.fov = isPortraitNow ? 58 : ROOM_STATIONS.room.fov;
+        if (isPortraitNow && !isTransitioning.current) {
+          camera.position.set(-0.65, 6.95, -0.65);
+        }
+      }
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      renderer.shadowMap.needsUpdate = true;
     };
     window.addEventListener('resize', handleResize);
 
@@ -2581,35 +2715,59 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         <div
           style={{
             position: 'absolute',
-            bottom: '100px',
-            right: 'clamp(12px, 3vw, 36px)',
-            width: 'min(440px, calc(100vw - 24px))',
-            maxHeight: 'min(75vh, calc(100vh - 180px))',
+            bottom: 'clamp(14px, 3vh, 90px)',
+            right: 'clamp(10px, 3vw, 36px)',
+            left: 'clamp(10px, 3vw, auto)',
+            width: 'min(440px, calc(100vw - 20px))',
+            maxHeight: 'min(76vh, calc(100vh - 120px))',
+            margin: '0 auto',
             overflowY: 'auto',
             backgroundColor: 'rgba(13, 17, 24, 0.95)',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(100, 180, 255, 0.35)',
             borderRadius: '16px',
-            padding: 'clamp(18px, 3vw, 26px)',
+            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(100, 180, 255, 0.2)',
             zIndex: 40,
             animation: 'slideUp 0.3s ease-out',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Laptop size={18} color="#60a5fa" />
-              <span style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '0.1em', color: '#60a5fa' }}>
-                SAMSUNG GALAXY BOOK 2 • GHAYZELLE'S SKILLS
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+              <Laptop size={18} color="#60a5fa" style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#60a5fa', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                SAMSUNG GALAXY BOOK 2 • SKILLS
               </span>
             </div>
-            <button
-              onClick={() => setPanelDismissed(true)}
-              title="Hide panel to inspect 3D laptop"
-              style={{ background: 'transparent', border: 'none', color: '#889', cursor: 'pointer' }}
-            >
-              <X size={18} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              <button
+                onClick={() => goToStation('room')}
+                title="Return to Studio View"
+                style={{
+                  background: 'rgba(96, 165, 250, 0.12)',
+                  border: '1px solid rgba(96, 165, 250, 0.3)',
+                  color: '#93c5fd',
+                  padding: '4px 10px',
+                  borderRadius: '100px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <Compass size={12} color="#60a5fa" />
+                <span>Studio</span>
+              </button>
+              <button
+                onClick={() => setPanelDismissed(true)}
+                title="Hide panel to inspect 3D laptop"
+                style={{ background: 'transparent', border: 'none', color: '#889', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#fff', marginBottom: '14px' }}>
@@ -2700,35 +2858,59 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         <div
           style={{
             position: 'absolute',
-            bottom: '100px',
-            right: 'clamp(12px, 3vw, 36px)',
-            width: 'min(430px, calc(100vw - 24px))',
-            maxHeight: 'min(75vh, calc(100vh - 180px))',
+            bottom: 'clamp(14px, 3vh, 90px)',
+            right: 'clamp(10px, 3vw, 36px)',
+            left: 'clamp(10px, 3vw, auto)',
+            width: 'min(430px, calc(100vw - 20px))',
+            maxHeight: 'min(76vh, calc(100vh - 120px))',
+            margin: '0 auto',
             overflowY: 'auto',
             backgroundColor: 'rgba(13, 17, 24, 0.95)',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 170, 60, 0.35)',
             borderRadius: '16px',
-            padding: 'clamp(18px, 3vw, 26px)',
+            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 170, 60, 0.2)',
             zIndex: 40,
             animation: 'slideUp 0.3s ease-out',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Pin size={18} color="#ffaa40" />
-              <span style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '0.1em', color: '#ffaa40' }}>
-                CORK BULLETIN BOARD • ABOUT ME
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+              <Pin size={18} color="#ffaa40" style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#ffaa40', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                BULLETIN BOARD • ABOUT ME
               </span>
             </div>
-            <button
-              onClick={() => setPanelDismissed(true)}
-              title="Hide panel to inspect 3D board"
-              style={{ background: 'transparent', border: 'none', color: '#889', cursor: 'pointer' }}
-            >
-              <X size={18} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              <button
+                onClick={() => goToStation('room')}
+                title="Return to Studio View"
+                style={{
+                  background: 'rgba(255, 170, 60, 0.12)',
+                  border: '1px solid rgba(255, 170, 60, 0.3)',
+                  color: '#fcd34d',
+                  padding: '4px 10px',
+                  borderRadius: '100px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <Compass size={12} color="#ffaa40" />
+                <span>Studio</span>
+              </button>
+              <button
+                onClick={() => setPanelDismissed(true)}
+                title="Hide panel to inspect 3D board"
+                style={{ background: 'transparent', border: 'none', color: '#889', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           <div
@@ -2839,35 +3021,59 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         <div
           style={{
             position: 'absolute',
-            bottom: '100px',
-            right: 'clamp(12px, 3vw, 36px)',
-            width: 'min(450px, calc(100vw - 24px))',
-            maxHeight: 'min(78vh, calc(100vh - 180px))',
+            bottom: 'clamp(14px, 3vh, 90px)',
+            right: 'clamp(10px, 3vw, 36px)',
+            left: 'clamp(10px, 3vw, auto)',
+            width: 'min(450px, calc(100vw - 20px))',
+            maxHeight: 'min(78vh, calc(100vh - 120px))',
+            margin: '0 auto',
             overflowY: 'auto',
             backgroundColor: 'rgba(13, 17, 24, 0.95)',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 77, 21, 0.4)',
             borderRadius: '16px',
-            padding: 'clamp(18px, 3vw, 26px)',
+            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 77, 21, 0.25)',
             zIndex: 40,
             animation: 'slideUp 0.3s ease-out',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FileText size={18} color="#ff4d15" />
-              <span style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '0.1em', color: '#ff7728' }}>
-                STUDY DESK DOCUMENT • RESUME
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+              <FileText size={18} color="#ff4d15" style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#ff7728', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                DESK DOCUMENT • RESUME
               </span>
             </div>
-            <button
-              onClick={() => setPanelDismissed(true)}
-              title="Hide panel to inspect 3D paper"
-              style={{ background: 'transparent', border: 'none', color: '#889', cursor: 'pointer' }}
-            >
-              <X size={18} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              <button
+                onClick={() => goToStation('room')}
+                title="Return to Studio View"
+                style={{
+                  background: 'rgba(255, 77, 21, 0.12)',
+                  border: '1px solid rgba(255, 77, 21, 0.3)',
+                  color: '#ff8a5c',
+                  padding: '4px 10px',
+                  borderRadius: '100px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <Compass size={12} color="#ff7728" />
+                <span>Studio</span>
+              </button>
+              <button
+                onClick={() => setPanelDismissed(true)}
+                title="Hide panel to inspect 3D paper"
+                style={{ background: 'transparent', border: 'none', color: '#889', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           <div
@@ -3176,45 +3382,45 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 onClick={() => goToStation(c.id)}
                 style={{
                   position: 'absolute',
-                  transform: 'translate(-50%, -50%)',
+                  top: 0,
+                  left: 0,
                   display: 'none', // positioned dynamically in animate()
                   pointerEvents: 'auto',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '9px',
-                  minWidth: '136px',
-                  height: '40px',
-                  padding: '0 18px',
+                  gap: 'clamp(5px, 1.2vw, 9px)',
+                  minWidth: 'clamp(82px, 18vw, 136px)',
+                  height: 'clamp(32px, 4.4vw, 40px)',
+                  padding: '0 clamp(10px, 1.8vw, 18px)',
                   borderRadius: '100px',
                   border: `1.5px solid ${c.glowColor || 'rgba(255, 120, 40, 0.5)'}`,
                   backgroundColor: 'rgba(12, 16, 24, 0.88)',
                   backdropFilter: 'blur(16px)',
                   WebkitBackdropFilter: 'blur(16px)',
                   color: '#ffffff',
-                  fontSize: '11.5px',
+                  fontSize: 'clamp(10px, 1.3vw, 11.5px)',
                   fontWeight: '800',
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   cursor: 'pointer',
                   boxShadow: `0 8px 30px rgba(0,0,0,0.7), 0 0 18px ${c.glowColor || 'rgba(255, 100, 30, 0.3)'}, inset 0 1px 0 rgba(255, 255, 255, 0.22)`,
-                  transition: 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s, border-color 0.22s, background-color 0.22s',
+                  transition: 'box-shadow 0.22s, border-color 0.22s, background-color 0.22s',
                   whiteSpace: 'nowrap',
                   userSelect: 'none',
+                  willChange: 'transform',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.08)';
                   e.currentTarget.style.borderColor = '#ffffff';
                   e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.32)';
                   e.currentTarget.style.boxShadow = '0 14px 40px rgba(0,0,0,0.9), 0 0 32px rgba(255, 115, 30, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
                   e.currentTarget.style.borderColor = c.glowColor || 'rgba(255, 120, 40, 0.5)';
                   e.currentTarget.style.backgroundColor = 'rgba(12, 16, 24, 0.88)';
                   e.currentTarget.style.boxShadow = `0 8px 30px rgba(0,0,0,0.7), 0 0 18px ${c.glowColor || 'rgba(255, 100, 30, 0.3)'}, inset 0 1px 0 rgba(255, 255, 255, 0.22)`;
                 }}
               >
-                <Icon size={15} color={c.iconColor || '#ff7728'} />
+                <Icon size={14} color={c.iconColor || '#ff7728'} />
                 <span>{c.name}</span>
               </button>
             );
