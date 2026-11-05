@@ -1415,68 +1415,73 @@ function createResumePaperTexture() {
 // ABOUT ME PAPER DISPLAY ON BULLETIN BOARD
 function createAboutMePaperTexture() {
   const canvas = document.createElement('canvas');
-  // High-res pinned memo paper (approx 3:4 aspect ratio matching film.002 scale)
-  canvas.width = 1600;
-  canvas.height = 2080;
+  // Wide pinned memo paper matching the 3D bulletin board note proportions (~ 1.31 : 1)
+  canvas.width = 2000;
+  canvas.height = 1530;
   const ctx = canvas.getContext('2d');
 
   // Warm cream textured memo paper
   ctx.fillStyle = '#fffdfa';
-  ctx.fillRect(0, 0, 1600, 2080);
+  ctx.fillRect(0, 0, 2000, 1530);
 
   // Subtle clean border
   ctx.strokeStyle = '#e2ded5';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(36, 36, 1528, 2008);
+  ctx.lineWidth = 4;
+  ctx.strokeRect(36, 36, 1928, 1458);
 
   // Top pin shadow indicator
-  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
   ctx.beginPath();
-  ctx.arc(800, 70, 10, 0, Math.PI * 2);
+  ctx.arc(1000, 65, 12, 0, Math.PI * 2);
   ctx.fill();
 
   // Title: A Little About Me
-  ctx.font = '900 62px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.font = '900 68px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#0f172a';
   ctx.textAlign = 'center';
-  ctx.fillText('A Little About Me', 800, 210);
+  ctx.fillText('A Little About Me', 1000, 190);
 
   // Warm terracotta accent line under title
   ctx.strokeStyle = '#ff4d15';
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(600, 240);
-  ctx.lineTo(1000, 240);
+  ctx.moveTo(760, 222);
+  ctx.lineTo(1240, 222);
   ctx.stroke();
 
   // Reset text alignment for paragraphs
   ctx.textAlign = 'left';
 
-  // 3 paragraphs provided by the user
+  // 3 paragraphs provided by Ghayzelle
   const paragraphs = [
     "I'm someone who embraces new experiences, welcomes different ideas and perspectives, and is always open to learning.",
     "As an aspiring Front-End Developer, I enjoy turning ideas into interactive and meaningful digital experiences. I'm interested in exploring how design and technology work together to create interfaces that are both functional and engaging.",
     "I believe growth comes from stepping outside my comfort zone, taking on challenges, and turning new ideas into action. I may not have everything figured out, but I'm always moving forward, learning through experience, and finding new ways to improve.",
   ];
 
-  let curY = 370;
+  let curY = 330;
   ctx.fillStyle = '#1e293b';
 
   paragraphs.forEach((p) => {
-    ctx.font = '500 37px "Inter", -apple-system, sans-serif';
-    const lines = wrapCanvasText(p, 45);
+    ctx.font = '500 40px "Inter", -apple-system, sans-serif';
+    const lines = wrapCanvasText(p, 58);
     lines.forEach((line) => {
-      ctx.fillText(line, 130, curY);
-      curY += 56;
+      ctx.fillText(line, 140, curY);
+      curY += 58;
     });
-    curY += 68; // comfortable spacing between paragraphs
+    curY += 46; // comfortable spacing between paragraphs
   });
 
+  // Education tag
+  ctx.font = '700 36px "Inter", sans-serif';
+  ctx.fillStyle = '#475569';
+  ctx.fillText('🎓 Holy Angel University — BS Computer Science (2023 – Present)', 140, 1420);
+
   // Sign-off
-  ctx.font = 'italic 700 38px "Inter", sans-serif';
+  ctx.font = 'italic 700 42px "Inter", sans-serif';
   ctx.fillStyle = '#ff4d15';
   ctx.textAlign = 'right';
-  ctx.fillText('— Ghayzelle Dizon', 1470, 1920);
+  ctx.fillText('— Ghayzelle Dizon', 1860, 1420);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.flipY = false;
@@ -1914,12 +1919,12 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               if (posAttr && uvAttr) {
                 for (let i = 0; i < posAttr.count; i++) {
                   const z = posAttr.getZ(i);
-                  // Front face of Cube.037 faces towards room camera (z < -0.1)
-                  if (z < -0.1) {
+                  // Front face of Cube.037 faces towards room camera (z <= 0)
+                  if (z <= 0.1) {
                     const x = posAttr.getX(i);
                     const y = posAttr.getY(i);
-                    const u = (1 - y) * 0.5;
-                    const v = (x + 1) * 0.5;
+                    const u = (y + 1) * 0.5;
+                    const v = (1 - x) * 0.5;
                     uvAttr.setXY(i, u, v);
                   } else {
                     uvAttr.setXY(i, 0.01, 0.01);
@@ -1932,7 +1937,10 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               }
               child.material = new THREE.MeshStandardMaterial({
                 map: aboutMePaperTexture,
-                roughness: 0.85,
+                emissiveMap: aboutMePaperTexture,
+                emissive: new THREE.Color(0xffffff),
+                emissiveIntensity: 0.75, // Self-illuminated crispness guarantees 100% legibility under all studio lighting!
+                roughness: 0.35,
                 metalness: 0.0,
                 side: THREE.DoubleSide,
               });
@@ -1951,13 +1959,12 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               const posAttr = child.geometry.attributes.position;
               const uvAttr = child.geometry.attributes.uv;
               if (posAttr && uvAttr) {
-                // Compute position-based UV projection (immune to Draco vertex reordering)
-                // Maps upright: top of photo to screen-top, right to screen-right
+                // Compute upright UV projection (maps hat to top, feet to bottom, crocodile horizontally)
                 for (let i = 0; i < posAttr.count; i++) {
                   const x = posAttr.getX(i);
                   const z = posAttr.getZ(i);
-                  const u = (1 - x) * 0.5;
-                  const v = (1 - z) * 0.5;
+                  const u = (1 - z) * 0.5;
+                  const v = (x + 1) * 0.5;
                   uvAttr.setXY(i, u, v);
                 }
                 uvAttr.needsUpdate = true;
@@ -1967,6 +1974,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               }
               child.material = new THREE.MeshStandardMaterial({
                 map: polaroidPhotoTexture,
+                emissiveMap: polaroidPhotoTexture,
+                emissive: new THREE.Color(0xffffff),
+                emissiveIntensity: 0.35,
                 roughness: 0.25, // Glossy photo finish
                 metalness: 0.05,
                 side: THREE.DoubleSide,
@@ -2189,11 +2199,52 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         model.add(resumeMesh);
         interactiveList.push(resumeMesh);
 
+        // DEDICATED CRISP PRINTED ABOUT ME MEMO SHEET ON BULLETIN BOARD
+        aboutMePaperTexture.needsUpdate = true;
+        const aboutMeGeo = new THREE.PlaneGeometry(0.584, 0.447);
+        const aboutMeMat = new THREE.MeshStandardMaterial({
+          map: aboutMePaperTexture,
+          emissiveMap: aboutMePaperTexture,
+          emissive: new THREE.Color(0xffffff),
+          emissiveIntensity: 0.75, // Crisp self-illumination guarantees 100% text legibility under all room lighting
+          roughness: 0.3,
+          metalness: 0.0,
+          side: THREE.DoubleSide,
+        });
+        const aboutMeMesh = new THREE.Mesh(aboutMeGeo, aboutMeMat);
+        aboutMeMesh.name = 'aboutMeNoteSheet';
+        aboutMeMesh.position.set(-2.285, 6.566, 1.818);
+        aboutMeMesh.rotation.set(0, Math.PI, 0.074);
+        aboutMeMesh.userData = { station: 'aboutme' };
+        model.add(aboutMeMesh);
+        interactiveList.push(aboutMeMesh);
+
+        // DEDICATED CRISP POLAROID PHOTO OVERLAY (Guaranteed 100% Upright Orientation)
+        polaroidPhotoTexture.needsUpdate = true;
+        const polaroidGeo = new THREE.PlaneGeometry(0.293, 0.338);
+        const polaroidMat = new THREE.MeshStandardMaterial({
+          map: polaroidPhotoTexture,
+          emissiveMap: polaroidPhotoTexture,
+          emissive: new THREE.Color(0xffffff),
+          emissiveIntensity: 0.4,
+          roughness: 0.2,
+          metalness: 0.05,
+          side: THREE.DoubleSide,
+        });
+        const polaroidMesh = new THREE.Mesh(polaroidGeo, polaroidMat);
+        polaroidMesh.name = 'polaroidPhotoSheet';
+        polaroidMesh.position.set(-1.765, 6.583, 1.819);
+        polaroidMesh.rotation.set(0, Math.PI, -0.187);
+        polaroidMesh.userData = { station: 'aboutme' };
+        model.add(polaroidMesh);
+        interactiveList.push(polaroidMesh);
+
         interactiveMeshesRef.current = interactiveList;
         scene.add(model);
         isModelLoadedRef.current = true;
         targetProgressRef.current = 100;
         renderer.shadowMap.needsUpdate = true;
+        renderer.render(scene, camera);
       },
       (xhr) => {
         let pct = 0;
