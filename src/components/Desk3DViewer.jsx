@@ -1936,13 +1936,13 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               const posAttr = child.geometry.attributes.position;
               const uvAttr = child.geometry.attributes.uv;
               if (posAttr && uvAttr) {
-                // Front face of Cube.037 faces towards room camera (z > 0.1)
+                // Front face of Cube.037 faces towards room camera (z < -0.1)
                 // In local space due to -94.2 deg Z rotation:
                 // y goes from -1 (left) to +1 (right) -> u = (y + 1) * 0.5
                 // x goes from -1 (up) to +1 (down) -> v = (x + 1) * 0.5 (with flipY = false on canvas texture)
                 for (let i = 0; i < posAttr.count; i++) {
                   const z = posAttr.getZ(i);
-                  if (z > 0.1) {
+                  if (z < -0.1) {
                     const x = posAttr.getX(i);
                     const y = posAttr.getY(i);
                     const u = (y + 1) * 0.5;
@@ -1961,7 +1961,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 map: aboutMePaperTexture,
                 emissiveMap: aboutMePaperTexture,
                 emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 0.75, // Self-illuminated crispness guarantees 100% legibility under all studio lighting!
+                emissiveIntensity: 0.85, // Self-illuminated crispness guarantees 100% legibility under all studio lighting!
                 roughness: 0.35,
                 metalness: 0.0,
                 side: THREE.DoubleSide,
@@ -1982,14 +1982,14 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               const uvAttr = child.geometry.attributes.uv;
               if (posAttr && uvAttr) {
                 // In local plane geometry:
-                // x goes from -1 (left) to +1 (right)
-                // z goes from -1 (top of polaroid frame) to +1 (bottom of polaroid frame)
-                // With flipY = true: v=1 is top of photo, v=0 is bottom
+                // With flipY = true:
+                // u = (1 - x) * 0.5 maps crocodile head to left, tail to right
+                // v = (z + 1) * 0.5 maps hat to top, body/feet to bottom (upright)
                 for (let i = 0; i < posAttr.count; i++) {
                   const x = posAttr.getX(i);
                   const z = posAttr.getZ(i);
-                  const u = (x + 1) * 0.5;
-                  const v = (1 - z) * 0.5;
+                  const u = (1 - x) * 0.5;
+                  const v = (z + 1) * 0.5;
                   uvAttr.setXY(i, u, v);
                 }
                 uvAttr.needsUpdate = true;
@@ -2001,7 +2001,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 map: polaroidPhotoTexture,
                 emissiveMap: polaroidPhotoTexture,
                 emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 0.35,
+                emissiveIntensity: 0.45,
                 roughness: 0.25, // Glossy photo finish
                 metalness: 0.05,
                 side: THREE.DoubleSide,
