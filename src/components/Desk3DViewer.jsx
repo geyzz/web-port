@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import ProjectTabletCarousel from './ProjectTabletCarousel';
 import GazedLogo from './GazedLogo';
 import {
@@ -1697,6 +1698,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
     // 6. LOAD GLB AND FIX ALL MATERIALS (MUG, VASES, WOOD, BOOKS, PAPERS)
     const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    loader.setDRACOLoader(dracoLoader);
     const interactiveList = [];
     let bookCounter = 0;
     const mugTexture = createTwoToneMugTexture();
@@ -2147,7 +2151,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         if (xhr.total > 0) {
           pct = Math.round((xhr.loaded / xhr.total) * 100);
         } else {
-          const approxTotal = 319714308;
+          const approxTotal = 24156136;
           pct = Math.round((xhr.loaded / approxTotal) * 100);
         }
         targetProgressRef.current = Math.max(targetProgressRef.current, Math.min(pct, 99));
