@@ -1423,38 +1423,38 @@ function createResumePaperTexture() {
 // ABOUT ME PAPER DISPLAY ON BULLETIN BOARD
 function createAboutMePaperTexture() {
   const canvas = document.createElement('canvas');
-  // Wide pinned memo paper matching the 3D bulletin board note proportions (~ 1.31 : 1)
-  canvas.width = 2000;
-  canvas.height = 1530;
+  // Wide pinned memo paper matching the 3D bulletin board note proportions (~ 1.33 : 1)
+  canvas.width = 2048;
+  canvas.height = 1536;
   const ctx = canvas.getContext('2d');
 
   // Warm cream textured memo paper
-  ctx.fillStyle = '#fffdfa';
-  ctx.fillRect(0, 0, 2000, 1530);
+  ctx.fillStyle = '#faf7f2';
+  ctx.fillRect(0, 0, 2048, 1536);
 
-  // Subtle clean border
-  ctx.strokeStyle = '#e2ded5';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(36, 36, 1928, 1458);
+  // Clean paper border
+  ctx.strokeStyle = '#dfd9ce';
+  ctx.lineWidth = 5;
+  ctx.strokeRect(40, 40, 1968, 1456);
 
-  // Top pin shadow indicator
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  // Top pin hole indicator
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
   ctx.beginPath();
-  ctx.arc(1000, 65, 12, 0, Math.PI * 2);
+  ctx.arc(1024, 70, 14, 0, Math.PI * 2);
   ctx.fill();
 
-  // Title: A Little About Me
-  ctx.font = '900 68px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  // Title: A Little About Me (Bold, High Contrast, Centered)
+  ctx.font = '900 78px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#0f172a';
   ctx.textAlign = 'center';
-  ctx.fillText('A Little About Me', 1000, 190);
+  ctx.fillText('A Little About Me', 1024, 195);
 
   // Warm terracotta accent line under title
-  ctx.strokeStyle = '#ff4d15';
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#ea580c';
+  ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.moveTo(760, 222);
-  ctx.lineTo(1240, 222);
+  ctx.moveTo(760, 228);
+  ctx.lineTo(1288, 228);
   ctx.stroke();
 
   // Reset text alignment for paragraphs
@@ -1467,29 +1467,30 @@ function createAboutMePaperTexture() {
     "I believe growth comes from stepping outside my comfort zone, taking on challenges, and turning new ideas into action. I may not have everything figured out, but I'm always moving forward, learning through experience, and finding new ways to improve.",
   ];
 
-  let curY = 330;
-  ctx.fillStyle = '#0f172a'; // Deep charcoal black for rich, punchy ink contrast
+  let curY = 345;
 
   paragraphs.forEach((p) => {
-    ctx.font = '600 41px "Inter", -apple-system, sans-serif';
-    const lines = wrapCanvasText(p, 58);
+    // Bold, punchy font size and pitch dark color guarantees 100% readability from any camera angle
+    ctx.font = 'bold 46px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = '#020617';
+    const lines = wrapCanvasText(p, 52);
     lines.forEach((line) => {
-      ctx.fillText(line, 140, curY);
-      curY += 58;
+      ctx.fillText(line, 150, curY);
+      curY += 66;
     });
-    curY += 46; // comfortable spacing between paragraphs
+    curY += 48; // comfortable spacing between paragraphs
   });
 
   // Education tag
-  ctx.font = '700 36px "Inter", sans-serif';
-  ctx.fillStyle = '#334155';
-  ctx.fillText('🎓 Holy Angel University — BS Computer Science (2023 – Present)', 140, 1420);
+  ctx.font = 'bold 40px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#1e293b';
+  ctx.fillText('🎓 Holy Angel University — BS Computer Science (2023 – Present)', 150, 1430);
 
   // Sign-off
-  ctx.font = 'italic 700 42px "Inter", sans-serif';
+  ctx.font = 'bold italic 48px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillStyle = '#ea580c';
   ctx.textAlign = 'right';
-  ctx.fillText('— Ghayzelle Dizon', 1860, 1420);
+  ctx.fillText('— Ghayzelle Dizon', 1898, 1430);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.flipY = false;
@@ -1938,8 +1939,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               if (posAttr && uvAttr) {
                 // Front face of Cube.037 faces towards room camera (z < -0.1)
                 // In local space due to -94.2 deg Z rotation:
-                // y goes from +1 (left) to -1 (right) -> u = (1 - y) * 0.5 (un-mirrored, reads left to right)
-                // x goes from -1 (up) to +1 (down) -> v = (x + 1) * 0.5 (with flipY = false on canvas texture)
+                // Horizontally flipped so text reads left-to-right (u = (1 - y) * 0.5)
+                // Vertically right-side up (v = (x + 1) * 0.5 with flipY = false on canvas texture)
                 for (let i = 0; i < posAttr.count; i++) {
                   const z = posAttr.getZ(i);
                   if (z < -0.1) {
@@ -1961,8 +1962,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 map: aboutMePaperTexture,
                 emissiveMap: aboutMePaperTexture,
                 emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 0.22, // Balanced subtle illumination so paper looks natural and text stays pitch-black & ultra-legible
-                roughness: 0.55,
+                emissiveIntensity: 0.28, // Crisp natural contrast with bold black ink, zero light-bleach
+                roughness: 0.85, // Authentic matte memo paper texture
                 metalness: 0.0,
                 side: THREE.DoubleSide,
               });
