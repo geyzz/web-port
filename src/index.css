@@ -166,11 +166,64 @@ html, body {
   }
 }
 
-@media (max-width: 600px) {
+/* Mobile Portrait Mode:
+   Main container is right-justified as a layout block (leaving the left side 100% open for the pull-string),
+   while all inner typography & buttons remain left-aligned for natural reading flow */
+@media (max-width: 640px) {
   .hero-main-container {
-    margin-left: 0;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+    margin-left: auto !important;
+    margin-right: clamp(10px, 3.5vw, 20px) !important;
+    max-width: calc(100vw - clamp(110px, 28vw, 140px)) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .hero-main-container h1 {
+    font-size: clamp(26px, 7vw, 36px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .hero-main-container h2 {
+    font-size: clamp(16px, 4.4vw, 20px) !important;
+    margin-bottom: 12px !important;
+  }
+
+  .hero-main-container p {
+    font-size: clamp(13px, 3.5vw, 14.5px) !important;
+    line-height: 1.55 !important;
+    margin-bottom: 22px !important;
+  }
+
+  .hero-action-buttons {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .hero-action-buttons button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .landing-footer {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    padding: 12px 16px !important;
+    gap: 8px !important;
+  }
+
+  .landing-footer-branding {
+    font-size: 11px !important;
+    text-align: right !important;
+    justify-content: flex-end !important;
+  }
+
+  .landing-footer-email-btn {
+    padding: 9px 16px !important;
+    font-size: 12px !important;
   }
 }
 

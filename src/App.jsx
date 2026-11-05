@@ -14,6 +14,7 @@ import {
   Folder,
   Send,
   ExternalLink,
+  Menu,
 } from 'lucide-react';
 import Desk3DViewer from './components/Desk3DViewer';
 import FourPanelWindow from './components/FourPanelWindow';
@@ -26,6 +27,8 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deskViewerOpen, setDeskViewerOpen] = useState(false);
   const [portfolioWebOpen, setPortfolioWebOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const [pullPos, setPullPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [stringHovered, setStringHovered] = useState(false);
@@ -280,6 +283,18 @@ export default function App() {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
+
+  // Close header menu when tapping outside
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleOutsideClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, [menuOpen]);
 
   // High-performance hardware-accelerated mouse parallax (Zero React state re-renders!)
   useEffect(() => {
@@ -743,105 +758,177 @@ export default function App() {
           })()}
         </div>
 
-        {/* Navigation Bar (Minimal Entrance - Mobile Adaptive) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1.5vw, 10px)', flexWrap: 'nowrap' }}>
-          {/* Get in Touch Button */}
+        {/* Navigation Bar: Consolidated Glassmorphism Menu Option */}
+        <div ref={menuRef} style={{ position: 'relative', zIndex: 80 }}>
           <button
-            onClick={() => setModalOpen(true)}
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Navigation Menu"
             style={{
-              padding: '6px clamp(10px, 1.8vw, 16px)',
-              backgroundColor: 'rgba(25, 30, 40, 0.75)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '100px',
-              color: '#e0e4ec',
-              fontSize: 'clamp(11px, 1.2vw, 12px)',
-              fontWeight: '600',
+              padding: '7px 16px',
+              backgroundColor: menuOpen ? 'rgba(255, 77, 21, 0.22)' : 'rgba(20, 25, 36, 0.75)',
+              border: menuOpen
+                ? '1.5px solid rgba(255, 77, 21, 0.65)'
+                : '1.5px solid rgba(255, 255, 255, 0.16)',
+              borderRadius: '12px',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: '700',
+              letterSpacing: '0.03em',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(12px)',
+              gap: '8px',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              boxShadow: menuOpen ? '0 0 20px rgba(255, 77, 21, 0.35)' : '0 4px 18px rgba(0,0,0,0.4)',
               transition: 'all 0.2s ease',
-              whiteSpace: 'nowrap',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 77, 21, 0.5)';
-              e.currentTarget.style.color = '#ffffff';
-              e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
+              if (!menuOpen) {
+                e.currentTarget.style.borderColor = 'rgba(255, 77, 21, 0.5)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-              e.currentTarget.style.color = '#e0e4ec';
-              e.currentTarget.style.backgroundColor = 'rgba(25, 30, 40, 0.75)';
+              if (!menuOpen) {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
+                e.currentTarget.style.backgroundColor = 'rgba(20, 25, 36, 0.75)';
+              }
             }}
           >
-            <Mail size={13} color="#ff7728" />
-            <span style={{ display: 'inline' }}>Get in Touch</span>
+            {menuOpen ? <X size={15} color="#ff4d15" /> : <Menu size={15} color="#ff7728" />}
+            <span>Menu</span>
           </button>
 
-          {/* Web Portfolio Preview Button */}
-          <button
-            onClick={() => setPortfolioWebOpen(true)}
-            style={{
-              padding: '6px clamp(10px, 1.8vw, 16px)',
-              backgroundColor: 'rgba(56, 189, 248, 0.15)',
-              border: '1px solid rgba(56, 189, 248, 0.45)',
-              borderRadius: '100px',
-              color: '#38bdf8',
-              fontSize: 'clamp(11px, 1.2vw, 12px)',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(10px)',
-              transition: 'all 0.2s ease',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#0284c7';
-              e.currentTarget.style.color = '#ffffff';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.15)';
-              e.currentTarget.style.color = '#38bdf8';
-            }}
-          >
-            <Folder size={13} />
-            <span>Web Portfolio ↗</span>
-          </button>
+          {/* Glass Dropdown Panel (3D Studio, Web Portfolio, Get in Touch) */}
+          {menuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                width: 'clamp(215px, 64vw, 255px)',
+                backgroundColor: 'rgba(14, 18, 26, 0.96)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1.5px solid rgba(255, 77, 21, 0.35)',
+                borderRadius: '16px',
+                padding: '8px',
+                boxShadow: '0 20px 48px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 77, 21, 0.18)',
+                zIndex: 100,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+              }}
+            >
+              {/* 1. Enter 3D Studio */}
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setDeskViewerOpen(true);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 77, 21, 0.35)',
+                  backgroundColor: 'rgba(255, 77, 21, 0.14)',
+                  color: '#ff8a5c',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.18s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ff4d15';
+                  e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.14)';
+                  e.currentTarget.style.color = '#ff8a5c';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Box size={16} />
+                  <span>3D Studio</span>
+                </div>
+                <span style={{ fontSize: '14px' }}>↗</span>
+              </button>
 
-          {/* 3D Studio Entrance */}
-          <button
-            onClick={() => setDeskViewerOpen(true)}
-            style={{
-              padding: '6px clamp(10px, 1.8vw, 16px)',
-              backgroundColor: 'rgba(255, 77, 21, 0.15)',
-              border: '1px solid rgba(255, 77, 21, 0.45)',
-              borderRadius: '100px',
-              color: '#ff8a5c',
-              fontSize: 'clamp(11px, 1.2vw, 12px)',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backdropFilter: 'blur(10px)',
-              transition: 'all 0.2s ease',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ff4d15';
-              e.currentTarget.style.color = '#ffffff';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
-              e.currentTarget.style.color = '#ff8a5c';
-            }}
-          >
-            <Box size={13} />
-            <span>3D Studio ↗</span>
-          </button>
+              {/* 2. Web Portfolio */}
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setPortfolioWebOpen(true);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(56, 189, 248, 0.35)',
+                  backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                  color: '#38bdf8',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.18s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0284c7';
+                  e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
+                  e.currentTarget.style.color = '#38bdf8';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Folder size={16} />
+                  <span>Web Portfolio</span>
+                </div>
+                <span style={{ fontSize: '14px' }}>↗</span>
+              </button>
+
+              {/* 3. Get in Touch */}
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setModalOpen(true);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                  color: '#cbd5e1',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.18s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+                  e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
+                  e.currentTarget.style.color = '#cbd5e1';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Mail size={16} color="#ff7728" />
+                  <span>Get in Touch</span>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -941,8 +1028,8 @@ export default function App() {
           Exploring the intersection of design, technology, and creativity. Building interactive experiences, one idea at a time.
         </p>
 
-        {/* Action Buttons: Enter 3D Studio ↗ & Get in Touch */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+        {/* Action Buttons: Enter 3D Studio ↗ & Web Portfolio ↗ */}
+        <div className="hero-action-buttons" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
           <button
             onClick={() => setDeskViewerOpen(true)}
             style={{
@@ -976,12 +1063,12 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setModalOpen(true)}
+            onClick={() => setPortfolioWebOpen(true)}
             style={{
               padding: '13px 22px',
-              backgroundColor: 'rgba(255, 77, 21, 0.12)',
-              color: '#ff8a5c',
-              border: '1px solid rgba(255, 77, 21, 0.4)',
+              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+              color: '#38bdf8',
+              border: '1px solid rgba(56, 189, 248, 0.45)',
               borderRadius: '10px',
               fontSize: '14px',
               fontWeight: '700',
@@ -990,22 +1077,23 @@ export default function App() {
               alignItems: 'center',
               gap: '8px',
               backdropFilter: 'blur(10px)',
-              boxShadow: '0 4px 16px rgba(255, 77, 21, 0.15)',
+              boxShadow: '0 4px 16px rgba(56, 189, 248, 0.14)',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ff4d15';
+              e.currentTarget.style.backgroundColor = '#0284c7';
               e.currentTarget.style.color = '#ffffff';
               e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.12)';
-              e.currentTarget.style.color = '#ff8a5c';
+              e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
+              e.currentTarget.style.color = '#38bdf8';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <Mail size={16} />
-            <span>Get in Touch</span>
+            <Folder size={16} />
+            <span>Web Portfolio</span>
+            <span style={{ fontSize: '15px' }}>↗</span>
           </button>
         </div>
       </main>
@@ -1014,6 +1102,7 @@ export default function App() {
           5. FOOTER / CONTACT & BRANDING (Gaze.d)
       ───────────────────────────────────────────────────────────── */}
       <footer
+        className="landing-footer"
         style={{
           position: 'relative',
           zIndex: 30,
@@ -1025,7 +1114,7 @@ export default function App() {
           gap: '12px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="landing-footer-branding" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '14px', fontWeight: '700', color: '#ffffff' }}>Gaze</span>
           <span style={{ fontSize: '14px', fontWeight: '700', color: '#ff4d15' }}>.d</span>
           <span style={{ fontSize: '13px', color: '#64748b' }}>•</span>
@@ -1034,6 +1123,7 @@ export default function App() {
 
         <div
           onClick={handleCopyEmail}
+          className="landing-footer-email-btn"
           style={{
             cursor: 'pointer',
             textAlign: 'right',

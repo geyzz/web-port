@@ -245,14 +245,15 @@ function Centerpiece3DFolder({ onScrollToProjects }) {
         title="Click folder to explore Selected Works"
         style={{
           position: 'relative',
-          width: 'min(440px, calc(100vw - 40px))',
-          height: 'min(375px, calc((100vw - 40px) * 0.85))',
+          width: 'min(440px, calc(100vw - 36px))',
+          height: 'min(375px, calc((100vw - 36px) * 0.85))',
           maxWidth: '440px',
           maxHeight: '375px',
           cursor: 'pointer',
           perspective: '1200px',
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.03 : 1})`,
+          transform: `scale(min(1, calc((100vw - 36px) / 440))) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.03 : 1})`,
+          transformOrigin: 'center center',
           transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1)',
           userSelect: 'none',
         }}
@@ -3840,7 +3841,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
             padding: '6px clamp(10px, 1.6vw, 18px) 6px 10px',
             borderRadius: '100px',
             boxShadow: '0 10px 30px rgba(22, 38, 59, 0.06)',
-            maxWidth: '100%',
+            maxWidth: 'calc(100% - 78px)',
             overflow: 'hidden',
           }}
         >
