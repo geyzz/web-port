@@ -1188,73 +1188,67 @@ function createResumePaperTexture() {
   ctx.fillRect(0, 0, 2048, 2896);
 
   // Subtle clean border
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 3;
   ctx.strokeRect(48, 48, 1952, 2800);
 
-  // Left vibrant accent bar
-  ctx.fillStyle = '#ea580c';
-  ctx.fillRect(88, 88, 20, 160);
-
-  // Candidate Name
-  ctx.font = '900 102px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#000000';
-  ctx.fillText('GHAYZELLE DIZON', 130, 180);
+  // Top Header (Matching Resume PDF exactly)
+  ctx.font = '900 88px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#0f172a';
+  ctx.fillText('Ghayzelle Dizon', 88, 155);
 
   // Role Title
-  ctx.font = '900 42px "Inter", -apple-system, sans-serif';
+  ctx.font = '800 32px "Inter", -apple-system, sans-serif';
   ctx.fillStyle = '#ea580c';
-  ctx.fillText('FRONT-END DEVELOPER', 130, 238);
+  ctx.fillText('FRONT-END DEVELOPER', 88, 205);
 
   // Contact Info bar
-  ctx.font = 'bold 30px sans-serif';
-  ctx.fillStyle = '#0f172a';
-  ctx.fillText('0969 0199 663  •  ghayzelle.dzn@gmail.com  •  github.com/geyzz  •  linkedin.com/in/ghayzelle-dizon', 88, 308);
+  ctx.font = '600 24.5px sans-serif';
+  ctx.fillStyle = '#475569';
+  ctx.fillText('+63 969 0199 663 | ghayzelle.dzn@gmail.com | gazed.vercel.app | github.com/geyzz | linkedin.com/in/ghayzelle-dizon', 88, 252);
 
   // Header separator
-  ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 5;
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(88, 340);
-  ctx.lineTo(1960, 340);
+  ctx.moveTo(88, 280);
+  ctx.lineTo(1960, 280);
   ctx.stroke();
 
-  let curY = 410;
+  let curY = 345;
 
-  // Helper section header
+  // Helper section header with orange square bullet matching the PDF
   const drawSectionHeader = (title) => {
-    ctx.font = '900 38px sans-serif';
-    ctx.fillStyle = '#000000';
-    ctx.fillText(title, 88, curY);
+    // Orange square icon
+    ctx.fillStyle = '#ea580c';
+    ctx.fillRect(88, curY - 22, 18, 18);
 
-    ctx.strokeStyle = '#ea580c';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(88, curY + 14);
-    ctx.lineTo(340, curY + 14);
-    ctx.stroke();
+    ctx.font = '900 32px "Inter", -apple-system, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(title, 120, curY - 5);
 
-    ctx.strokeStyle = '#94a3b8';
+    ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(340, curY + 14);
+    ctx.moveTo(88, curY + 14);
     ctx.lineTo(1960, curY + 14);
     ctx.stroke();
 
-    curY += 66;
+    curY += 52;
   };
 
   // 1. PROFILE
   drawSectionHeader('PROFILE');
-  ctx.font = 'bold 30px "Inter", -apple-system, sans-serif';
-  ctx.fillStyle = '#0f172a';
-  const profileText = 'Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter. Works earnestly toward every goal, learns new tools quickly, and follows through from initial design to working product.';
-  const profileLines = wrapCanvasText(profileText, 90);
+  ctx.font = '500 27px "Inter", -apple-system, sans-serif';
+  ctx.fillStyle = '#1e293b';
+  const profileText =
+    'Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter. Works earnestly toward every goal, learns new tools quickly, and follows through from initial design to working product.';
+  const profileLines = wrapCanvasText(profileText, 94);
   profileLines.forEach((line) => {
     ctx.fillText(line, 88, curY);
-    curY += 46;
+    curY += 40;
   });
-  curY += 32;
+  curY += 28;
 
   // 2. TECHNICAL SKILLS
   drawSectionHeader('TECHNICAL SKILLS');
@@ -1268,17 +1262,17 @@ function createResumePaperTexture() {
   ];
 
   skills.forEach((s) => {
-    ctx.font = '900 31px sans-serif';
-    ctx.fillStyle = '#000000';
+    ctx.font = '800 27px sans-serif';
+    ctx.fillStyle = '#0f172a';
     ctx.fillText(s.label, 88, curY);
 
     const labelW = ctx.measureText(s.label).width;
-    ctx.font = 'bold 30px sans-serif';
-    ctx.fillStyle = '#0f172a';
-    ctx.fillText(s.val, 88 + labelW + 16, curY);
-    curY += 48;
+    ctx.font = '500 27px sans-serif';
+    ctx.fillStyle = '#334155';
+    ctx.fillText(s.val, 88 + labelW + 12, curY);
+    curY += 40;
   });
-  curY += 32;
+  curY += 28;
 
   // 3. PROJECTS
   drawSectionHeader('PROJECTS');
@@ -1286,7 +1280,7 @@ function createResumePaperTexture() {
   const projects = [
     {
       title: 'Plan_.ed - Shopping & Errand Planner App',
-      type: 'Personal Project',
+      tag: 'Personal',
       stack: 'React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build',
       bullets: [
         'Designed and built a mobile shopping planner featuring custom light/dark themes, collapsible headers, and an interactive errand calendar with native reminder alarms.',
@@ -1295,17 +1289,18 @@ function createResumePaperTexture() {
       ],
     },
     {
-      title: 'C&J Real Estate - Property Showcase Website',
-      type: 'Personal Project',
-      stack: 'React, Vite, JavaScript (JSX), CSS3, HTML5',
+      title: 'C&J Real Estate - Property Showcase & Management Platform',
+      tag: 'Personal',
+      stack: 'React, Vite, Supabase (PostgreSQL, RLS), JavaScript (ES6+), EmailJS, Custom CSS3',
       bullets: [
-        'Designed and developed a single-page real estate website with a custom brand identity, hero showcase, company overview cards, and property section.',
-        'Crafted custom CSS3 Flexbox layouts, layered blurred and clipped background visuals, and tailored typography.',
+        'Architected a full-stack real estate platform and session-authenticated Admin Portal with Supabase for real-time property CRUD listings, status management, and lead tracking.',
+        'Engineered an interactive showroom featuring dual-thumb price sliders, dynamic Philippine geographic selectors (phil-reg-prov-mun-brgy), and multi-property inquiry carts.',
+        'Integrated automated client notification workflows using EmailJS and crafted responsive CSS3 Grid layouts achieving sub-second load times and fluid modal views.',
       ],
     },
     {
       title: 'HAUtogo - Real-Time Faculty Tracking & Class Management',
-      type: 'Collaborative Project',
+      tag: 'Collaborative',
       stack: 'Flutter, Dart, Supabase, flutter_map, geolocator',
       bullets: [
         'Built a campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations.',
@@ -1316,99 +1311,84 @@ function createResumePaperTexture() {
   ];
 
   projects.forEach((p) => {
-    ctx.font = '900 33px sans-serif';
-    ctx.fillStyle = '#000000';
+    ctx.font = '800 29px sans-serif';
+    ctx.fillStyle = '#0f172a';
     ctx.fillText(p.title, 88, curY);
 
-    ctx.font = '900 28px sans-serif';
-    ctx.fillStyle = '#ea580c';
-    ctx.fillText(p.type, 1680, curY);
-    curY += 40;
+    ctx.font = '600 24px sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText(p.tag, 1840, curY);
+    curY += 36;
 
-    ctx.font = 'italic 900 29px sans-serif';
+    ctx.font = 'italic 700 25px sans-serif';
     ctx.fillStyle = '#c2410c';
     ctx.fillText('Tech Stack: ' + p.stack, 88, curY);
-    curY += 38;
+    curY += 34;
 
     p.bullets.forEach((b) => {
-      ctx.fillStyle = '#ea580c';
+      ctx.fillStyle = '#475569';
       ctx.beginPath();
-      ctx.arc(100, curY - 9, 6, 0, Math.PI * 2);
+      ctx.arc(98, curY - 7, 4.5, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.font = 'bold 29px sans-serif';
-      ctx.fillStyle = '#0f172a';
-      const lines = wrapCanvasText(b, 86);
+      ctx.font = '500 26px sans-serif';
+      ctx.fillStyle = '#1e293b';
+      const lines = wrapCanvasText(b, 90);
       lines.forEach((l) => {
-        ctx.fillText(l, 124, curY);
-        curY += 40;
+        ctx.fillText(l, 118, curY);
+        curY += 36;
       });
     });
-    curY += 24;
+    curY += 18;
   });
-  curY += 10;
+  curY += 12;
 
   // 4. EDUCATION
   drawSectionHeader('EDUCATION');
-  ctx.font = '900 33px sans-serif';
-  ctx.fillStyle = '#000000';
+  ctx.font = '800 29px sans-serif';
+  ctx.fillStyle = '#0f172a';
   ctx.fillText('Bachelor of Science in Computer Science', 88, curY);
 
-  ctx.font = 'bold 28px sans-serif';
-  ctx.fillStyle = '#475569';
-  ctx.fillText('2023 – Present', 1700, curY);
-  curY += 42;
+  ctx.font = '600 24px sans-serif';
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('2023 - Present', 1780, curY);
+  curY += 36;
 
-  ctx.font = 'bold 31px sans-serif';
-  ctx.fillStyle = '#1e293b';
+  ctx.font = '600 26px sans-serif';
+  ctx.fillStyle = '#334155';
   ctx.fillText('Holy Angel University', 88, curY);
-  curY += 40;
+  curY += 34;
 
-  ctx.font = 'bold 28px sans-serif';
-  ctx.fillStyle = '#047857';
-  ctx.fillText("•  Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year", 88, curY);
-  curY += 54;
+  ctx.fillStyle = '#475569';
+  ctx.beginPath();
+  ctx.arc(98, curY - 7, 4.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.font = '600 25.5px sans-serif';
+  ctx.fillStyle = '#0f172a';
+  ctx.fillText("Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year", 118, curY);
+  curY += 56;
 
   // 5. CERTIFICATIONS
   drawSectionHeader('CERTIFICATIONS');
 
   const certs = [
-    { name: 'Responsive Web Design', issuer: 'freeCodeCamp', date: 'Sep 2024' },
-    { name: 'JavaScript Essentials 1', issuer: 'Cisco Networking Academy', date: 'Oct 2024' },
-    { name: 'AWS Academy Graduate - Cloud Foundations', issuer: 'Amazon Web Services', date: 'Feb 2026' },
+    'Responsive Web Design - freeCodeCamp',
+    'JavaScript Essentials 1 - Cisco Networking Academy',
+    'AWS Academy Graduate - Cloud Foundations - Amazon Web Services',
   ];
 
   certs.forEach((c) => {
-    ctx.fillStyle = '#047857';
+    ctx.fillStyle = '#475569';
     ctx.beginPath();
-    ctx.arc(100, curY - 8, 6, 0, Math.PI * 2);
+    ctx.arc(98, curY - 7, 4.5, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.font = 'bold 30px sans-serif';
-    ctx.fillStyle = '#000000';
-    ctx.fillText(c.name, 124, curY);
-
-    const nameW = ctx.measureText(c.name).width;
-    ctx.font = 'bold 29px sans-serif';
-    ctx.fillStyle = '#334155';
-    ctx.fillText(' — ' + c.issuer, 124 + nameW, curY);
-
-    ctx.font = 'bold 27px sans-serif';
-    ctx.fillStyle = '#475569';
-    ctx.fillText(c.date, 1720, curY);
-    curY += 50;
+    ctx.font = '600 26px sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(c, 118, curY);
+    curY += 40;
   });
-
-  // Footer Accent Bar
-  curY += 24;
-  ctx.fillStyle = '#f1f5f9';
-  ctx.fillRect(88, curY, 1872, 56);
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(88, curY, 1872, 56);
-  ctx.font = 'bold 24px sans-serif';
-  ctx.fillStyle = '#334155';
-  ctx.fillText('Ghayzelle Dizon  •  Front-End Developer & UI/UX Designer  •  Official Resume Portfolio', 112, curY + 36);
 
   const texture = new THREE.CanvasTexture(canvas);
   // Three.js PlaneGeometry uses standard top-to-bottom UVs when flipY is true
@@ -3202,13 +3182,13 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           >
             <div style={{ borderBottom: '2px solid #ea580c', paddingBottom: '10px', marginBottom: '14px' }}>
               <h2 style={{ fontSize: '22px', fontWeight: '900', margin: 0, color: '#0f172a' }}>
-                GHAYZELLE DIZON
+                Ghayzelle Dizon
               </h2>
               <div style={{ fontSize: '13px', color: '#ea580c', fontWeight: '800', marginTop: '2px' }}>
-                Front-End Developer
+                FRONT-END DEVELOPER
               </div>
               <div style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
-                0969 0199 663 • ghayzelle.dzn@gmail.com • github.com/geyzz • linkedin.com/in/ghayzelle-dizon
+                +63 969 0199 663 | ghayzelle.dzn@gmail.com | gazed.vercel.app | github.com/geyzz | linkedin.com/in/ghayzelle-dizon
               </div>
             </div>
 
@@ -3218,7 +3198,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 Profile
               </div>
               <p style={{ fontSize: '12px', color: '#1e293b', margin: 0, lineHeight: 1.5 }}>
-                Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter.
+                Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter. Works earnestly toward every goal, learns new tools quickly, and follows through from initial design to working product.
               </p>
             </div>
 
@@ -3228,10 +3208,10 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 Technical Skills
               </div>
               <div style={{ fontSize: '11.5px', color: '#1e293b', lineHeight: 1.5 }}>
-                <strong>Design & UI:</strong> Figma, Blender (3D Modeling), UI/UX Design, Wireframing, CSS3<br />
+                <strong>Design &amp; UI:</strong> Figma, Blender (3D Modeling), UI/UX Design, Wireframing &amp; Prototyping, Responsive Design, Custom CSS3<br />
                 <strong>Languages:</strong> JavaScript, TypeScript, HTML5, CSS3, Dart, Python, SQL<br />
-                <strong>Frameworks:</strong> React, Vite, React Native, Expo, Expo Router, Flutter<br />
-                <strong>Backend:</strong> Supabase (Auth, Realtime, RLS), PostgreSQL, AsyncStorage<br />
+                <strong>Frameworks &amp; Libraries:</strong> React, Vite, React Native, Expo, Expo Router, Flutter<br />
+                <strong>Backend &amp; Databases:</strong> Supabase (Auth, Realtime, Row-Level Security), PostgreSQL, AsyncStorage<br />
                 <strong>Tools:</strong> Git, GitHub, EAS Build, VS Code
               </div>
             </div>
@@ -3241,20 +3221,35 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Projects
               </div>
-              <div style={{ marginBottom: '8px' }}>
-                <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Plan_.ed - Shopping & Errand Planner App</strong>
-                <div style={{ fontSize: '11px', color: '#ea580c', fontStyle: 'italic' }}>React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build</div>
-                <div style={{ fontSize: '11.5px', color: '#334155' }}>• Mobile shopping planner with light/dark themes, errand calendar, and smart checklists with mall directory.</div>
+              <div style={{ marginBottom: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Plan_.ed - Shopping &amp; Errand Planner App</strong>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>Personal Project</span>
+                </div>
+                <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Designed and built a mobile shopping planner featuring custom light/dark themes, collapsible headers, and an interactive errand calendar with native reminder alarms.</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Created smart checklists with real-time cost calculation and a directory linking items to 4 major Pampanga malls.</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Implemented cloud and offline sync using Supabase and AsyncStorage, and shipped an Android APK via EAS Build.</div>
               </div>
-              <div style={{ marginBottom: '8px' }}>
-                <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>C&J Real Estate - Property Showcase Website</strong>
-                <div style={{ fontSize: '11px', color: '#ea580c', fontStyle: 'italic' }}>React, Vite, JavaScript (JSX), CSS3, HTML5</div>
-                <div style={{ fontSize: '11.5px', color: '#334155' }}>• Single-page property showcase with custom brand identity, hero showcase, and CSS3 Flexbox layouts.</div>
+              <div style={{ marginBottom: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>C&amp;J Real Estate - Property Showcase &amp; Management Platform</strong>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>Personal Project</span>
+                </div>
+                <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: React, Vite, Supabase (PostgreSQL, RLS), JavaScript (ES6+), EmailJS, Custom CSS3</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Architected a full-stack real estate platform and session-authenticated Admin Portal with Supabase for real-time property CRUD listings, status management, and lead tracking.</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Engineered an interactive showroom featuring dual-thumb price sliders, dynamic Philippine geographic selectors (phil-reg-prov-mun-brgy), and multi-property inquiry carts.</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Integrated automated client notification workflows using EmailJS and crafted responsive CSS3 Grid layouts achieving sub-second load times and fluid modal views.</div>
               </div>
               <div>
-                <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>HAUtogo - Real-Time Faculty Tracking & Class Management</strong>
-                <div style={{ fontSize: '11px', color: '#ea580c', fontStyle: 'italic' }}>Flutter, Dart, Supabase, flutter_map, geolocator</div>
-                <div style={{ fontSize: '11.5px', color: '#334155' }}>• Campus mobile app for HAU with live professor tracking, room navigation, and geofencing.</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>HAUtogo - Real-Time Faculty Tracking &amp; Class Management</strong>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>Collaborative Project</span>
+                </div>
+                <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: Flutter, Dart, Supabase, flutter_map, geolocator</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Built a campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations.</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Designed role-based weekly schedule views for students and professors, plus one-tap room navigation and next-class indicators.</div>
+                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Implemented campus geofencing and full account authentication (login, password recovery, profile management) with Supabase.</div>
               </div>
             </div>
 
@@ -3263,9 +3258,12 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Education
               </div>
-              <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Bachelor of Science in Computer Science</strong> (2023 – Present)
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Bachelor of Science in Computer Science</strong>
+                <span style={{ fontSize: '11.5px', color: '#64748b' }}>2023 - Present</span>
+              </div>
               <div style={{ fontSize: '12px', color: '#475569' }}>Holy Angel University</div>
-              <div style={{ fontSize: '11.5px', color: '#047857', fontWeight: '700' }}>• Dean's Lister: 1st Year (1st Sem), 2nd Year (1st Sem), 3rd Year</div>
+              <div style={{ fontSize: '11.5px', color: '#0f172a', fontWeight: '600', marginTop: '2px' }}>• Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year</div>
             </div>
 
             {/* Certifications */}
@@ -3273,9 +3271,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Certifications
               </div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>Responsive Web Design</strong> — freeCodeCamp (Sep 2024)</div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>JavaScript Essentials 1</strong> — Cisco Networking Academy (Oct 2024)</div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>AWS Academy Graduate</strong> — Cloud Foundations (Feb 2026)</div>
+              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>Responsive Web Design</strong> - freeCodeCamp</div>
+              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>JavaScript Essentials 1</strong> - Cisco Networking Academy</div>
+              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>AWS Academy Graduate</strong> - Cloud Foundations - Amazon Web Services</div>
             </div>
           </div>
 
@@ -3309,12 +3307,44 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               }}
             >
               <Download size={15} />
-              <span>Download PDF</span>
+              <span>Download Resume (PDF)</span>
+            </a>
+            <a
+              href="/Ghayzelle_Dizon_CV.pdf"
+              download="Ghayzelle_Dizon_CV.pdf"
+              style={{
+                flex: '1 1 140px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '11px 16px',
+                backgroundColor: '#0f172a',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: '700',
+                fontSize: '13px',
+                textDecoration: 'none',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#1e293b';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#0f172a';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <Download size={15} />
+              <span>Download CV (PDF)</span>
             </a>
             <a
               href="mailto:ghayzelle.dzn@gmail.com?subject=Job%20Inquiry%20-%20Ghayzelle%20Dizon"
               style={{
-                flex: '1 1 140px',
+                flex: '1 1 120px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

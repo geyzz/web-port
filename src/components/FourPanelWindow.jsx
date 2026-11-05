@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // FourPanelWindow
 function FourPanelWindow({
@@ -10,6 +10,18 @@ function FourPanelWindow({
   style = {},
 }) {
   const [hovered, setHovered] = useState(false);
+  const [isMobileScreen, setIsMobileScreen] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const isGlowing = isLit && lightOn;
 
   // Architectural Half-Window
@@ -571,13 +583,21 @@ function FourPanelWindow({
           <g style={{ mixBlendMode: 'screen', pointerEvents: 'none' }}>
             {/* Primary Cinematic Light Beam pointing downward directly over hero container */}
             <polygon
-              points="18,45 308,45 540,780 -180,780"
+              points={
+                isMobileScreen
+                  ? '18,45 308,45 740,820 60,820'
+                  : '18,45 308,45 520,820 -220,820'
+              }
               fill="url(#windowVolumetricBeam)"
               filter="url(#beamBlurFilter)"
             />
             {/* Secondary Soft Ambient Room Spill over hero area */}
             <polygon
-              points="0,20 320,20 660,920 -300,920"
+              points={
+                isMobileScreen
+                  ? '0,20 320,20 880,960 -20,960'
+                  : '0,20 320,20 660,960 -340,960'
+              }
               fill="url(#windowAmbientSpill)"
               filter="url(#softSpillBlurFilter)"
             />

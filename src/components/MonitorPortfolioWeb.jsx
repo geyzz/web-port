@@ -2157,7 +2157,7 @@ function ParallaxBookshelf({ techStackItems }) {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight || 800;
 
-      const pinTop = isShortLandscape ? 40 : 64;
+      const pinTop = isShortLandscape ? 10 : 64;
       const totalLockedDistance = Math.max(1, rect.height - (vh - pinTop));
       const scrolledWhilePinned = pinTop - rect.top;
 
@@ -2346,9 +2346,9 @@ function ParallaxBookshelf({ techStackItems }) {
       <div
         style={{
           position: 'sticky',
-          top: isShortLandscape ? '40px' : '64px',
-          paddingTop: isShortLandscape ? '2px' : '8px',
-          paddingBottom: isShortLandscape ? '8px' : '24px',
+          top: isShortLandscape ? '10px' : '64px',
+          paddingTop: isShortLandscape ? '0px' : '8px',
+          paddingBottom: isShortLandscape ? '4px' : '24px',
           width: '100%',
         }}
       >
@@ -2374,7 +2374,7 @@ function ParallaxBookshelf({ techStackItems }) {
               alignItems: 'flex-start',
               justifyContent: 'flex-start',
               minHeight: isShortLandscape
-                ? `${18 * totalBooks + 16}px`
+                ? `${Math.max(13, Math.min(17, Math.floor((viewportDims.height - 70) / totalBooks))) * totalBooks + 12}px`
                 : isCompactHeight
                 ? `${26 * totalBooks + 24}px`
                 : '568px',
@@ -2405,7 +2405,7 @@ function ParallaxBookshelf({ techStackItems }) {
               const isLanding = itemProgress > 0.04 && itemProgress < 0.96;
 
               const bookHeight = isShortLandscape
-                ? Math.max(16, Math.min(20, Math.floor((viewportDims.height - 100) / totalBooks)))
+                ? Math.max(13, Math.min(17, Math.floor((viewportDims.height - 70) / totalBooks)))
                 : isCompactHeight
                 ? 26
                 : 34;
@@ -2559,7 +2559,16 @@ function ParallaxBookshelf({ techStackItems }) {
           </div>
 
           {/* ── RIGHT SIDE: SECTION HEADER + ACTIVE MONOGRAPH DOSSIER + 4 CORE CAPABILITY CARDS ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: isShortLandscape ? '10px' : '18px', paddingBottom: isShortLandscape ? '4px' : '12px' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: isShortLandscape ? '6px' : '18px',
+              paddingBottom: isShortLandscape ? '2px' : '12px',
+              maxHeight: isShortLandscape ? `${viewportDims.height - 24}px` : 'none',
+              overflowY: isShortLandscape ? 'auto' : 'visible',
+            }}
+          >
             {/* Formal Section Header */}
             <div
               style={{
@@ -4741,40 +4750,75 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                 </h2>
               </div>
 
-              {/* Download Resume Button */}
-              <a
-                href="/Ghayzelle_Dizon_Resume.pdf"
-                download="Ghayzelle_Dizon_Resume.pdf"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '11px 22px',
-                  borderRadius: '100px',
-                  backgroundColor: NAVY_PRIMARY,
-                  color: '#f4f6f8',
-                  fontSize: '13px',
-                  fontWeight: '700',
-                  textDecoration: 'none',
-                  boxShadow: '0 8px 24px rgba(22, 38, 59, 0.22)',
-                  transition: 'all 0.22s ease',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = NAVY_ACCENT;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 28px rgba(22, 38, 59, 0.35)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = NAVY_PRIMARY;
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(22, 38, 59, 0.22)';
-                }}
-              >
-                <Download size={15} />
-                <span>Download Resume (PDF)</span>
-              </a>
+              {/* Download Resume & CV Buttons */}
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <a
+                  href="/Ghayzelle_Dizon_Resume.pdf"
+                  download="Ghayzelle_Dizon_Resume.pdf"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '11px 20px',
+                    borderRadius: '100px',
+                    backgroundColor: NAVY_PRIMARY,
+                    color: '#f4f6f8',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    boxShadow: '0 8px 24px rgba(22, 38, 59, 0.22)',
+                    transition: 'all 0.22s ease',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = NAVY_ACCENT;
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 28px rgba(22, 38, 59, 0.35)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = NAVY_PRIMARY;
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(22, 38, 59, 0.22)';
+                  }}
+                >
+                  <Download size={15} />
+                  <span>Download Resume (PDF)</span>
+                </a>
+                <a
+                  href="/Ghayzelle_Dizon_CV.pdf"
+                  download="Ghayzelle_Dizon_CV.pdf"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '11px 20px',
+                    borderRadius: '100px',
+                    backgroundColor: BG_SURFACE,
+                    color: TEXT_PRIMARY,
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    boxShadow: '0 8px 24px rgba(20, 21, 21, 0.08)',
+                    transition: 'all 0.22s ease',
+                    border: `1.5px solid ${BORDER_STRONG}`,
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = NAVY_LIGHT;
+                    e.currentTarget.style.borderColor = NAVY_PRIMARY;
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = BG_SURFACE;
+                    e.currentTarget.style.borderColor = BORDER_STRONG;
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <Download size={15} />
+                  <span>Download CV (PDF)</span>
+                </a>
+              </div>
             </div>
           </ParallaxSectionBlock>
 
@@ -4839,15 +4883,15 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                 <p style={{ fontSize: '13.5px', color: TEXT_SECONDARY, lineHeight: 1.65, margin: 0 }}>
                   Computer Science student and Front-End Developer passionate about UI/UX design, 3D visuals, and building distinctive web and mobile applications from initial concept in Figma and Blender to working production product.
                 </p>
-                <div style={{ marginTop: '16px' }}>
+                <div style={{ marginTop: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   <a
                     href="/Ghayzelle_Dizon_Resume.pdf"
                     download="Ghayzelle_Dizon_Resume.pdf"
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '8px',
-                      padding: '8px 16px',
+                      gap: '7px',
+                      padding: '8px 14px',
                       borderRadius: '8px',
                       backgroundColor: 'transparent',
                       color: NAVY_PRIMARY,
@@ -4864,6 +4908,37 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';
                       e.currentTarget.style.color = NAVY_PRIMARY;
+                    }}
+                  >
+                    <Download size={13} />
+                    <span>Download Resume (PDF)</span>
+                  </a>
+                  <a
+                    href="/Ghayzelle_Dizon_CV.pdf"
+                    download="Ghayzelle_Dizon_CV.pdf"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '7px',
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      backgroundColor: 'transparent',
+                      color: TEXT_PRIMARY,
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                      border: `1.5px solid ${BORDER_STRONG}`,
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = BG_SURFACE;
+                      e.currentTarget.style.borderColor = NAVY_PRIMARY;
+                      e.currentTarget.style.color = NAVY_PRIMARY;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.borderColor = BORDER_STRONG;
+                      e.currentTarget.style.color = TEXT_PRIMARY;
                     }}
                   >
                     <Download size={13} />

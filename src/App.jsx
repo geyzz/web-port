@@ -1027,6 +1027,25 @@ export default function App() {
           maxWidth: '680px',
         }}
       >
+        {/* Atmospheric Warm Ambient Illumination directly covering the main hero div */}
+        {lightOn && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '-20px',
+              left: '-30px',
+              right: '-30px',
+              bottom: '-20px',
+              background: 'radial-gradient(ellipse at 50% 45%, rgba(255, 125, 30, 0.2) 0%, rgba(255, 75, 20, 0.06) 55%, transparent 75%)',
+              pointerEvents: 'none',
+              zIndex: -1,
+              borderRadius: '36px',
+              filter: 'blur(16px)',
+              transition: 'opacity 0.4s ease',
+            }}
+          />
+        )}
+
         {/* Candidate Eyebrow */}
         <div
           className="hero-eyebrow"
