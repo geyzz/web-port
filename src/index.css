@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=Syne:wght@700;800;900&display=swap');
+
+:root {
+  --color-bg: #0b0d11;
+  --color-building: #13171d;
+  --color-window-dark: #07090c;
+  --color-window-frame: #1b2028;
+  --color-orange-primary: #ff4d15;
+  --color-orange-glow: #ff7728;
+  --color-orange-amber: #ffaa40;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Syne', 'Outfit', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg);
+  color: #ffffff;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  user-select: none;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Light Beam Polygon Effect */
+.light-cone {
+  position: absolute;
+  pointer-events: none;
+  z-index: 15;
+  mix-blend-mode: screen;
+  filter: blur(1px);
+  transition: opacity 0.6s ease;
+}
+
+/* Glowing Window Pulse */
+@keyframes windowPulse {
+  0%, 100% {
+    box-shadow: 0 0 45px 12px rgba(255, 90, 20, 0.55),
+                0 0 100px 30px rgba(255, 60, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 55px 16px rgba(255, 110, 30, 0.7),
+                0 0 120px 40px rgba(255, 70, 0, 0.45);
+  }
+}
+
+.window-lit {
+  animation: windowPulse 4s ease-in-out infinite alternate;
+}
+
+/* CRT Screen Glow inside the window */
+@keyframes screenFlicker {
+  0%, 100% { opacity: 0.95; }
+  45% { opacity: 0.88; }
+  50% { opacity: 0.98; }
+  85% { opacity: 0.92; }
+}
+
+.screen-glow {
+  animation: screenFlicker 3s infinite;
+}
+
+/* Geometric custom text style */
+.tracking-ultra-wide {
+  letter-spacing: 0.22em;
+}
+
+.title-designer {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+/* Glassmorphism modal */
+.glass-panel {
+  background: rgba(18, 22, 28, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Nightstand Pull-String Animations */
+@keyframes pullSway {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.pull-string-container {
+  transform-origin: top center;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pull-string-container:hover {
+  animation: pullSway 2.6s ease-in-out infinite;
+}
+
+.pull-string-container.pulling {
+  animation: none !important;
+  transform: translateY(16px) scaleY(1.06) !important;
+  transition: transform 0.08s ease-out !important;
+}
+
+/* Idle knob glow pulse — shown when light is OFF to invite interaction */
+@keyframes knobPulse {
+  0%   { r: 14; opacity: 0.55; }
+  50%  { r: 20; opacity: 0.18; }
+  100% { r: 14; opacity: 0.55; }
+}
+
+@keyframes knobPulseOuter {
+  0%   { r: 20; opacity: 0.28; }
+  50%  { r: 28; opacity: 0.06; }
+  100% { r: 20; opacity: 0.28; }
+}
+
+.knob-pulse-inner {
+  animation: knobPulse 2s ease-in-out infinite;
+}
+
+.knob-pulse-outer {
+  animation: knobPulseOuter 2s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+/* Responsive Hero Main Left Margin */
+.hero-main-container {
+  margin-left: 100px;
+}
+
+@media (max-width: 1366px) {
+  .hero-main-container {
+    margin-left: clamp(40px, 6vw, 100px);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-main-container {
+    margin-left: clamp(20px, 4vw, 40px);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-main-container {
+    margin-left: 0;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+
