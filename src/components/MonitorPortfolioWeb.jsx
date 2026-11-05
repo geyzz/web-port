@@ -625,8 +625,34 @@ function Centerpiece3DFolder({ onScrollToProjects }) {
 
 // ── FLOATING 3D INTERACTIVE ARCHITECTURAL PORTRAIT (Dynamic Cursor Physics Tilt & Holographic Pills) ──
 function FloatingInteractivePortrait() {
+  const containerRef = useRef(null);
   const [hovered, setHovered] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [scrollParallax, setScrollParallax] = useState(0);
+
+  useEffect(() => {
+    let rafId = null;
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const vh = window.innerHeight || 800;
+        // Normalized delta: 0 when centered, -1 when near bottom, +1 when near top
+        const delta = ((vh * 0.5) - (rect.top + rect.height * 0.5)) / (vh * 0.5);
+        setScrollParallax(Math.max(-1.5, Math.min(1.5, delta)));
+      });
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', onScroll, { capture: true });
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -653,6 +679,7 @@ function FloatingInteractivePortrait() {
       pos: { top: '-14px', left: '-18px' },
       depthZ: 44,
       pFactor: 14,
+      scrollFactor: -26,
     },
     {
       id: 'p2',
@@ -661,6 +688,7 @@ function FloatingInteractivePortrait() {
       pos: { top: '34%', right: '-24px' },
       depthZ: 52,
       pFactor: 18,
+      scrollFactor: 32,
     },
     {
       id: 'p3',
@@ -669,6 +697,7 @@ function FloatingInteractivePortrait() {
       pos: { bottom: '26%', left: '-22px' },
       depthZ: 48,
       pFactor: 16,
+      scrollFactor: -20,
     },
     {
       id: 'p4',
@@ -677,11 +706,13 @@ function FloatingInteractivePortrait() {
       pos: { bottom: '-14px', right: '-8px' },
       depthZ: 42,
       pFactor: 12,
+      scrollFactor: 28,
     },
   ];
 
   return (
     <div
+      ref={containerRef}
       style={{
         position: 'relative',
         display: 'flex',
@@ -707,7 +738,7 @@ function FloatingInteractivePortrait() {
           background: 'radial-gradient(ellipse at center, rgba(20, 21, 21, 0.28) 0%, rgba(20, 21, 21, 0.08) 55%, transparent 75%)',
           filter: 'blur(14px)',
           pointerEvents: 'none',
-          transform: `scale(${hovered ? 1.08 : 0.95}) translateY(${hovered ? 6 : 0}px)`,
+          transform: `scale(${hovered ? 1.08 : 0.95}) translateY(${(hovered ? 6 : 0) + scrollParallax * 10}px)`,
           transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       />
@@ -730,10 +761,10 @@ function FloatingInteractivePortrait() {
             : '0 16px 36px rgba(20, 21, 21, 0.08), 0 4px 10px rgba(0,0,0,0.03)',
           boxSizing: 'border-box',
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(${hovered ? -10 : 0}px) scale(${hovered ? 1.025 : 1})`,
+          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(${(hovered ? -10 : 0) + scrollParallax * -18}px) scale(${hovered ? 1.025 : 1})`,
           transition: hovered
             ? 'transform 0.08s ease-out, box-shadow 0.25s ease'
-            : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease',
+            : 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease',
           cursor: 'grab',
           userSelect: 'none',
         }}
@@ -761,10 +792,10 @@ function FloatingInteractivePortrait() {
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
             color: NAVY_PRIMARY,
-            transform: `translateZ(38px) translate(${pX * 8}px, ${pY * 8}px)`,
+            transform: `translateZ(38px) translate(${pX * 8}px, ${pY * 8 + scrollParallax * -18}px)`,
             transition: hovered
               ? 'transform 0.08s ease-out, box-shadow 0.25s ease'
-              : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease',
+              : 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease',
             pointerEvents: 'none',
             whiteSpace: 'nowrap',
           }}
@@ -782,50 +813,53 @@ function FloatingInteractivePortrait() {
         </div>
 
         {/* ── 4 FLOATING 3D PARALLAX PILLS ([01] to [04]) ── */}
-        {calloutPills.map((p) => (
-          <div
-            key={p.id}
-            style={{
-              position: 'absolute',
-              ...p.pos,
-              zIndex: 25,
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(16px)',
-              border: `1px solid ${BORDER_SUBTLE}`,
-              borderRadius: '100px',
-              padding: '6px 13px',
-              boxShadow: hovered
-                ? '0 10px 26px rgba(22, 38, 59, 0.15)'
-                : '0 6px 16px rgba(22, 38, 59, 0.09)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '10px',
-              fontWeight: '800',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: NAVY_PRIMARY,
-              transform: `translateZ(${p.depthZ}px) translate(${pX * p.pFactor}px, ${pY * p.pFactor}px)`,
-              transition: hovered
-                ? 'transform 0.08s ease-out, box-shadow 0.25s ease'
-                : 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease',
-              pointerEvents: 'none',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <span
+        {calloutPills.map((p) => {
+          const pillScrollY = scrollParallax * p.scrollFactor;
+          return (
+            <div
+              key={p.id}
               style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: NAVY_PRIMARY,
-                flexShrink: 0,
+                position: 'absolute',
+                ...p.pos,
+                zIndex: 25,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(16px)',
+                border: `1px solid ${BORDER_SUBTLE}`,
+                borderRadius: '100px',
+                padding: '6px 13px',
+                boxShadow: hovered
+                  ? '0 10px 26px rgba(22, 38, 59, 0.15)'
+                  : '0 6px 16px rgba(22, 38, 59, 0.09)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '10px',
+                fontWeight: '800',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: NAVY_PRIMARY,
+                transform: `translateZ(${p.depthZ}px) translate(${pX * p.pFactor}px, ${pY * p.pFactor + pillScrollY}px)`,
+                transition: hovered
+                  ? 'transform 0.08s ease-out, box-shadow 0.25s ease'
+                  : 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease',
+                pointerEvents: 'none',
+                whiteSpace: 'nowrap',
               }}
-            />
-            <span style={{ opacity: 0.6, fontSize: '9px', letterSpacing: '0.08em' }}>[{p.num}]</span>
-            <span>{p.text}</span>
-          </div>
-        ))}
+            >
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: NAVY_PRIMARY,
+                  flexShrink: 0,
+                }}
+              />
+              <span style={{ opacity: 0.6, fontSize: '9px', letterSpacing: '0.08em' }}>[{p.num}]</span>
+              <span>{p.text}</span>
+            </div>
+          );
+        })}
 
         {/* Top Technical Metadata Bar */}
         <div
@@ -2085,6 +2119,12 @@ function ParallaxBookshelf({ techStackItems }) {
       if (raw > maxProgressRef.current) {
         maxProgressRef.current = raw;
         setScrollProgress(raw);
+      } else if (rect.top >= vh * 0.85) {
+        // When scrolled up so books are not seen, reset progress so they can fade & restack on scroll down!
+        if (maxProgressRef.current !== 0) {
+          maxProgressRef.current = 0;
+          setScrollProgress(0);
+        }
       }
     };
 
@@ -2309,10 +2349,11 @@ function ParallaxBookshelf({ techStackItems }) {
               const bookHeight = 34;
               const pal = bookPalettes[book.palette] || bookPalettes.navy;
 
-              // Parallax motion: drops down and slides in on scroll down; stays stacked on scroll up
+              // Parallax motion: drops down and slides in on scroll down; stays stacked until scrolled off-screen
               const dropY = (1 - itemProgress) * -28;
               const slideX = isHovered ? 14 : (1 - itemProgress) * -80;
-              const opacity = isRevealed ? 1 : 0;
+              // Smooth progressive fade as volumes descend and restack
+              const opacity = isRevealed ? Math.min(1, itemProgress * 2.2) : 0;
 
               // Strictly decreasing minimum width + right padding by index so every book is ordered according to size!
               const minBookWidth = 515 - idx * 17;
@@ -2346,7 +2387,7 @@ function ParallaxBookshelf({ techStackItems }) {
                       : `translate3d(${slideX}px, ${dropY}px, 0)`,
                     transition: isHovered
                       ? 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease'
-                      : 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease-out, box-shadow 0.2s ease',
+                      : 'transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.26s ease-out, box-shadow 0.2s ease',
                     boxShadow:
                       isHovered || isLanding
                         ? '12px 14px 30px rgba(15, 27, 43, 0.32)'
@@ -4173,8 +4214,34 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
             </div>
           </ParallaxSectionBlock>
 
-          {/* Part A: Architectural About Me — Separated Free-Floating 3D Portrait & Narrative Dossier */}
-          <ParallaxSectionBlock speed={0.03} offset={30} delayMs={40} style={{ width: '100%', marginBottom: '64px' }}>
+          {/* Part A: Architectural About Me — Separated Free-Floating 3D Portrait & Narrative Dossier with Dual-Plane Parallax */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              marginBottom: '64px',
+            }}
+          >
+            {/* Subtle Large Background Watermark with Parallax Depth */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                right: 'clamp(0px, 3vw, 40px)',
+                fontFamily: DISPLAY_FONT,
+                fontSize: 'clamp(64px, 12vw, 150px)',
+                fontWeight: '900',
+                letterSpacing: '-0.04em',
+                color: 'rgba(22, 38, 59, 0.025)',
+                lineHeight: 0.85,
+                pointerEvents: 'none',
+                userSelect: 'none',
+                zIndex: 0,
+              }}
+            >
+              ABOUT
+            </div>
+
             <div
               style={{
                 display: 'grid',
@@ -4182,26 +4249,29 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                 gap: 'clamp(36px, 5vw, 64px)',
                 alignItems: 'center',
                 width: '100%',
+                position: 'relative',
+                zIndex: 1,
               }}
             >
-              {/* Left: Free-Floating 3D Interactive Portrait with Holographic 3D Tilt & Floating Parallax Pills */}
-              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', overflow: 'visible' }}>
+              {/* Left: Free-Floating 3D Interactive Portrait with Negative Scroll Parallax */}
+              <ParallaxSectionBlock speed={-0.05} offset={28} delayMs={0} style={{ display: 'flex', justifyContent: 'center', width: '100%', overflow: 'visible' }}>
                 <FloatingInteractivePortrait />
-              </div>
+              </ParallaxSectionBlock>
 
-              {/* Right: Editorial Narrative Card */}
-              <div
-                style={{
-                  backgroundColor: BG_SURFACE,
-                  borderRadius: '28px',
-                  border: `1px solid ${BORDER_SUBTLE}`,
-                  padding: 'clamp(28px, 4.5vw, 48px)',
-                  boxShadow: '0 20px 50px rgba(22, 38, 59, 0.05)',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
+              {/* Right: Editorial Narrative Card with Positive Scroll Parallax */}
+              <ParallaxSectionBlock speed={0.03} offset={34} delayMs={40} style={{ width: '100%' }}>
+                <div
+                  style={{
+                    backgroundColor: BG_SURFACE,
+                    borderRadius: '28px',
+                    border: `1px solid ${BORDER_SUBTLE}`,
+                    padding: 'clamp(28px, 4.5vw, 48px)',
+                    boxShadow: '0 20px 50px rgba(22, 38, 59, 0.05)',
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                 {/* Top Right Architectural Registration Mark (GD / BIO.01) */}
                 <div
                   style={{
@@ -4350,8 +4420,9 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                   </a>
                 </div>
               </div>
-            </div>
-          </ParallaxSectionBlock>
+            </ParallaxSectionBlock>
+          </div>
+        </div>
 
           {/* Part B: Scroll-Scrubbed Tech Stack Bookshelf */}
           <div id="techstack">
