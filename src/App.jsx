@@ -1305,22 +1305,6 @@ export default function App() {
                 </span>
               </button>
 
-              {/* Direct dispatch label */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  fontSize: '11px',
-                  color: '#64748b',
-                  textAlign: 'center',
-                  marginTop: '2px',
-                }}
-              >
-                <span style={{ color: '#eab308' }}>★</span>
-                <span>Dispatches directly to <strong style={{ color: '#94a3b8' }}>ghayzelle.dzn@gmail.com</strong> (Flagged High Priority)</span>
-              </div>
             </form>
 
             <div

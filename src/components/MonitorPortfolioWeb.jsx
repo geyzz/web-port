@@ -5092,21 +5092,6 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
                     </span>
                   </button>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      fontSize: '11px',
-                      color: TEXT_MUTED,
-                      textAlign: 'center',
-                      marginTop: '4px',
-                    }}
-                  >
-                    <span style={{ color: '#eab308' }}>★</span>
-                    <span>Dispatches directly to <strong>ghayzelle.dzn@gmail.com</strong> (Flagged High Priority)</span>
-                  </div>
                 </form>
               </ParallaxSectionBlock>
             </div>

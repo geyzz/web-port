@@ -1876,17 +1876,26 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             ) {
               aboutMePaperTexture.needsUpdate = true;
               child.geometry = child.geometry.clone();
+              const posAttr = child.geometry.attributes.position;
               const uvAttr = child.geometry.attributes.uv;
-              if (uvAttr) {
-                for (let i = 0; i < uvAttr.count; i++) {
-                  uvAttr.setXY(i, 0.01, 0.01);
+              if (posAttr && uvAttr) {
+                for (let i = 0; i < posAttr.count; i++) {
+                  const z = posAttr.getZ(i);
+                  // Front face of Cube.037 faces towards room camera (z < -0.1)
+                  if (z < -0.1) {
+                    const x = posAttr.getX(i);
+                    const y = posAttr.getY(i);
+                    const u = (1 - y) * 0.5;
+                    const v = (x + 1) * 0.5;
+                    uvAttr.setXY(i, u, v);
+                  } else {
+                    uvAttr.setXY(i, 0.01, 0.01);
+                  }
                 }
-                // Front face vertices on Cube.037 (mapped to screen orientation - NOT inverted):
-                uvAttr.setXY(9, 0, 0);  // Top-left on screen
-                uvAttr.setXY(6, 1, 0);  // Top-right on screen
-                uvAttr.setXY(21, 0, 1); // Bottom-left on screen
-                uvAttr.setXY(18, 1, 1); // Bottom-right on screen
                 uvAttr.needsUpdate = true;
+                if (child.geometry.attributes.uv1) {
+                  child.geometry.attributes.uv1 = uvAttr;
+                }
               }
               child.material = new THREE.MeshStandardMaterial({
                 map: aboutMePaperTexture,
@@ -1906,13 +1915,18 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               (name.includes('film') && name.includes('001'))
             ) {
               child.geometry = child.geometry.clone();
+              const posAttr = child.geometry.attributes.position;
               const uvAttr = child.geometry.attributes.uv;
-              if (uvAttr) {
-                // Front vertices on Plane.009 (mapped to screen orientation - NOT inverted):
-                uvAttr.setXY(1, 0, 0);  // Top-left on screen
-                uvAttr.setXY(0, 1, 0);  // Top-right on screen
-                uvAttr.setXY(3, 0, 1);  // Bottom-left on screen
-                uvAttr.setXY(2, 1, 1);  // Bottom-right on screen
+              if (posAttr && uvAttr) {
+                // Compute position-based UV projection (immune to Draco vertex reordering)
+                // Maps upright: top of photo to screen-top, right to screen-right
+                for (let i = 0; i < posAttr.count; i++) {
+                  const x = posAttr.getX(i);
+                  const z = posAttr.getZ(i);
+                  const u = (1 - x) * 0.5;
+                  const v = (1 - z) * 0.5;
+                  uvAttr.setXY(i, u, v);
+                }
                 uvAttr.needsUpdate = true;
                 if (child.geometry.attributes.uv1) {
                   child.geometry.attributes.uv1 = uvAttr;
