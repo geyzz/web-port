@@ -1468,10 +1468,10 @@ function createAboutMePaperTexture() {
   ];
 
   let curY = 330;
-  ctx.fillStyle = '#1e293b';
+  ctx.fillStyle = '#0f172a'; // Deep charcoal black for rich, punchy ink contrast
 
   paragraphs.forEach((p) => {
-    ctx.font = '500 40px "Inter", -apple-system, sans-serif';
+    ctx.font = '600 41px "Inter", -apple-system, sans-serif';
     const lines = wrapCanvasText(p, 58);
     lines.forEach((line) => {
       ctx.fillText(line, 140, curY);
@@ -1482,12 +1482,12 @@ function createAboutMePaperTexture() {
 
   // Education tag
   ctx.font = '700 36px "Inter", sans-serif';
-  ctx.fillStyle = '#475569';
+  ctx.fillStyle = '#334155';
   ctx.fillText('🎓 Holy Angel University — BS Computer Science (2023 – Present)', 140, 1420);
 
   // Sign-off
   ctx.font = 'italic 700 42px "Inter", sans-serif';
-  ctx.fillStyle = '#ff4d15';
+  ctx.fillStyle = '#ea580c';
   ctx.textAlign = 'right';
   ctx.fillText('— Ghayzelle Dizon', 1860, 1420);
 
@@ -1938,14 +1938,14 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               if (posAttr && uvAttr) {
                 // Front face of Cube.037 faces towards room camera (z < -0.1)
                 // In local space due to -94.2 deg Z rotation:
-                // y goes from -1 (left) to +1 (right) -> u = (y + 1) * 0.5
+                // y goes from +1 (left) to -1 (right) -> u = (1 - y) * 0.5 (un-mirrored, reads left to right)
                 // x goes from -1 (up) to +1 (down) -> v = (x + 1) * 0.5 (with flipY = false on canvas texture)
                 for (let i = 0; i < posAttr.count; i++) {
                   const z = posAttr.getZ(i);
                   if (z < -0.1) {
                     const x = posAttr.getX(i);
                     const y = posAttr.getY(i);
-                    const u = (y + 1) * 0.5;
+                    const u = (1 - y) * 0.5;
                     const v = (x + 1) * 0.5;
                     uvAttr.setXY(i, u, v);
                   } else {
@@ -1961,8 +1961,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 map: aboutMePaperTexture,
                 emissiveMap: aboutMePaperTexture,
                 emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 0.85, // Self-illuminated crispness guarantees 100% legibility under all studio lighting!
-                roughness: 0.35,
+                emissiveIntensity: 0.22, // Balanced subtle illumination so paper looks natural and text stays pitch-black & ultra-legible
+                roughness: 0.55,
                 metalness: 0.0,
                 side: THREE.DoubleSide,
               });
