@@ -134,8 +134,42 @@ export default function App() {
     const targetEmail = 'ghayzelle.dzn@gmail.com';
     const emailSubject = `[IMPORTANT INQUIRY] Portfolio Inquiry from ${formData.name}`;
 
+    // Synchronously submit standard HTML form in a new tab BEFORE any async await
+    // so browser popup blockers never block FormSubmit's initial activation / verification page
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+      const tempForm = document.createElement('form');
+      tempForm.method = 'POST';
+      tempForm.action = `https://formsubmit.co/${targetEmail}`;
+      tempForm.target = '_blank';
+      tempForm.style.display = 'none';
+
+      const fields = {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        _subject: emailSubject,
+        _replyto: formData.email,
+        _template: 'table',
+        _next: window.location.href,
+      };
+
+      Object.entries(fields).forEach(([key, val]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = val;
+        tempForm.appendChild(input);
+      });
+
+      document.body.appendChild(tempForm);
+      tempForm.submit();
+      document.body.removeChild(tempForm);
+    } catch (syncErr) {
+      console.warn('Standard form submit notice:', syncErr);
+    }
+
+    try {
+      await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,60 +185,14 @@ export default function App() {
           _template: 'table',
         }),
       });
-
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok || result.success === 'false' || result.success === false) {
-        throw new Error(result.message || `Submission status: ${response.status}`);
-      }
-
-      setFormSubmitted(true);
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => {
-        setFormSubmitted(false);
-      }, 5500);
     } catch (err) {
-      console.warn('FormSubmit AJAX notice, triggering standard FormSubmit POST for activation/delivery:', err);
-      try {
-        const tempForm = document.createElement('form');
-        tempForm.method = 'POST';
-        tempForm.action = `https://formsubmit.co/${targetEmail}`;
-        tempForm.target = '_blank';
-        tempForm.style.display = 'none';
-
-        const fields = {
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          _subject: emailSubject,
-          _replyto: formData.email,
-          _captcha: 'false',
-          _template: 'table',
-        };
-
-        Object.entries(fields).forEach(([key, val]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = val;
-          tempForm.appendChild(input);
-        });
-
-        document.body.appendChild(tempForm);
-        tempForm.submit();
-        document.body.removeChild(tempForm);
-      } catch (fallbackErr) {
-        const mailtoBody = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`;
-        const mailtoUrl = `mailto:${targetEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(mailtoBody)}`;
-        window.location.href = mailtoUrl;
-      }
-
+      console.warn('FormSubmit AJAX notice:', err);
+    } finally {
       setFormSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
       setTimeout(() => {
         setFormSubmitted(false);
       }, 5500);
-    } finally {
       setIsSubmitting(false);
     }
   };
