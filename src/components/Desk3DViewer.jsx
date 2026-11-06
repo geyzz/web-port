@@ -3373,6 +3373,7 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
           TOP BAR & NAVIGATION CONTROLS
       */}
       <div
+        className="studio-header"
         style={{
           position: 'absolute',
           top: 0,
@@ -5049,15 +5050,17 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
           box-shadow: 0 6px 24px rgba(255, 77, 21, 0.6), 0 0 24px rgba(255, 77, 21, 0.45);
         }
 
-        /* ── Station Information Panels & Mobile Bottom Clearance ── */
+        /* ── Station Information Panels & Responsive Space Between Header & Footer ── */
         .station-info-panel {
           position: absolute;
-          bottom: clamp(92px, 12vh, 114px);
-          right: clamp(14px, 3vw, 36px);
-          left: clamp(14px, 3vw, auto);
-          max-height: min(72vh, calc(100vh - 170px));
-          margin: 0 auto;
+          bottom: 86px;
+          right: clamp(16px, 3vw, 36px);
+          left: auto;
+          max-height: calc(100vh - 172px);
+          max-height: calc(100dvh - 172px);
+          margin: 0;
           overflow-y: auto;
+          overscroll-behavior: contain;
           background-color: rgba(13, 17, 24, 0.95);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
@@ -5065,20 +5068,53 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
           padding: clamp(14px, 2.5vw, 24px);
           z-index: 40;
           animation: slideUp 0.3s ease-out;
+          box-sizing: border-box;
         }
 
-        /* Mobile View (Phones <= 640px) - Stack vertically, aligned right */
-        @media (max-width: 640px) {
+        .station-info-panel::-webkit-scrollbar {
+          width: 5px;
+        }
+        .station-info-panel::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 10px;
+        }
+        .station-info-panel::-webkit-scrollbar-thumb {
+          background: rgba(255, 119, 40, 0.35);
+          border-radius: 10px;
+        }
+        .station-info-panel::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 119, 40, 0.65);
+        }
+
+        /* Tablet Portrait / Medium Screens (641px to 960px) */
+        @media (max-width: 960px) and (min-width: 641px) {
           .station-info-panel {
-            bottom: 118px !important;
+            bottom: 88px !important;
+            right: 18px !important;
+            left: auto !important;
+            width: min(440px, calc(100vw - 36px)) !important;
+            max-height: calc(100vh - 176px) !important;
+            max-height: calc(100dvh - 176px) !important;
+          }
+        }
+
+        /* Mobile View (Phones <= 640px) - Stack bottom buttons, full width panel with generous top & bottom clearance */
+        @media (max-width: 640px) {
+          .studio-header {
+            padding: 12px 14px !important;
+            padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
+          }
+          .station-info-panel {
+            bottom: calc(116px + env(safe-area-inset-bottom, 0px)) !important;
             left: 12px !important;
             right: 12px !important;
             width: calc(100vw - 24px) !important;
-            max-height: calc(100vh - 195px) !important;
+            max-height: calc(100vh - 198px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+            max-height: calc(100dvh - 198px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
             padding: 14px !important;
           }
           .studio-bottom-actions {
-            bottom: 14px !important;
+            bottom: max(14px, env(safe-area-inset-bottom, 14px)) !important;
             right: 14px !important;
             flex-direction: column-reverse !important;
             align-items: flex-end !important;
@@ -5095,9 +5131,16 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
 
         /* Landscape Mobile Proportions (Short screens <= 520px height) */
         @media (max-height: 520px) {
+          .studio-header {
+            padding: 8px 14px !important;
+          }
           .station-info-panel {
-            bottom: 56px !important;
-            max-height: calc(100vh - 110px) !important;
+            bottom: 48px !important;
+            right: 14px !important;
+            left: auto !important;
+            width: min(440px, calc(100vw - 28px)) !important;
+            max-height: calc(100vh - 104px) !important;
+            max-height: calc(100dvh - 104px) !important;
             padding: 10px 14px !important;
           }
           .studio-bottom-actions {
@@ -5108,9 +5151,9 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
             gap: 6px !important;
           }
           .studio-action-btn {
-            padding: 6px 11px !important;
+            padding: 5px 12px !important;
             font-size: 11px !important;
-            min-height: 30px !important;
+            min-height: 28px !important;
           }
         }
       `}</style>
