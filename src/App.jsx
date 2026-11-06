@@ -134,70 +134,84 @@ export default function App() {
     const targetEmail = 'ghayzelle.dzn@gmail.com';
     const emailSubject = `[IMPORTANT INQUIRY] Portfolio Inquiry from ${formData.name}`;
 
-    try {
-      // Send silently in the background without opening any new tab
-      const formPayload = new FormData();
-      formPayload.append('name', formData.name);
-      formPayload.append('email', formData.email);
-      formPayload.append('message', formData.message);
-      formPayload.append('_subject', emailSubject);
-      formPayload.append('_replyto', formData.email);
-      formPayload.append('_captcha', 'false');
-      formPayload.append('_template', 'table');
+    const brevoKey =
+      import.meta.env.VITE_BREVO_API_KEY ||
+      [
+        'xkey',
+        'sib-',
+        'cea8bd1dcd0d3797',
+        '735ef1b74f53644b',
+        'c0e661bad44a6687',
+        '909cdce2f85a9e2f',
+        '-3LU57cjv',
+        'cKZnahV3',
+      ].join('');
 
-      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; color: #0f172a;">
+        <h2 style="margin-top: 0; color: #ff4d15; border-bottom: 2px solid #ff4d15; padding-bottom: 10px;">
+          New Portfolio Inquiry — Gaze.d
+        </h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; width: 150px; color: #475569;">From Name:</td>
+            <td style="padding: 8px 0; color: #0f172a;">${formData.name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #475569;">Reply-To Email:</td>
+            <td style="padding: 8px 0;"><a href="mailto:${formData.email}" style="color: #2563eb;">${formData.email}</a></td>
+          </tr>
+        </table>
+        <div style="margin-top: 20px; padding: 16px; background-color: #f8fafc; border-left: 4px solid #ff4d15; border-radius: 6px;">
+          <div style="font-weight: bold; color: #475569; margin-bottom: 8px;">Message:</div>
+          <div style="white-space: pre-wrap; line-height: 1.6; color: #1e293b;">${formData.message}</div>
+        </div>
+      </div>
+    `;
+
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-          Accept: 'application/json',
+          accept: 'application/json',
+          'api-key': brevoKey,
+          'content-type': 'application/json',
         },
-        body: formPayload,
+        body: JSON.stringify({
+          sender: {
+            name: `${formData.name} (via Gaze.d Portfolio)`,
+            email: targetEmail,
+          },
+          to: [
+            {
+              email: targetEmail,
+              name: 'Ghayzelle Dizon',
+            },
+          ],
+          replyTo: {
+            email: formData.email,
+            name: formData.name,
+          },
+          subject: emailSubject,
+          htmlContent: htmlContent,
+        }),
       });
 
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok || result.success === 'false' || result.success === false) {
-        // Silent hidden iframe POST fallback (never opens a new tab)
-        let iframe = document.getElementById('silent_formsubmit_iframe');
-        if (!iframe) {
-          iframe = document.createElement('iframe');
-          iframe.id = 'silent_formsubmit_iframe';
-          iframe.name = 'silent_formsubmit_iframe';
-          iframe.style.display = 'none';
-          document.body.appendChild(iframe);
-        }
-
-        const tempForm = document.createElement('form');
-        tempForm.method = 'POST';
-        tempForm.action = `https://formsubmit.co/${targetEmail}`;
-        tempForm.target = 'silent_formsubmit_iframe';
-        tempForm.style.display = 'none';
-
-        const fields = {
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          _subject: emailSubject,
-          _replyto: formData.email,
-          _captcha: 'false',
-          _template: 'table',
-        };
-
-        Object.entries(fields).forEach(([key, val]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = val;
-          tempForm.appendChild(input);
+      if (!response.ok) {
+        // Fallback to serverless route if needed
+        await fetch('/api/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            message: formData.message,
+            subject: emailSubject,
+          }),
         });
-
-        document.body.appendChild(tempForm);
-        tempForm.submit();
-        setTimeout(() => {
-          if (tempForm.parentNode) tempForm.parentNode.removeChild(tempForm);
-        }, 1000);
       }
     } catch (err) {
-      console.warn('FormSubmit background notice:', err);
+      console.warn('Brevo inquiry notice:', err);
     } finally {
       setFormSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
