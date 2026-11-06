@@ -134,48 +134,45 @@ export default function App() {
     const targetEmail = 'ghayzelle.dzn@gmail.com';
     const emailSubject = `[IMPORTANT INQUIRY] Portfolio Inquiry from ${formData.name}`;
 
-    // Synchronously submit standard HTML form in a new tab BEFORE any async await
-    // so browser popup blockers never block FormSubmit's initial activation / verification page
     try {
-      const tempForm = document.createElement('form');
-      tempForm.method = 'POST';
-      tempForm.action = `https://formsubmit.co/${targetEmail}`;
-      tempForm.target = '_blank';
-      tempForm.style.display = 'none';
+      // Send silently in the background without opening any new tab
+      const formPayload = new FormData();
+      formPayload.append('name', formData.name);
+      formPayload.append('email', formData.email);
+      formPayload.append('message', formData.message);
+      formPayload.append('_subject', emailSubject);
+      formPayload.append('_replyto', formData.email);
+      formPayload.append('_captcha', 'false');
+      formPayload.append('_template', 'table');
 
-      const fields = {
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-        _subject: emailSubject,
-        _replyto: formData.email,
-        _template: 'table',
-        _next: window.location.href,
-      };
-
-      Object.entries(fields).forEach(([key, val]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = val;
-        tempForm.appendChild(input);
-      });
-
-      document.body.appendChild(tempForm);
-      tempForm.submit();
-      document.body.removeChild(tempForm);
-    } catch (syncErr) {
-      console.warn('Standard form submit notice:', syncErr);
-    }
-
-    try {
-      await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({
+        body: formPayload,
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || result.success === 'false' || result.success === false) {
+        // Silent hidden iframe POST fallback (never opens a new tab)
+        let iframe = document.getElementById('silent_formsubmit_iframe');
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.id = 'silent_formsubmit_iframe';
+          iframe.name = 'silent_formsubmit_iframe';
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+        }
+
+        const tempForm = document.createElement('form');
+        tempForm.method = 'POST';
+        tempForm.action = `https://formsubmit.co/${targetEmail}`;
+        tempForm.target = 'silent_formsubmit_iframe';
+        tempForm.style.display = 'none';
+
+        const fields = {
           name: formData.name,
           email: formData.email,
           message: formData.message,
@@ -183,10 +180,24 @@ export default function App() {
           _replyto: formData.email,
           _captcha: 'false',
           _template: 'table',
-        }),
-      });
+        };
+
+        Object.entries(fields).forEach(([key, val]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = val;
+          tempForm.appendChild(input);
+        });
+
+        document.body.appendChild(tempForm);
+        tempForm.submit();
+        setTimeout(() => {
+          if (tempForm.parentNode) tempForm.parentNode.removeChild(tempForm);
+        }, 1000);
+      }
     } catch (err) {
-      console.warn('FormSubmit AJAX notice:', err);
+      console.warn('FormSubmit background notice:', err);
     } finally {
       setFormSubmitted(true);
       setFormData({ name: '', email: '', message: '' });

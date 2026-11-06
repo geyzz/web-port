@@ -3762,63 +3762,74 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
     const targetEmail = 'ghayzelle.dzn@gmail.com';
     const emailSubject = `[IMPORTANT INQUIRY] ${formData.projectType} commission from ${formData.name}`;
 
-    // Synchronously submit standard HTML form in a new tab BEFORE any async await
-    // so browser popup blockers never block FormSubmit's initial activation / verification page
     try {
-      const tempForm = document.createElement('form');
-      tempForm.method = 'POST';
-      tempForm.action = `https://formsubmit.co/${targetEmail}`;
-      tempForm.target = '_blank';
-      tempForm.style.display = 'none';
+      // Send silently in the background without opening any new tab
+      const formPayload = new FormData();
+      formPayload.append('Name', formData.name);
+      formPayload.append('Email', formData.email);
+      formPayload.append('Project Discipline', formData.projectType);
+      formPayload.append('Message', formData.message);
+      formPayload.append('_subject', emailSubject);
+      formPayload.append('_replyto', formData.email);
+      formPayload.append('_priority', 'urgent');
+      formPayload.append('_importance', 'high');
+      formPayload.append('_template', 'table');
+      formPayload.append('_captcha', 'false');
 
-      const fields = {
-        Name: formData.name,
-        Email: formData.email,
-        'Project Discipline': formData.projectType,
-        Message: formData.message,
-        _subject: emailSubject,
-        _replyto: formData.email,
-        _template: 'table',
-        _next: window.location.href,
-      };
-
-      Object.entries(fields).forEach(([key, val]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = val;
-        tempForm.appendChild(input);
-      });
-
-      document.body.appendChild(tempForm);
-      tempForm.submit();
-      document.body.removeChild(tempForm);
-    } catch (syncErr) {
-      console.warn('Standard form submit notice:', syncErr);
-    }
-
-    try {
-      await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({
+        body: formPayload,
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || result.success === 'false' || result.success === false) {
+        // Silent hidden iframe POST fallback (never opens a new tab)
+        let iframe = document.getElementById('silent_formsubmit_iframe');
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.id = 'silent_formsubmit_iframe';
+          iframe.name = 'silent_formsubmit_iframe';
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+        }
+
+        const tempForm = document.createElement('form');
+        tempForm.method = 'POST';
+        tempForm.action = `https://formsubmit.co/${targetEmail}`;
+        tempForm.target = 'silent_formsubmit_iframe';
+        tempForm.style.display = 'none';
+
+        const fields = {
           Name: formData.name,
           Email: formData.email,
           'Project Discipline': formData.projectType,
           Message: formData.message,
           _subject: emailSubject,
           _replyto: formData.email,
-          _priority: 'urgent',
-          _importance: 'high',
           _template: 'table',
           _captcha: 'false',
-        }),
-      });
+        };
+
+        Object.entries(fields).forEach(([key, val]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = val;
+          tempForm.appendChild(input);
+        });
+
+        document.body.appendChild(tempForm);
+        tempForm.submit();
+        setTimeout(() => {
+          if (tempForm.parentNode) tempForm.parentNode.removeChild(tempForm);
+        }, 1000);
+      }
     } catch (err) {
-      console.warn('FormSubmit AJAX notice:', err);
+      console.warn('FormSubmit background notice:', err);
     } finally {
       setFormSubmitted(true);
       setFormData({ name: '', email: '', projectType: 'UI/UX Design', message: '' });
