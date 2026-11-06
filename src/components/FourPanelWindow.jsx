@@ -576,33 +576,6 @@ function FourPanelWindow({
           </g>
         )}
 
-        {/* 
-            6. VOLUMETRIC LIGHT BEAM (CASTING DOWNWARD LIGHT OVER MAIN HERO DIV)
-        */}
-        {isGlowing && (
-          <g style={{ mixBlendMode: 'screen', pointerEvents: 'none' }}>
-            {/* Primary Cinematic Light Beam pointing downward directly over hero container */}
-            <polygon
-              points={
-                isMobileScreen
-                  ? '18,45 308,45 740,820 60,820'
-                  : '18,45 308,45 520,820 -220,820'
-              }
-              fill="url(#windowVolumetricBeam)"
-              filter="url(#beamBlurFilter)"
-            />
-            {/* Secondary Soft Ambient Room Spill over hero area */}
-            <polygon
-              points={
-                isMobileScreen
-                  ? '0,20 320,20 880,960 -20,960'
-                  : '0,20 320,20 660,960 -340,960'
-              }
-              fill="url(#windowAmbientSpill)"
-              filter="url(#softSpillBlurFilter)"
-            />
-          </g>
-        )}
       </svg>
     </div>
   );

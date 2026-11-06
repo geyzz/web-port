@@ -79,10 +79,152 @@ export default function App() {
 
   const containerRef = useRef(null);
   const gridRef = useRef(null);
+  const heroRef = useRef(null);
+  const eyebrowRef = useRef(null);
+  const titleRef = useRef(null);
+  const buttonRef = useRef(null);
+  const litWindowRef = useRef(null);
+  const [beamGeometry, setBeamGeometry] = useState(null);
   const startPosRef = useRef({ x: 0, y: 0 });
   const currentPullRef = useRef({ x: 0, y: 0 });
   const isDraggingRef = useRef(false);
   const animFrameRef = useRef(null);
+
+  // Dynamically calculate and track the beam from the selected window SVG directly onto the hero content:
+  // shining at the exact angle from GHAYZELLE (top) down to where the button is (bottom),
+  // fully responsive and adapted for all mobile devices, tablets, and desktop gadgets.
+  useEffect(() => {
+    const updateBeam = () => {
+      if (!litWindowRef.current || !eyebrowRef.current || !buttonRef.current || !containerRef.current) return;
+      const cRect = containerRef.current.getBoundingClientRect();
+      const wRect = litWindowRef.current.getBoundingClientRect();
+      const eyeRect = eyebrowRef.current.getBoundingClientRect();
+      const btnRect = buttonRef.current.getBoundingClientRect();
+      const tRect = titleRef.current ? titleRef.current.getBoundingClientRect() : null;
+
+      // Window coordinates relative to the landing page container
+      const wLeft = wRect.left - cRect.left;
+      const wRight = wRect.right - cRect.left;
+      const wTop = wRect.top - cRect.top;
+      const wBottom = wRect.bottom - cRect.top;
+      const wWidth = wRect.width;
+      const wHeight = wRect.height;
+
+      // Inner lit room aperture points at the window (Row 1, Col 2)
+      const winTopLeft = { x: wLeft + wWidth * 0.08, y: wTop + wHeight * 0.18 };
+      const winTopRight = { x: wRight - wWidth * 0.08, y: wTop + wHeight * 0.18 };
+      const winSillLeft = { x: wLeft + wWidth * 0.08, y: wBottom - wHeight * 0.08 };
+      const winSillRight = { x: wRight - wWidth * 0.08, y: wBottom - wHeight * 0.08 };
+
+      // Measure the bounds of the hero content so the beam tightly envelopes it
+      // Keep clear margin from the left hanging pull string on any gadget
+      const textLeft = Math.max(
+        15,
+        Math.min(
+          eyeRect.left,
+          btnRect.left,
+          tRect ? tRect.left : eyeRect.left
+        ) - cRect.left - 20
+      );
+
+      const textRight = Math.min(
+        cRect.width - 10,
+        Math.max(
+          eyeRect.right,
+          btnRect.right,
+          tRect ? tRect.right : eyeRect.right
+        ) - cRect.left + 24
+      );
+
+      // Angle from GHAYZELLE (top) down to where the button is (bottom)
+      const targetTopY = eyeRect.top - cRect.top - 12;
+      const targetBotY = btnRect.bottom - cRect.top + 22;
+      const targetCenterX = (textLeft + textRight) / 2;
+      const targetCenterY = (targetTopY + targetBotY) / 2;
+
+      // Detect mobile / vertical stacked view vs wide desktop horizontal view
+      const isMobileView = cRect.width <= 768 || (wLeft < textRight && targetTopY > wBottom - 30);
+
+      const winCenterX = wLeft + wWidth / 2;
+      const winCenterY = wTop + wHeight / 2;
+
+      let primaryPoints = '';
+      let softPoints = '';
+      let gradX1 = 0;
+      let gradY1 = 0;
+      let gradX2 = 0;
+      let gradY2 = 0;
+
+      if (isMobileView) {
+        // Mobile / Portrait / Tablet: Window is above or horizontally overlapping.
+        // The beam emanates directly from inside the lit room window (aperture and sill)
+        // and fans out downward, bathing the hero container from GHAYZELLE DIZON (top) down to the button (bottom).
+        const roomTopY = winTopLeft.y + wHeight * 0.10;
+        primaryPoints = `${winTopLeft.x},${roomTopY} ${winTopRight.x},${roomTopY} ${textRight},${targetTopY} ${textRight},${targetBotY} ${textLeft},${targetBotY} ${textLeft},${targetTopY}`;
+        softPoints = `${winTopLeft.x - 16},${roomTopY - 10} ${winTopRight.x + 16},${roomTopY - 10} ${textRight + 26},${targetTopY - 8} ${textRight + 26},${targetBotY + 24} ${textLeft - 26},${targetBotY + 24} ${textLeft - 26},${targetTopY - 8}`;
+
+        gradX1 = winCenterX;
+        gradY1 = roomTopY;
+        const dx = targetCenterX - gradX1;
+        const dy = targetCenterY - gradY1;
+        const dist = Math.hypot(dx, dy) || 1;
+        const dirX = dx / dist;
+        gradX2 = targetCenterX + dirX * 30;
+        gradY2 = targetBotY + 40;
+      } else {
+        // Desktop: Window is to the right of the hero text.
+        // The beam streams diagonally leftward from inside the lit room window onto the hero container,
+        // shining at the exact angle from GHAYZELLE (top) down to where the button is (bottom).
+        primaryPoints = `${winTopLeft.x},${winTopLeft.y} ${textLeft},${targetTopY} ${textLeft},${targetBotY} ${textRight},${targetBotY} ${winSillRight.x},${winSillRight.y} ${winSillLeft.x},${winSillLeft.y}`;
+        softPoints = `${winTopLeft.x - 14},${winTopLeft.y - 12} ${textLeft - 32},${targetTopY - 16} ${textLeft - 32},${targetBotY + 26} ${textRight + 34},${targetBotY + 26} ${winSillRight.x + 18},${winSillRight.y + 12} ${winSillLeft.x - 14},${winSillLeft.y + 12}`;
+
+        gradX1 = winCenterX;
+        gradY1 = winCenterY;
+        gradX2 = textLeft - 70;
+        gradY2 = (targetTopY + targetBotY) / 2;
+      }
+
+      setBeamGeometry({
+        primaryPoints,
+        softPoints,
+        gradX1,
+        gradY1,
+        gradX2,
+        gradY2,
+        winCenterX,
+        winCenterY,
+        winWidth: wWidth,
+        winHeight: wHeight,
+        viewW: cRect.width,
+        viewH: cRect.height,
+      });
+    };
+
+    updateBeam();
+    const timer1 = setTimeout(updateBeam, 60);
+    const timer2 = setTimeout(updateBeam, 300);
+    let ro;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      ro = new ResizeObserver(() => {
+        updateBeam();
+      });
+      ro.observe(containerRef.current);
+      if (heroRef.current) ro.observe(heroRef.current);
+      if (eyebrowRef.current) ro.observe(eyebrowRef.current);
+      if (titleRef.current) ro.observe(titleRef.current);
+      if (buttonRef.current) ro.observe(buttonRef.current);
+      if (litWindowRef.current) ro.observe(litWindowRef.current);
+    }
+    window.addEventListener('resize', updateBeam);
+    window.addEventListener('orientationchange', updateBeam);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', updateBeam);
+      window.removeEventListener('orientationchange', updateBeam);
+    };
+  }, []);
 
   // Validate email format and common email provider domains
   const validateEmailProvider = (rawEmail) => {
@@ -473,6 +615,7 @@ export default function App() {
             return (
               <div
                 key={idx}
+                ref={litWindowRef}
                 style={{
                   position: 'relative',
                   display: 'flex',
@@ -514,18 +657,91 @@ export default function App() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. ATMOSPHERIC AMBIENT GLOW ON HERO (POSITIONED OVER HERO DIV)
+          2. DYNAMIC VOLUMETRIC LIGHT BEAM (CAST IN THE ANGLE FROM THE LIT WINDOW TO GHAYZELLE AT THE TOP DOWN TO WHERE THE BUTTON IS)
       ───────────────────────────────────────────────────────────── */}
-      {lightOn && (
-        <div
-          className="hero-light-glow"
+      {lightOn && beamGeometry && (
+        <svg
           style={{
             position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
             pointerEvents: 'none',
-            zIndex: 10,
+            zIndex: 15,
+            mixBlendMode: 'screen',
             transition: 'opacity 0.4s ease',
           }}
-        />
+          viewBox={`0 0 ${beamGeometry.viewW} ${beamGeometry.viewH}`}
+        >
+          <defs>
+            <radialGradient
+              id="roomApertureGlow"
+              cx="50%"
+              cy="50%"
+              r="50%"
+            >
+              <stop offset="0%" stopColor="#fff2a8" stopOpacity="0.55" />
+              <stop offset="35%" stopColor="#ffb038" stopOpacity="0.32" />
+              <stop offset="70%" stopColor="#ff7018" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#ff4000" stopOpacity="0" />
+            </radialGradient>
+            <linearGradient
+              id="volumetricHeroBeam"
+              x1={`${(beamGeometry.gradX1 / beamGeometry.viewW) * 100}%`}
+              y1={`${(beamGeometry.gradY1 / beamGeometry.viewH) * 100}%`}
+              x2={`${(beamGeometry.gradX2 / beamGeometry.viewW) * 100}%`}
+              y2={`${(beamGeometry.gradY2 / beamGeometry.viewH) * 100}%`}
+            >
+              <stop offset="0%" stopColor="#ffc255" stopOpacity="0.45" />
+              <stop offset="18%" stopColor="#ff9526" stopOpacity="0.30" />
+              <stop offset="45%" stopColor="#ff6c14" stopOpacity="0.18" />
+              <stop offset="75%" stopColor="#ff4c08" stopOpacity="0.08" />
+              <stop offset="100%" stopColor="#ff3300" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient
+              id="softSpillBeam"
+              x1={`${(beamGeometry.gradX1 / beamGeometry.viewW) * 100}%`}
+              y1={`${(beamGeometry.gradY1 / beamGeometry.viewH) * 100}%`}
+              x2={`${(beamGeometry.gradX2 / beamGeometry.viewW) * 100}%`}
+              y2={`${(beamGeometry.gradY2 / beamGeometry.viewH) * 100}%`}
+            >
+              <stop offset="0%" stopColor="#ffd478" stopOpacity="0.22" />
+              <stop offset="30%" stopColor="#ff8c20" stopOpacity="0.12" />
+              <stop offset="70%" stopColor="#ff5510" stopOpacity="0.04" />
+              <stop offset="100%" stopColor="#ff3300" stopOpacity="0" />
+            </linearGradient>
+            <filter id="beamBlur" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="22" />
+            </filter>
+            <filter id="softSpillBlur" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="38" />
+            </filter>
+          </defs>
+
+          {/* Concentrated interior light emission right at the lit room window */}
+          <ellipse
+            cx={beamGeometry.winCenterX}
+            cy={beamGeometry.winCenterY}
+            rx={beamGeometry.winWidth * 0.58}
+            ry={beamGeometry.winHeight * 0.52}
+            fill="url(#roomApertureGlow)"
+            filter="url(#beamBlur)"
+          />
+
+          {/* Secondary soft ambient spill cone projecting towards hero container */}
+          <polygon
+            points={beamGeometry.softPoints}
+            fill="url(#softSpillBeam)"
+            filter="url(#softSpillBlur)"
+          />
+
+          {/* Primary directional volumetric light beam connecting the chosen SVG room to the hero container */}
+          <polygon
+            points={beamGeometry.primaryPoints}
+            fill="url(#volumetricHeroBeam)"
+            filter="url(#beamBlur)"
+          />
+        </svg>
       )}
 
       {/* ─────────────────────────────────────────────────────────────
@@ -849,6 +1065,7 @@ export default function App() {
           4. MAIN HERO CONTENT (REVISED MINIMAL DIGITAL ENTRANCE)
       ───────────────────────────────────────────────────────────── */}
       <main
+        ref={heroRef}
         className="hero-main-container"
         style={{
           position: 'relative',
@@ -860,27 +1077,9 @@ export default function App() {
           maxWidth: '680px',
         }}
       >
-        {/* Atmospheric Warm Ambient Illumination directly covering the main hero div */}
-        {lightOn && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '-20px',
-              left: '-30px',
-              right: '-30px',
-              bottom: '-20px',
-              background: 'radial-gradient(ellipse at 50% 45%, rgba(255, 125, 30, 0.2) 0%, rgba(255, 75, 20, 0.06) 55%, transparent 75%)',
-              pointerEvents: 'none',
-              zIndex: -1,
-              borderRadius: '36px',
-              filter: 'blur(16px)',
-              transition: 'opacity 0.4s ease',
-            }}
-          />
-        )}
-
         {/* Candidate Eyebrow */}
         <div
+          ref={eyebrowRef}
           className="hero-eyebrow"
           style={{
             display: 'inline-flex',
@@ -894,9 +1093,12 @@ export default function App() {
               fontSize: '13.5px',
               fontWeight: '800',
               letterSpacing: '0.16em',
-              color: '#ff7728',
+              color: lightOn ? '#ff8533' : '#ff7728',
               textTransform: 'uppercase',
-              textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+              textShadow: lightOn
+                ? '0 0 16px rgba(255, 120, 40, 0.45), 0 2px 10px rgba(0,0,0,0.8)'
+                : '0 2px 10px rgba(0,0,0,0.8)',
+              transition: 'color 0.3s ease, text-shadow 0.3s ease',
             }}
           >
             GHAYZELLE DIZON
@@ -905,8 +1107,9 @@ export default function App() {
             style={{
               fontSize: '13px',
               fontWeight: '600',
-              color: '#94a3b8',
+              color: lightOn ? '#cbd5e1' : '#94a3b8',
               letterSpacing: '0.04em',
+              transition: 'color 0.3s ease',
             }}
           >
             / GAZE.D
@@ -915,6 +1118,7 @@ export default function App() {
 
         {/* Main Headline: FRONT-END DEVELOPER */}
         <h1
+          ref={titleRef}
           className="hero-title"
           style={{
             fontSize: 'clamp(28px, 5.5vw, 52px)',
@@ -924,8 +1128,9 @@ export default function App() {
             marginBottom: '10px',
             letterSpacing: '-0.015em',
             textShadow: lightOn
-              ? '0 4px 30px rgba(0,0,0,0.95), 0 0 36px rgba(255, 90, 20, 0.2)'
+              ? '0 4px 30px rgba(0,0,0,0.95), 0 0 45px rgba(255, 115, 30, 0.4), 0 0 16px rgba(255, 180, 80, 0.25)'
               : '0 4px 30px rgba(0,0,0,0.95)',
+            transition: 'text-shadow 0.35s ease',
           }}
         >
           FRONT-END DEVELOPER
@@ -938,10 +1143,13 @@ export default function App() {
             fontSize: 'clamp(20px, 2.4vw, 26px)',
             fontWeight: '600',
             fontStyle: 'italic',
-            color: '#ffaa66',
+            color: lightOn ? '#ffba78' : '#ffaa66',
             letterSpacing: '-0.01em',
             marginBottom: '16px',
-            textShadow: '0 2px 14px rgba(0,0,0,0.8)',
+            textShadow: lightOn
+              ? '0 2px 18px rgba(255, 140, 50, 0.4), 0 2px 14px rgba(0,0,0,0.8)'
+              : '0 2px 14px rgba(0,0,0,0.8)',
+            transition: 'color 0.3s ease, text-shadow 0.3s ease',
           }}
         >
           A different perspective.
@@ -953,10 +1161,13 @@ export default function App() {
           style={{
             fontSize: '16px',
             lineHeight: 1.65,
-            color: '#cbd5e1',
+            color: lightOn ? '#e2e8f0' : '#cbd5e1',
             maxWidth: '560px',
             marginBottom: '32px',
-            textShadow: '0 2px 14px rgba(0,0,0,0.9)',
+            textShadow: lightOn
+              ? '0 2px 16px rgba(0,0,0,0.9), 0 0 20px rgba(255, 120, 40, 0.15)'
+              : '0 2px 14px rgba(0,0,0,0.9)',
+            transition: 'color 0.3s ease, text-shadow 0.3s ease',
           }}
         >
           Exploring the intersection of design, technology, and creativity. Building interactive experiences, one idea at a time.
@@ -965,6 +1176,7 @@ export default function App() {
         {/* Action Button: Enter 3D Studio ↗ ONLY */}
         <div className="hero-actions" style={{ display: 'flex', alignItems: 'center' }}>
           <button
+            ref={buttonRef}
             onClick={() => setDeskViewerOpen(true)}
             style={{
               padding: '13px 26px',
@@ -979,8 +1191,10 @@ export default function App() {
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 6px 22px rgba(255, 77, 21, 0.45)',
-              transition: 'all 0.2s ease',
+              boxShadow: lightOn
+                ? '0 6px 26px rgba(255, 77, 21, 0.6), 0 0 32px rgba(255, 130, 40, 0.35)'
+                : '0 6px 22px rgba(255, 77, 21, 0.45)',
+              transition: 'all 0.25s ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#ff6332';
@@ -1249,8 +1463,8 @@ export default function App() {
                   {[
                     { id: 'Web Development', label: 'Web Development' },
                     { id: 'Mobile App', label: 'Mobile App' },
-                    { id: 'UI/UX & 3D Design', label: 'UI/UX & 3D Design' },
-                    { id: 'Front-End Role', label: 'Front-End Role' },
+                    { id: 'UI/UX Design', label: 'UI/UX Design' },
+                    { id: '3D Design', label: '3D Design' },
                     { id: 'Other', label: 'Other' },
                   ].map((item) => {
                     const isSelected = formData.projectType === item.id;

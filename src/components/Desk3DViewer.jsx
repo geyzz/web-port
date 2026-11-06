@@ -2155,31 +2155,37 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
     targetLimits: STATION_LIMITS.room,
   });
   const monitorMeshRef = useRef(null);
-  const portfolioTexturesRef = useRef(null);
-  if (!portfolioTexturesRef.current) {
-    portfolioTexturesRef.current = [
-      createPortfolioCarouselTexture(0),
-      createPortfolioCarouselTexture(1),
-      createPortfolioCarouselTexture(2),
-    ];
-  }
-  const transitionCanvasRef = useRef(null);
-  const transitionTextureRef = useRef(null);
+  const projectCanvasesRef = useRef(null);
+  const monitorCanvasRef = useRef(null);
+  const monitorTextureRef = useRef(null);
   const transitionAnimIdRef = useRef(null);
   const isTransitioningMonitorRef = useRef(false);
 
-  if (!transitionCanvasRef.current && typeof document !== 'undefined') {
-    const tCanvas = document.createElement('canvas');
-    tCanvas.width = 2048;
-    tCanvas.height = 1024;
-    transitionCanvasRef.current = tCanvas;
-    const tTex = new THREE.CanvasTexture(tCanvas);
-    tTex.flipY = false;
-    tTex.colorSpace = THREE.SRGBColorSpace;
-    tTex.minFilter = THREE.LinearFilter;
-    tTex.magFilter = THREE.LinearFilter;
-    tTex.generateMipmaps = false;
-    transitionTextureRef.current = tTex;
+  // Initialize pre-rendered project canvases and the single persistent monitor screen canvas/texture
+  if (!monitorCanvasRef.current && typeof document !== 'undefined') {
+    projectCanvasesRef.current = [0, 1, 2].map((idx) => {
+      const c = document.createElement('canvas');
+      c.width = 2048;
+      c.height = 1024;
+      c._projectIndex = idx;
+      drawProjectScreenOnCanvas(c, idx);
+      return c;
+    });
+
+    const mCanvas = document.createElement('canvas');
+    mCanvas.width = 2048;
+    mCanvas.height = 1024;
+    const mCtx = mCanvas.getContext('2d');
+    mCtx.drawImage(projectCanvasesRef.current[0], 0, 0);
+    monitorCanvasRef.current = mCanvas;
+
+    const mTex = new THREE.CanvasTexture(mCanvas);
+    mTex.flipY = false;
+    mTex.colorSpace = THREE.SRGBColorSpace;
+    mTex.minFilter = THREE.LinearFilter;
+    mTex.magFilter = THREE.LinearFilter;
+    mTex.generateMipmaps = false;
+    monitorTextureRef.current = mTex;
   }
 
   const certificatesTextureRef = useRef(null);
@@ -2189,10 +2195,12 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
 
   // Smooth cinematic animated slide transition between projects on the 3D monitor screen
   const updateMonitorProject = (newIndex, explicitDir = null) => {
+    if (isTransitioningMonitorRef.current) return;
+
     const fromIdx = carouselIndexRef.current;
     const toIdx = ((newIndex % 3) + 3) % 3;
 
-    if (fromIdx === toIdx && !isTransitioningMonitorRef.current) return;
+    if (fromIdx === toIdx) return;
 
     // Slide direction: +1 slides left (advance next), -1 slides right (go back)
     let dir = explicitDir;
@@ -2207,42 +2215,28 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       transitionAnimIdRef.current = null;
     }
 
-    // Set transition lock IMMEDIATELY so secondary useEffect safeguard doesn't clobber the animation
     isTransitioningMonitorRef.current = true;
     setCarouselIndex(toIdx);
     carouselIndexRef.current = toIdx;
 
-    if (!monitorMeshRef.current?.material || !portfolioTexturesRef.current) {
-      isTransitioningMonitorRef.current = false;
-      return;
-    }
+    const fromCanvas = projectCanvasesRef.current?.[fromIdx];
+    const toCanvas = projectCanvasesRef.current?.[toIdx];
+    const mCanvas = monitorCanvasRef.current;
+    const mTex = monitorTextureRef.current;
 
-    const fromCanvas = portfolioTexturesRef.current[fromIdx]?.image;
-    const toCanvas = portfolioTexturesRef.current[toIdx]?.image;
-    const tCanvas = transitionCanvasRef.current;
-    const tTex = transitionTextureRef.current;
-
-    if (!fromCanvas || !toCanvas || !tCanvas || !tTex) {
-      const tex = portfolioTexturesRef.current[toIdx];
-      if (tex) {
-        tex.needsUpdate = true;
-        monitorMeshRef.current.material.map = tex;
-        monitorMeshRef.current.material.emissiveMap = tex;
-        monitorMeshRef.current.material.needsUpdate = true;
+    if (!fromCanvas || !toCanvas || !mCanvas || !mTex) {
+      if (toCanvas && mCanvas && mTex) {
+        mCanvas.getContext('2d').drawImage(toCanvas, 0, 0);
+        mTex.needsUpdate = true;
       }
       isTransitioningMonitorRef.current = false;
       return;
     }
 
-    const tCtx = tCanvas.getContext('2d');
+    const mCtx = mCanvas.getContext('2d');
     const targetAccent = PORTFOLIO_PROJECTS[toIdx]?.accent || '#d6b349';
     const duration = 380; // snappy, fluid 380ms slide
     const startTime = performance.now();
-
-    // Assign transition canvas texture to monitor
-    monitorMeshRef.current.material.map = tTex;
-    monitorMeshRef.current.material.emissiveMap = tTex;
-    monitorMeshRef.current.material.needsUpdate = true;
 
     const animateSlide = (now) => {
       const elapsed = now - startTime;
@@ -2252,59 +2246,56 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       const ease = 1 - Math.pow(1 - progress, 3);
       const shift = dir * ease * 2048;
 
-      // Draw sliding canvases
-      tCtx.fillStyle = '#06080e';
-      tCtx.fillRect(0, 0, 2048, 1024);
+      // Draw sliding canvases directly onto monitorCanvas
+      mCtx.fillStyle = '#06080e';
+      mCtx.fillRect(0, 0, 2048, 1024);
 
       // 1. Outgoing project sliding away
-      tCtx.drawImage(fromCanvas, -shift, 0);
+      mCtx.drawImage(fromCanvas, -shift, 0);
 
       // 2. Incoming project sliding into view
       const incomingX = dir > 0 ? (2048 - shift) : (-2048 - shift);
-      tCtx.drawImage(toCanvas, incomingX, 0);
+      mCtx.drawImage(toCanvas, incomingX, 0);
 
       // 3. Futuristic glowing neon energy divider line
       const dividerX = incomingX;
-      tCtx.save();
-      tCtx.strokeStyle = targetAccent;
-      tCtx.shadowColor = targetAccent;
-      tCtx.shadowBlur = 24;
-      tCtx.lineWidth = 6;
-      tCtx.beginPath();
-      tCtx.moveTo(dividerX, 0);
-      tCtx.lineTo(dividerX, 1024);
-      tCtx.stroke();
+      mCtx.save();
+      mCtx.strokeStyle = targetAccent;
+      mCtx.shadowColor = targetAccent;
+      mCtx.shadowBlur = 24;
+      mCtx.lineWidth = 6;
+      mCtx.beginPath();
+      mCtx.moveTo(dividerX, 0);
+      mCtx.lineTo(dividerX, 1024);
+      mCtx.stroke();
 
       // Atmospheric glowing gradient bleed on the incoming side
-      const grad = tCtx.createLinearGradient(dividerX - (dir > 0 ? 40 : -40), 0, dividerX, 0);
+      const grad = mCtx.createLinearGradient(dividerX - (dir > 0 ? 40 : -40), 0, dividerX, 0);
       grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
       grad.addColorStop(1, targetAccent + '55');
-      tCtx.fillStyle = grad;
-      tCtx.fillRect(dir > 0 ? (dividerX - 40) : dividerX, 0, 40, 1024);
-      tCtx.restore();
+      mCtx.fillStyle = grad;
+      mCtx.fillRect(dir > 0 ? (dividerX - 40) : dividerX, 0, 40, 1024);
+      mCtx.restore();
 
-      // Dynamic emissive pulse on monitor during transition (balanced, non-glaring)
+      // Dynamic emissive pulse on monitor during transition
       if (monitorMeshRef.current?.material) {
         const pulse = Math.sin(progress * Math.PI) * 0.08;
         monitorMeshRef.current.material.emissiveIntensity = 0.95 + pulse;
       }
 
-      tTex.needsUpdate = true;
+      mTex.needsUpdate = true;
 
       if (progress < 1) {
         transitionAnimIdRef.current = requestAnimationFrame(animateSlide);
       } else {
-        // Animation finished: cleanly snap to target pre-rendered texture
+        // Animation finished: cleanly render destination frame
+        mCtx.drawImage(toCanvas, 0, 0);
+        mTex.needsUpdate = true;
+        if (monitorMeshRef.current?.material) {
+          monitorMeshRef.current.material.emissiveIntensity = 0.95;
+        }
         isTransitioningMonitorRef.current = false;
         transitionAnimIdRef.current = null;
-        if (monitorMeshRef.current?.material) {
-          const finalTex = portfolioTexturesRef.current[toIdx];
-          finalTex.needsUpdate = true;
-          monitorMeshRef.current.material.map = finalTex;
-          monitorMeshRef.current.material.emissiveMap = finalTex;
-          monitorMeshRef.current.material.emissiveIntensity = 0.95;
-          monitorMeshRef.current.material.needsUpdate = true;
-        }
       }
     };
 
@@ -2316,19 +2307,20 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
     preloadProjectScreenImages();
     preloadCertScreenImages();
     onProjectImagesLoadedListener = () => {
-      if (portfolioTexturesRef.current) {
-        portfolioTexturesRef.current.forEach((tex, idx) => {
-          if (tex && tex.image) {
-            drawProjectScreenOnCanvas(tex.image, idx);
-            tex.needsUpdate = true;
+      if (projectCanvasesRef.current) {
+        projectCanvasesRef.current.forEach((canv, idx) => {
+          if (canv) {
+            drawProjectScreenOnCanvas(canv, idx);
           }
         });
-        if (monitorMeshRef.current?.material) {
-          const curTex = portfolioTexturesRef.current[carouselIndexRef.current];
-          if (curTex) {
-            monitorMeshRef.current.material.map = curTex;
-            monitorMeshRef.current.material.emissiveMap = curTex;
-            monitorMeshRef.current.material.needsUpdate = true;
+        if (monitorCanvasRef.current && !isTransitioningMonitorRef.current) {
+          const curCanvas = projectCanvasesRef.current[carouselIndexRef.current];
+          if (curCanvas) {
+            const mCtx = monitorCanvasRef.current.getContext('2d');
+            mCtx.drawImage(curCanvas, 0, 0);
+            if (monitorTextureRef.current) {
+              monitorTextureRef.current.needsUpdate = true;
+            }
           }
         }
       }
@@ -2345,16 +2337,17 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
     };
   }, []);
 
-  // Secondary safeguard: swap 3D monitor texture whenever carouselIndex state changes
+  // Secondary safeguard: update monitor canvas whenever carouselIndex state changes
   useEffect(() => {
-    if (monitorMeshRef.current?.material && portfolioTexturesRef.current && !isTransitioningMonitorRef.current) {
+    if (projectCanvasesRef.current && monitorCanvasRef.current && !isTransitioningMonitorRef.current) {
       const safeIdx = ((carouselIndex % 3) + 3) % 3;
-      const tex = portfolioTexturesRef.current[safeIdx];
-      if (tex) {
-        tex.needsUpdate = true;
-        monitorMeshRef.current.material.map = tex;
-        monitorMeshRef.current.material.emissiveMap = tex;
-        monitorMeshRef.current.material.needsUpdate = true;
+      const curCanvas = projectCanvasesRef.current[safeIdx];
+      if (curCanvas) {
+        const mCtx = monitorCanvasRef.current.getContext('2d');
+        mCtx.drawImage(curCanvas, 0, 0);
+        if (monitorTextureRef.current) {
+          monitorTextureRef.current.needsUpdate = true;
+        }
       }
     }
   }, [carouselIndex]);
@@ -2644,9 +2637,8 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
               matName.includes('monitor_screen')
             ) {
               monitorMeshRef.current = child;
-              const curIdx = carouselIndexRef.current;
-              const initialTex = portfolioTexturesRef.current ? portfolioTexturesRef.current[curIdx] : createPortfolioCarouselTexture(0);
-              initialTex.needsUpdate = true;
+              const initialTex = monitorTextureRef.current;
+              if (initialTex) initialTex.needsUpdate = true;
               child.material = new THREE.MeshStandardMaterial({
                 map: initialTex,
                 emissiveMap: initialTex,
@@ -3071,7 +3063,7 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
               // 2. Bi-directional 3D Monitor navigation: click left side for Prev (-1), right side for Next (+1)
               const isLeft = (hit.uv && typeof hit.uv.x === 'number')
                 ? hit.uv.x < 0.5
-                : (hit.point ? hit.point.x < -1.08 : false);
+                : (hit.point ? hit.point.z > 0.08 : false);
 
               if (isLeft) {
                 const prevIdx = (carouselIndexRef.current - 1 + 3) % 3;
@@ -3558,23 +3550,11 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       {/* 1. PORTFOLIO & CERTIFICATES STATION PANEL (CURVED ULTRAWIDE MONITOR) */}
       {activeStation === 'portfolio' && !panelDismissed && (
         <div
+          className="station-info-panel"
           style={{
-            position: 'absolute',
-            bottom: 'clamp(84px, 10vh, 100px)',
-            right: 'clamp(10px, 3vw, 36px)',
-            left: 'clamp(10px, 3vw, auto)',
             width: 'min(460px, calc(100vw - 20px))',
-            maxHeight: 'min(74vh, calc(100vh - 164px))',
-            margin: '0 auto',
-            overflowY: 'auto',
-            backgroundColor: 'rgba(13, 17, 24, 0.95)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 120, 60, 0.35)',
-            borderRadius: '16px',
-            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 77, 21, 0.2)',
-            zIndex: 40,
-            animation: 'slideUp 0.3s ease-out',
           }}
         >
           {/* Header */}
@@ -3853,23 +3833,11 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       {/* 2. TECH STACK PANEL (LAPTOP) */}
       {activeStation === 'techstack' && !panelDismissed && (
         <div
+          className="station-info-panel"
           style={{
-            position: 'absolute',
-            bottom: 'clamp(84px, 10vh, 100px)',
-            right: 'clamp(10px, 3vw, 36px)',
-            left: 'clamp(10px, 3vw, auto)',
             width: 'min(440px, calc(100vw - 20px))',
-            maxHeight: 'min(74vh, calc(100vh - 164px))',
-            margin: '0 auto',
-            overflowY: 'auto',
-            backgroundColor: 'rgba(13, 17, 24, 0.95)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(100, 180, 255, 0.35)',
-            borderRadius: '16px',
-            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(100, 180, 255, 0.2)',
-            zIndex: 40,
-            animation: 'slideUp 0.3s ease-out',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
@@ -3996,23 +3964,11 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       {/* 3. ABOUT ME PANEL (BULLETIN BOARD & POLAROID) */}
       {activeStation === 'aboutme' && !panelDismissed && (
         <div
+          className="station-info-panel"
           style={{
-            position: 'absolute',
-            bottom: 'clamp(84px, 10vh, 100px)',
-            right: 'clamp(10px, 3vw, 36px)',
-            left: 'clamp(10px, 3vw, auto)',
             width: 'min(430px, calc(100vw - 20px))',
-            maxHeight: 'min(74vh, calc(100vh - 164px))',
-            margin: '0 auto',
-            overflowY: 'auto',
-            backgroundColor: 'rgba(13, 17, 24, 0.95)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 170, 60, 0.35)',
-            borderRadius: '16px',
-            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 170, 60, 0.2)',
-            zIndex: 40,
-            animation: 'slideUp 0.3s ease-out',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
@@ -4210,23 +4166,11 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       {/* 4. RESUME PANEL (STUDY DESK PAPER) */}
       {activeStation === 'resume' && !panelDismissed && (
         <div
+          className="station-info-panel"
           style={{
-            position: 'absolute',
-            bottom: 'clamp(84px, 10vh, 100px)',
-            right: 'clamp(10px, 3vw, 36px)',
-            left: 'clamp(10px, 3vw, auto)',
             width: 'min(450px, calc(100vw - 20px))',
-            maxHeight: 'min(74vh, calc(100vh - 164px))',
-            margin: '0 auto',
-            overflowY: 'auto',
-            backgroundColor: 'rgba(13, 17, 24, 0.95)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(255, 77, 21, 0.4)',
-            borderRadius: '16px',
-            padding: 'clamp(14px, 2.5vw, 24px)',
             boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 77, 21, 0.25)',
-            zIndex: 40,
-            animation: 'slideUp 0.3s ease-out',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
@@ -4665,56 +4609,37 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          BOTTOM-RIGHT ACTION CONTROLS: [Show Info Panel] [Inquire]
+          UNIFIED ACTION CONTROLS: [Studio Room View] [Show Info Panel] [View Button] [Inquire]
+          Responsive for all gadgets: stacks vertically on mobile, horizontal row on desktop/tablet.
+          Buttons elapse when not applicable, with Inquire as the constant anchor.
       ───────────────────────────────────────────────────────────── */}
       {!loading && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '24px',
-            right: '28px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            zIndex: 45,
-          }}
-        >
-          {/* 1. Show Info Panel (in bottom-right corner, placed before the Inquire button) */}
+        <div className="studio-bottom-actions">
+          {/* 1. Studio Room View (Present when zoomed into any station; elapses in room view) */}
+          {activeStation !== 'room' && (
+            <button
+              onClick={() => goToStation('room')}
+              className="studio-action-btn studio-btn-room"
+              title="Return to Studio Room View"
+            >
+              <Compass size={14} color="#ff7728" />
+              <span>Studio Room View</span>
+            </button>
+          )}
+
+          {/* 2. Show Info Panel (Present when station panel is dismissed; elapses when panel is open or in room view) */}
           {panelDismissed && activeStation !== 'room' && (
             <button
               onClick={() => setPanelDismissed(false)}
-              style={{
-                backgroundColor: 'rgba(15, 20, 30, 0.92)',
-                border: '1px solid #ff4d15',
-                color: '#ff8a5c',
-                padding: '10px 18px',
-                borderRadius: '100px',
-                fontSize: '12.5px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.6), 0 0 16px rgba(255, 77, 21, 0.35)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.22)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(15, 20, 30, 0.92)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
+              className="studio-action-btn studio-btn-panel"
+              title="Show Information Panel"
             >
               <Sparkles size={14} color="#ff7728" />
               <span>Show Info Panel</span>
             </button>
           )}
 
-          {/* 2. Inquire Button (rightmost in the bottom-right corner) */}
+          {/* 3. Inquire Button (Constant anchor across all views and stations) */}
           <button
             onClick={() => {
               if (onOpenInquiry) {
@@ -4723,32 +4648,8 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
                 window.location.href = 'mailto:ghayzelle.dzn@gmail.com?subject=Portfolio%20Inquiry%20-%20Ghayzelle%20Dizon';
               }
             }}
-            style={{
-              background: 'linear-gradient(135deg, #ff4d15, #ff7728)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
-              color: '#ffffff',
-              padding: '10px 20px',
-              borderRadius: '100px',
-              fontSize: '12.5px',
-              fontWeight: '800',
-              letterSpacing: '0.03em',
-              cursor: 'pointer',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              boxShadow: '0 4px 20px rgba(255, 77, 21, 0.45), 0 0 18px rgba(255, 77, 21, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-              e.currentTarget.style.boxShadow = '0 6px 24px rgba(255, 77, 21, 0.6), 0 0 24px rgba(255, 77, 21, 0.45)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(255, 77, 21, 0.45), 0 0 18px rgba(255, 77, 21, 0.3)';
-            }}
+            className="studio-action-btn studio-btn-inquire"
+            title="Send an Inquiry"
           >
             <Mail size={14} color="#fff" />
             <span>Inquire</span>
@@ -5068,47 +4969,6 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
         </div>
       )}
 
-      {/* Return to Room View Pill (Visible when zoomed into any station) */}
-      {!loading && activeStation !== 'room' && (
-        <button
-          onClick={() => goToStation('room')}
-          style={{
-            position: 'absolute',
-            bottom: '24px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '10px 22px',
-            borderRadius: '100px',
-            border: '1px solid #ff4d15',
-            backgroundColor: 'rgba(14, 18, 25, 0.92)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            color: '#ffffff',
-            fontSize: '12.5px',
-            fontWeight: '700',
-            letterSpacing: '0.04em',
-            cursor: 'pointer',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 77, 21, 0.35)',
-            zIndex: 35,
-            transition: 'all 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateX(-50%) scale(1.05)';
-            e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.28)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
-            e.currentTarget.style.backgroundColor = 'rgba(14, 18, 25, 0.92)';
-          }}
-        >
-          <Compass size={15} color="#ff7728" />
-          <span>← Studio Room View</span>
-        </button>
-      )}
-
       <style>{`
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(20px); }
@@ -5126,6 +4986,132 @@ export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused =
         }
         [id^="callout-halo-"] {
           animation: subtleHaloPulse 2.8s ease-in-out infinite;
+        }
+
+        /* ── Unified Responsive Studio Action Buttons ── */
+        .studio-bottom-actions {
+          position: absolute;
+          bottom: 24px;
+          right: 28px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 50;
+          pointer-events: auto;
+        }
+        .studio-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 18px;
+          border-radius: 100px;
+          font-size: 12.5px;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          cursor: pointer;
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+          white-space: nowrap;
+          text-decoration: none;
+          box-sizing: border-box;
+          user-select: none;
+        }
+        .studio-btn-room {
+          background-color: rgba(14, 18, 25, 0.92);
+          border: 1px solid #ff4d15;
+          color: #ffffff;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6), 0 0 14px rgba(255, 77, 21, 0.3);
+        }
+        .studio-btn-room:hover {
+          background-color: rgba(255, 77, 21, 0.24);
+          transform: translateY(-2px);
+        }
+        .studio-btn-panel {
+          background-color: rgba(15, 20, 30, 0.92);
+          border: 1px solid rgba(255, 120, 60, 0.5);
+          color: #ff9966;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+        }
+        .studio-btn-panel:hover {
+          background-color: rgba(255, 120, 60, 0.22);
+          transform: translateY(-2px);
+        }
+        .studio-btn-inquire {
+          background: linear-gradient(135deg, #ff4d15, #ff7728);
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          color: #ffffff;
+          font-weight: 800;
+          box-shadow: 0 4px 20px rgba(255, 77, 21, 0.45), 0 0 16px rgba(255, 77, 21, 0.3);
+        }
+        .studio-btn-inquire:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 6px 24px rgba(255, 77, 21, 0.6), 0 0 24px rgba(255, 77, 21, 0.45);
+        }
+
+        /* ── Station Information Panels & Mobile Bottom Clearance ── */
+        .station-info-panel {
+          position: absolute;
+          bottom: clamp(92px, 12vh, 114px);
+          right: clamp(14px, 3vw, 36px);
+          left: clamp(14px, 3vw, auto);
+          max-height: min(72vh, calc(100vh - 170px));
+          margin: 0 auto;
+          overflow-y: auto;
+          background-color: rgba(13, 17, 24, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-radius: 16px;
+          padding: clamp(14px, 2.5vw, 24px);
+          z-index: 40;
+          animation: slideUp 0.3s ease-out;
+        }
+
+        /* Mobile View (Phones <= 640px) - Stack vertically, aligned right */
+        @media (max-width: 640px) {
+          .station-info-panel {
+            bottom: 118px !important;
+            left: 12px !important;
+            right: 12px !important;
+            width: calc(100vw - 24px) !important;
+            max-height: calc(100vh - 195px) !important;
+            padding: 14px !important;
+          }
+          .studio-bottom-actions {
+            bottom: 14px !important;
+            right: 14px !important;
+            flex-direction: column-reverse !important;
+            align-items: flex-end !important;
+            gap: 7px !important;
+            max-width: calc(100vw - 28px) !important;
+          }
+          .studio-action-btn {
+            padding: 8px 14px !important;
+            font-size: 11.5px !important;
+            min-height: 38px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75) !important;
+          }
+        }
+
+        /* Landscape Mobile Proportions (Short screens <= 520px height) */
+        @media (max-height: 520px) {
+          .station-info-panel {
+            bottom: 56px !important;
+            max-height: calc(100vh - 110px) !important;
+            padding: 10px 14px !important;
+          }
+          .studio-bottom-actions {
+            bottom: 8px !important;
+            right: 12px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 6px !important;
+          }
+          .studio-action-btn {
+            padding: 6px 11px !important;
+            font-size: 11px !important;
+            min-height: 30px !important;
+          }
         }
       `}</style>
     </div>

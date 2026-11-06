@@ -149,50 +149,29 @@ html, body {
   animation-delay: 0.3s;
 }
 
-/* Responsive Hero Main Left Margin */
+/* Responsive Hero Main Left Margin - Always maintaining generous breathing room from the SVG pull string */
 .hero-main-container {
-  margin-left: 100px;
+  margin-left: clamp(160px, 14vw, 220px);
 }
 
 @media (max-width: 1366px) {
   .hero-main-container {
-    margin-left: clamp(40px, 6vw, 100px);
+    margin-left: clamp(150px, 13vw, 190px);
   }
 }
 
 @media (max-width: 900px) {
   .hero-main-container {
-    margin-left: clamp(20px, 4vw, 40px);
+    margin-left: clamp(140px, 15vw, 170px);
   }
 }
 
-/* Atmospheric Warm Ambient Hero Glow when window light is on */
-.hero-light-glow {
-  top: 12%;
-  left: 8%;
-  width: min(850px, 90vw);
-  height: 680px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(255, 125, 30, 0.16) 0%, rgba(255, 75, 20, 0.05) 45%, transparent 70%);
-}
-
-@media (max-width: 768px) {
-  .hero-light-glow {
-    top: 18%;
-    left: auto;
-    right: 0%;
-    width: 100vw;
-    height: 540px;
-    background: radial-gradient(ellipse at 75% 45%, rgba(255, 130, 30, 0.22) 0%, rgba(255, 75, 20, 0.08) 50%, transparent 75%);
-  }
-}
-
-/* Mobile Portrait Mode: Right-align text and 3D button to give clear breathing space for the hanging pull chain */
+/* Mobile Portrait Mode: Position below the lit studio window and right-align text and 3D button */
 @media (max-width: 768px), (max-height: 520px) and (orientation: landscape) {
   .hero-main-container {
     margin-left: auto !important;
     margin-right: 0 !important;
-    padding-left: clamp(65px, 22vw, 120px) !important;
+    padding-left: clamp(95px, 26vw, 140px) !important;
     padding-right: 18px !important;
     text-align: right !important;
     align-items: flex-end !important;
@@ -219,6 +198,14 @@ html, body {
   .hero-main-container .hero-actions {
     justify-content: flex-end !important;
     width: 100% !important;
+  }
+}
+
+/* Portrait Mobile Breathing Room: Keeps the lit room window cleanly visible above the hero text */
+@media (max-width: 768px) and (orientation: portrait) {
+  .hero-main-container {
+    justify-content: flex-end !important;
+    padding-bottom: clamp(18px, 4.5vh, 44px) !important;
   }
 }
 
