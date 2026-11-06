@@ -156,21 +156,21 @@ export default function App() {
       let gradY2 = 0;
 
       if (isMobileView) {
-        // Mobile / Portrait / Tablet: Window is above or horizontally overlapping.
-        // The beam emanates directly from inside the lit room window (aperture and sill)
-        // and fans out downward, bathing the hero container from GHAYZELLE DIZON (top) down to the button (bottom).
-        const roomTopY = winTopLeft.y + wHeight * 0.10;
-        primaryPoints = `${winTopLeft.x},${roomTopY} ${winTopRight.x},${roomTopY} ${textRight},${targetTopY} ${textRight},${targetBotY} ${textLeft},${targetBotY} ${textLeft},${targetTopY}`;
-        softPoints = `${winTopLeft.x - 16},${roomTopY - 10} ${winTopRight.x + 16},${roomTopY - 10} ${textRight + 26},${targetTopY - 8} ${textRight + 26},${targetBotY + 24} ${textLeft - 26},${targetBotY + 24} ${textLeft - 26},${targetTopY - 8}`;
+        // Mobile / Portrait / Tablet: Window is above the hero container.
+        // The beam emanates cleanly from the lower window sill/aperture and fans outward
+        // and downward as a true volumetric light cone, bathing the hero container
+        // from right below the window down past the 3D Studio button, perfectly aligned.
+        const sillY = Math.max(wTop + wHeight * 0.65, winSillLeft.y);
+        const beamLeft = Math.max(55, textLeft - 10);
+        const beamRight = Math.min(cRect.width - 12, textRight + 12);
+
+        primaryPoints = `${winSillLeft.x},${sillY} ${winSillRight.x},${sillY} ${beamRight},${targetBotY} ${beamLeft},${targetBotY}`;
+        softPoints = `${winSillLeft.x - 8},${sillY - 2} ${winSillRight.x + 8},${sillY - 2} ${beamRight + 16},${targetBotY + 16} ${beamLeft - 14},${targetBotY + 16}`;
 
         gradX1 = winCenterX;
-        gradY1 = roomTopY;
-        const dx = targetCenterX - gradX1;
-        const dy = targetCenterY - gradY1;
-        const dist = Math.hypot(dx, dy) || 1;
-        const dirX = dx / dist;
-        gradX2 = targetCenterX + dirX * 30;
-        gradY2 = targetBotY + 40;
+        gradY1 = sillY;
+        gradX2 = (beamLeft + beamRight) / 2;
+        gradY2 = targetBotY + 25;
       } else {
         // Desktop: Window is to the right of the hero text.
         // The beam streams diagonally leftward from inside the lit room window onto the hero container,
@@ -197,6 +197,7 @@ export default function App() {
         winHeight: wHeight,
         viewW: cRect.width,
         viewH: cRect.height,
+        isMobile: isMobileView,
       });
     };
 
@@ -680,10 +681,10 @@ export default function App() {
               cy="50%"
               r="50%"
             >
-              <stop offset="0%" stopColor="#fff2a8" stopOpacity="0.55" />
-              <stop offset="35%" stopColor="#ffb038" stopOpacity="0.32" />
-              <stop offset="70%" stopColor="#ff7018" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#ff4000" stopOpacity="0" />
+              <stop offset="0%" stopColor="#ffe082" stopOpacity={beamGeometry.isMobile ? "0.45" : "0.55"} />
+              <stop offset="35%" stopColor="#ff9a28" stopOpacity={beamGeometry.isMobile ? "0.26" : "0.32"} />
+              <stop offset="70%" stopColor="#ff6010" stopOpacity={beamGeometry.isMobile ? "0.09" : "0.12"} />
+              <stop offset="100%" stopColor="#ff3300" stopOpacity="0" />
             </radialGradient>
             <linearGradient
               id="volumetricHeroBeam"
@@ -692,11 +693,11 @@ export default function App() {
               x2={`${(beamGeometry.gradX2 / beamGeometry.viewW) * 100}%`}
               y2={`${(beamGeometry.gradY2 / beamGeometry.viewH) * 100}%`}
             >
-              <stop offset="0%" stopColor="#ffc255" stopOpacity="0.45" />
-              <stop offset="18%" stopColor="#ff9526" stopOpacity="0.30" />
-              <stop offset="45%" stopColor="#ff6c14" stopOpacity="0.18" />
-              <stop offset="75%" stopColor="#ff4c08" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#ff3300" stopOpacity="0" />
+              <stop offset="0%" stopColor="#ffb038" stopOpacity={beamGeometry.isMobile ? "0.38" : "0.45"} />
+              <stop offset="22%" stopColor="#ff8522" stopOpacity={beamGeometry.isMobile ? "0.26" : "0.30"} />
+              <stop offset="55%" stopColor="#ff5510" stopOpacity={beamGeometry.isMobile ? "0.14" : "0.18"} />
+              <stop offset="80%" stopColor="#ff3a05" stopOpacity={beamGeometry.isMobile ? "0.06" : "0.08"} />
+              <stop offset="100%" stopColor="#e62e00" stopOpacity="0" />
             </linearGradient>
             <linearGradient
               id="softSpillBeam"
@@ -705,16 +706,16 @@ export default function App() {
               x2={`${(beamGeometry.gradX2 / beamGeometry.viewW) * 100}%`}
               y2={`${(beamGeometry.gradY2 / beamGeometry.viewH) * 100}%`}
             >
-              <stop offset="0%" stopColor="#ffd478" stopOpacity="0.22" />
-              <stop offset="30%" stopColor="#ff8c20" stopOpacity="0.12" />
-              <stop offset="70%" stopColor="#ff5510" stopOpacity="0.04" />
-              <stop offset="100%" stopColor="#ff3300" stopOpacity="0" />
+              <stop offset="0%" stopColor="#ffd070" stopOpacity={beamGeometry.isMobile ? "0.18" : "0.22"} />
+              <stop offset="30%" stopColor="#ff8018" stopOpacity={beamGeometry.isMobile ? "0.10" : "0.12"} />
+              <stop offset="70%" stopColor="#ff4d08" stopOpacity={beamGeometry.isMobile ? "0.03" : "0.04"} />
+              <stop offset="100%" stopColor="#cc2800" stopOpacity="0" />
             </linearGradient>
             <filter id="beamBlur" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="22" />
+              <feGaussianBlur stdDeviation={beamGeometry.isMobile ? "13" : "22"} />
             </filter>
             <filter id="softSpillBlur" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="38" />
+              <feGaussianBlur stdDeviation={beamGeometry.isMobile ? "22" : "38"} />
             </filter>
           </defs>
 
@@ -722,8 +723,8 @@ export default function App() {
           <ellipse
             cx={beamGeometry.winCenterX}
             cy={beamGeometry.winCenterY}
-            rx={beamGeometry.winWidth * 0.58}
-            ry={beamGeometry.winHeight * 0.52}
+            rx={beamGeometry.winWidth * (beamGeometry.isMobile ? 0.42 : 0.58)}
+            ry={beamGeometry.winHeight * (beamGeometry.isMobile ? 0.36 : 0.52)}
             fill="url(#roomApertureGlow)"
             filter="url(#beamBlur)"
           />
