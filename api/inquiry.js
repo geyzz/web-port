@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         sender: {
           name: `${name} (via Gaze.d Portfolio)`,
-          email: 'ghayzelle.dzn@gmail.com',
+          email: 'ghayzelled@gmail.com',
         },
         to: [
           {

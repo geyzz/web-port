@@ -3759,6 +3759,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
     setEmailError('');
     setIsSubmitting(true);
 
+    const senderEmail = 'ghayzelled@gmail.com';
     const targetEmail = 'ghayzelle.dzn@gmail.com';
     const emailSubject = `[IMPORTANT INQUIRY] ${formData.projectType} commission from ${formData.name}`;
 
@@ -3812,7 +3813,7 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
         body: JSON.stringify({
           sender: {
             name: `${formData.name} (via Gaze.d Portfolio)`,
-            email: targetEmail,
+            email: senderEmail,
           },
           to: [
             {

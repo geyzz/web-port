@@ -131,6 +131,7 @@ export default function App() {
     setEmailError('');
     setIsSubmitting(true);
 
+    const senderEmail = 'ghayzelled@gmail.com';
     const targetEmail = 'ghayzelle.dzn@gmail.com';
     const emailSubject = `[IMPORTANT INQUIRY] Portfolio Inquiry from ${formData.name}`;
 
@@ -180,7 +181,7 @@ export default function App() {
         body: JSON.stringify({
           sender: {
             name: `${formData.name} (via Gaze.d Portfolio)`,
-            email: targetEmail,
+            email: senderEmail,
           },
           to: [
             {
