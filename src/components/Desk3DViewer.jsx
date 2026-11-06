@@ -1971,7 +1971,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                   if (z < -0.1) {
                     const x = posAttr.getX(i);
                     const y = posAttr.getY(i);
-                    const u = (y + 1) * 0.5;
+                    const u = (1 - y) * 0.5;
                     const v = (x + 1) * 0.5;
                     uvAttr.setXY(i, u, v);
                   } else {
