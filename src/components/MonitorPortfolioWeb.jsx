@@ -3783,8 +3783,10 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Submission status: ${response.status}`);
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || result.success === 'false' || result.success === false) {
+        throw new Error(result.message || `Submission status: ${response.status}`);
       }
 
       setFormSubmitted(true);
@@ -3793,13 +3795,44 @@ export default function MonitorPortfolioWeb({ onBackTo3D = null }) {
         setFormSubmitted(false);
       }, 5500);
     } catch (err) {
-      console.warn('FormSubmit network notice, falling back to direct email protocol:', err);
-      // Fallback: Direct mailto trigger so no inquiry is ever lost
-      const mailtoBody = `Name: ${formData.name}\nEmail: ${formData.email}\nProject Discipline: ${formData.projectType}\n\nMessage:\n${formData.message}`;
-      const mailtoUrl = `mailto:${targetEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(mailtoBody)}`;
-      window.location.href = mailtoUrl;
+      console.warn('FormSubmit AJAX notice, triggering standard FormSubmit POST for activation/delivery:', err);
+      try {
+        const tempForm = document.createElement('form');
+        tempForm.method = 'POST';
+        tempForm.action = `https://formsubmit.co/${targetEmail}`;
+        tempForm.target = '_blank';
+        tempForm.style.display = 'none';
+
+        const fields = {
+          Name: formData.name,
+          Email: formData.email,
+          'Project Discipline': formData.projectType,
+          Message: formData.message,
+          _subject: emailSubject,
+          _replyto: formData.email,
+          _template: 'table',
+          _captcha: 'false',
+        };
+
+        Object.entries(fields).forEach(([key, val]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = val;
+          tempForm.appendChild(input);
+        });
+
+        document.body.appendChild(tempForm);
+        tempForm.submit();
+        document.body.removeChild(tempForm);
+      } catch (fallbackErr) {
+        const mailtoBody = `Name: ${formData.name}\nEmail: ${formData.email}\nProject Discipline: ${formData.projectType}\n\nMessage:\n${formData.message}`;
+        const mailtoUrl = `mailto:${targetEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+        window.location.href = mailtoUrl;
+      }
 
       setFormSubmitted(true);
+      setFormData({ name: '', email: '', projectType: 'UI/UX Design', message: '' });
       setTimeout(() => {
         setFormSubmitted(false);
       }, 5500);
