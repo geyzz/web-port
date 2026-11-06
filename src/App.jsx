@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import Desk3DViewer from './components/Desk3DViewer';
 import FourPanelWindow from './components/FourPanelWindow';
-import MonitorPortfolioWeb from './components/MonitorPortfolioWeb';
 import GazedLogo from './components/GazedLogo';
 
 export default function App() {
@@ -26,7 +25,6 @@ export default function App() {
   const [lightOn, setLightOn] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deskViewerOpen, setDeskViewerOpen] = useState(false);
-  const [portfolioWebOpen, setPortfolioWebOpen] = useState(false);
   const [pullPos, setPullPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [stringHovered, setStringHovered] = useState(false);
@@ -68,7 +66,13 @@ export default function App() {
   }, [mobileMenuOpen]);
 
   // Contact Form State (Matching Web Portfolio Format)
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    projectType: 'Web Development',
+    otherProjectType: '',
+    message: '',
+  });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailError, setEmailError] = useState('');
@@ -131,9 +135,14 @@ export default function App() {
     setEmailError('');
     setIsSubmitting(true);
 
+    const effectiveProjectType =
+      formData.projectType === 'Other' && formData.otherProjectType.trim()
+        ? `Other: ${formData.otherProjectType.trim()}`
+        : formData.projectType;
+
     const senderEmail = 'ghayzelled@gmail.com';
     const targetEmail = 'ghayzelle.dzn@gmail.com';
-    const emailSubject = `[IMPORTANT INQUIRY] Portfolio Inquiry from ${formData.name}`;
+    const emailSubject = `[IMPORTANT INQUIRY - ${effectiveProjectType}] Portfolio Inquiry from ${formData.name}`;
 
     const brevoKey =
       import.meta.env.VITE_BREVO_API_KEY ||
@@ -161,6 +170,10 @@ export default function App() {
           <tr>
             <td style="padding: 8px 0; font-weight: bold; color: #475569;">Reply-To Email:</td>
             <td style="padding: 8px 0;"><a href="mailto:${formData.email}" style="color: #2563eb;">${formData.email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; font-weight: bold; color: #475569;">Project Type:</td>
+            <td style="padding: 8px 0; color: #ff4d15; font-weight: bold;">${effectiveProjectType}</td>
           </tr>
         </table>
         <div style="margin-top: 20px; padding: 16px; background-color: #f8fafc; border-left: 4px solid #ff4d15; border-radius: 6px;">
@@ -215,7 +228,13 @@ export default function App() {
       console.warn('Brevo inquiry notice:', err);
     } finally {
       setFormSubmitted(true);
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({
+        name: '',
+        email: '',
+        projectType: 'Web Development',
+        otherProjectType: '',
+        message: '',
+      });
       setTimeout(() => {
         setFormSubmitted(false);
       }, 5500);
@@ -824,241 +843,6 @@ export default function App() {
           })()}
         </div>
 
-        {/* Mobile Navigation Menu Button (Right Aligned on Header) */}
-        {isMobileScreen && (
-          <div ref={mobileMenuRef} style={{ position: 'relative', zIndex: 65, marginLeft: 'auto' }}>
-            <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              aria-label="Toggle Navigation Menu"
-              style={{
-                width: '38px',
-                height: '38px',
-                padding: 0,
-                backgroundColor: mobileMenuOpen ? 'rgba(255, 77, 21, 0.25)' : 'rgba(18, 22, 32, 0.65)',
-                border: mobileMenuOpen ? '1.5px solid #ff4d15' : '1.5px solid rgba(255, 255, 255, 0.16)',
-                borderRadius: '12px',
-                color: '#ffffff',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
-                transition: 'all 0.2s ease',
-                flexShrink: 0,
-              }}
-            >
-              {mobileMenuOpen ? <X size={18} color="#ff7728" /> : <Menu size={18} color="#ff7728" />}
-            </button>
-
-            {/* Mobile Dropdown Menu with Inquiry, Web Portfolio & 3D Studio (Anchored to Right) */}
-            {mobileMenuOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  left: 'auto',
-                  zIndex: 100,
-                  minWidth: '185px',
-                  backgroundColor: 'rgba(16, 20, 28, 0.95)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: '14px',
-                  padding: '8px',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(255, 77, 21, 0.15)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px',
-                  animation: 'fadeInMenu 0.18s ease-out',
-                }}
-              >
-                {/* Inquiry */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setModalOpen(true);
-                  }}
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '9px',
-                    color: '#ffffff',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    textAlign: 'left',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
-                  <Mail size={15} color="#ff7728" />
-                  <span>Inquiry</span>
-                </button>
-
-                {/* Web Portfolio */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setPortfolioWebOpen(true);
-                  }}
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                    border: '1px solid rgba(56, 189, 248, 0.35)',
-                    borderRadius: '9px',
-                    color: '#38bdf8',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    textAlign: 'left',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
-                  <Folder size={15} />
-                  <span>Web Portfolio ↗</span>
-                </button>
-
-                {/* 3D Studio */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setDeskViewerOpen(true);
-                  }}
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(255, 77, 21, 0.12)',
-                    border: '1px solid rgba(255, 77, 21, 0.35)',
-                    borderRadius: '9px',
-                    color: '#ff8a5c',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    textAlign: 'left',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
-                  <Box size={15} />
-                  <span>3D Studio ↗</span>
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Desktop Navigation */}
-        {!isMobileScreen && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px, 1.5vw, 10px)', flexWrap: 'nowrap' }}>
-            {/* Inquiry Button */}
-            <button
-              onClick={() => setModalOpen(true)}
-              style={{
-                padding: '6px clamp(10px, 1.8vw, 16px)',
-                backgroundColor: 'rgba(25, 30, 40, 0.75)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '100px',
-                color: '#e0e4ec',
-                fontSize: 'clamp(11px, 1.2vw, 12px)',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                backdropFilter: 'blur(12px)',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 77, 21, 0.5)';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                e.currentTarget.style.color = '#e0e4ec';
-                e.currentTarget.style.backgroundColor = 'rgba(25, 30, 40, 0.75)';
-              }}
-            >
-              <Mail size={13} color="#ff7728" />
-              <span style={{ display: 'inline' }}>Inquiry</span>
-            </button>
-
-            {/* Web Portfolio Preview Button */}
-            <button
-              onClick={() => setPortfolioWebOpen(true)}
-              style={{
-                padding: '6px clamp(10px, 1.8vw, 16px)',
-                backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                border: '1px solid rgba(56, 189, 248, 0.45)',
-                borderRadius: '100px',
-                color: '#38bdf8',
-                fontSize: 'clamp(11px, 1.2vw, 12px)',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                backdropFilter: 'blur(10px)',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#0284c7';
-                e.currentTarget.style.color = '#ffffff';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.15)';
-                e.currentTarget.style.color = '#38bdf8';
-              }}
-            >
-              <Folder size={13} />
-              <span>Web Portfolio ↗</span>
-            </button>
-
-            {/* 3D Studio Entrance */}
-            <button
-              onClick={() => setDeskViewerOpen(true)}
-              style={{
-                padding: '6px clamp(10px, 1.8vw, 16px)',
-                backgroundColor: 'rgba(255, 77, 21, 0.15)',
-                border: '1px solid rgba(255, 77, 21, 0.45)',
-                borderRadius: '100px',
-                color: '#ff8a5c',
-                fontSize: 'clamp(11px, 1.2vw, 12px)',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                backdropFilter: 'blur(10px)',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#ff4d15';
-                e.currentTarget.style.color = '#ffffff';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.15)';
-                e.currentTarget.style.color = '#ff8a5c';
-              }}
-            >
-              <Box size={13} />
-              <span>3D Studio ↗</span>
-            </button>
-          </div>
-        )}
       </header>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -1298,7 +1082,7 @@ export default function App() {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 100,
+            zIndex: 999,
             backgroundColor: 'rgba(0, 0, 0, 0.82)',
             backdropFilter: 'blur(12px)',
             display: 'flex',
@@ -1449,6 +1233,96 @@ export default function App() {
                 )}
               </div>
 
+              {/* Project Type Radio Selection */}
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#94a3b8', marginBottom: '8px' }}>
+                  Project Type <span style={{ color: '#ff4d15' }}>*</span>
+                </label>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
+                    gap: '8px',
+                    marginBottom: '8px',
+                  }}
+                >
+                  {[
+                    { id: 'Web Development', label: 'Web Development' },
+                    { id: 'Mobile App', label: 'Mobile App' },
+                    { id: 'UI/UX & 3D Design', label: 'UI/UX & 3D Design' },
+                    { id: 'Front-End Role', label: 'Front-End Role' },
+                    { id: 'Other', label: 'Other' },
+                  ].map((item) => {
+                    const isSelected = formData.projectType === item.id;
+                    return (
+                      <label
+                        key={item.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '9px 12px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          backgroundColor: isSelected ? 'rgba(255, 77, 21, 0.16)' : 'rgba(255, 255, 255, 0.04)',
+                          border: isSelected ? '1.5px solid #ff4d15' : '1px solid rgba(255, 255, 255, 0.1)',
+                          transition: 'all 0.2s ease',
+                          userSelect: 'none',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="projectType"
+                          value={item.id}
+                          checked={isSelected}
+                          onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
+                          style={{
+                            accentColor: '#ff4d15',
+                            cursor: 'pointer',
+                            margin: 0,
+                            width: '14px',
+                            height: '14px',
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontSize: '12px',
+                            fontWeight: isSelected ? '700' : '500',
+                            color: isSelected ? '#ffffff' : '#cbd5e1',
+                          }}
+                        >
+                          {item.label}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                {/* If "Other" selected, show custom project type input */}
+                {formData.projectType === 'Other' && (
+                  <div style={{ marginTop: '8px' }}>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Please specify your project or inquiry type..."
+                      value={formData.otherProjectType}
+                      onChange={(e) => setFormData({ ...formData, otherProjectType: e.target.value })}
+                      style={{
+                        width: '100%',
+                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                        border: '1.5px solid #ff4d15',
+                        borderRadius: '8px',
+                        padding: '10px 12px',
+                        color: '#ffffff',
+                        fontSize: '12.5px',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Inquiry Message */}
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#94a3b8', marginBottom: '6px' }}>
@@ -1569,28 +1443,10 @@ export default function App() {
           7. INTERACTIVE 3D DESK VIEWER (desk.glb)
       ───────────────────────────────────────────────────────────── */}
       {deskViewerOpen && (
-        <div style={{ display: portfolioWebOpen ? 'none' : 'block' }}>
-          <Desk3DViewer
-            onClose={() => setDeskViewerOpen(false)}
-            onOpenPortfolioWeb={() => setPortfolioWebOpen(true)}
-            isPaused={portfolioWebOpen}
-          />
-        </div>
-      )}
-
-      {/* ─────────────────────────────────────────────────────────────
-          8. STANDALONE ONE-PAGE WEB PORTFOLIO (FOR MONITOR INTEGRATION)
-      ───────────────────────────────────────────────────────────── */}
-      {portfolioWebOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, overflowY: 'auto', backgroundColor: '#ececeb' }}>
-          <MonitorPortfolioWeb
-            onBackTo3D={() => {
-              // Directs to landing page as requested
-              setPortfolioWebOpen(false);
-              setDeskViewerOpen(false);
-            }}
-          />
-        </div>
+        <Desk3DViewer
+          onClose={() => setDeskViewerOpen(false)}
+          onOpenInquiry={() => setModalOpen(true)}
+        />
       )}
 
       <style>{`

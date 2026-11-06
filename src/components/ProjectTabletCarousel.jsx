@@ -87,7 +87,7 @@ export default function ProjectTabletCarousel({
       shortDesc:
         'Campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations, schedules, and one-tap room navigation.',
       fullOverview:
-        'HAUtogo is an official university utility app engineered to eliminate missed consultations and class delays. It renders a live GPS-geofenced campus map with real-time professor room availability, automated next-class alerts, and role-based student/faculty dashboards.',
+        'HAUtogo is a campus utility app engineered to eliminate missed consultations and class delays. It renders a live GPS-geofenced campus map with real-time professor room availability, automated next-class alerts, and role-based student/faculty dashboards.',
       stack: ['Flutter', 'Dart', 'Supabase', 'flutter_map', 'geolocator', 'PostgreSQL'],
       highlights: [
         'Built campus mobile interface with OpenStreetMap integration using flutter_map and live geolocator pins.',

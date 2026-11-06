@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" width="1200" height="850">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a101f"/>
+      <stop offset="50%" stop-color="#0e172a"/>
+      <stop offset="100%" stop-color="#080c16"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="850" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Guilloche / Border Frame -->
+  <rect x="30" y="30" width="1140" height="790" rx="16" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-opacity="0.85"/>
+  <rect x="44" y="44" width="1112" height="762" rx="12" fill="none" stroke="#3b82f6" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="6,6"/>
+  <rect x="52" y="52" width="1096" height="746" rx="8" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-opacity="0.6"/>
+
+  <!-- Corner Ornaments -->
+  <g fill="none" stroke="url(#goldGrad)" stroke-width="2">
+    <path d="M 60 90 L 60 60 L 90 60" />
+    <path d="M 1140 90 L 1140 60 L 1110 60" />
+    <path d="M 60 760 L 60 790 L 90 790" />
+    <path d="M 1140 760 L 1140 790 L 1110 790" />
+  </g>
+
+  <!-- Issuer Header / Logo Area -->
+  <g transform="translate(600, 130)" text-anchor="middle">
+    <!-- freeCodeCamp Flame Symbol -->
+    <path d="M -16 -24 C -12 -38 0 -48 4 -52 C 4 -52 14 -42 12 -30 C 18 -26 24 -16 22 -6 C 20 8 8 18 -6 16 C -20 14 -26 -4 -16 -24 Z" fill="url(#goldGrad)"/>
+    <text y="32" font-family="'Inter', -apple-system, sans-serif" font-size="28" font-weight="900" fill="#f8fafc" letter-spacing="4">
+      freeCodeCamp (())
+    </text>
+    <text y="58" font-family="'Inter', -apple-system, sans-serif" font-size="13" font-weight="700" fill="#93c5fd" letter-spacing="6">
+      VERIFIED DEVELOPER CERTIFICATION
+    </text>
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="300" y1="225" x2="900" y2="225" stroke="url(#goldGrad)" stroke-width="2" stroke-opacity="0.7"/>
+
+  <!-- Certificate Title -->
+  <text x="600" y="275" text-anchor="middle" font-family="'Inter', sans-serif" font-size="16" font-weight="600" fill="#94a3b8" letter-spacing="3">
+    THIS OFFICIALLY CERTIFIES THAT
+  </text>
+
+  <!-- Recipient Name -->
+  <text x="600" y="355" text-anchor="middle" font-family="'Cinzel', 'Georgia', serif" font-size="52" font-weight="800" fill="#ffffff" letter-spacing="2" filter="url(#shadow)">
+    GHAYZELLE DIZON
+  </text>
+  <line x1="360" y1="380" x2="840" y2="380" stroke="url(#goldGrad)" stroke-width="2"/>
+
+  <!-- Description Text -->
+  <text x="600" y="425" text-anchor="middle" font-family="'Inter', sans-serif" font-size="15" font-weight="500" fill="#cbd5e1" letter-spacing="1">
+    has successfully completed the developer curriculum and earned the credential for
+  </text>
+
+  <!-- Major Credential Title -->
+  <rect x="250" y="455" width="700" height="66" rx="12" fill="#1e293b" fill-opacity="0.85" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="600" y="498" text-anchor="middle" font-family="'Inter', sans-serif" font-size="26" font-weight="900" fill="#60a5fa" letter-spacing="1">
+    Responsive Web Design
+  </text>
+
+  <text x="600" y="560" text-anchor="middle" font-family="'Inter', sans-serif" font-size="14" font-weight="500" fill="#94a3b8">
+    Demonstrating proficiency in HTML5, CSS3, Flexbox, CSS Grid, Responsive Design &amp; Accessibility
+  </text>
+  <text x="600" y="586" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#38bdf8">
+    300 Hours of Verified Projects &amp; Coursework • September 2024
+  </text>
+
+  <!-- Gold Foil Seal Badge -->
+  <g transform="translate(600, 690)">
+    <circle r="48" fill="#1e293b" stroke="url(#goldGrad)" stroke-width="3"/>
+    <circle r="40" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <!-- Star Ribbon -->
+    <path d="M -18 36 L -24 64 L 0 54 L 24 64 L 18 36 Z" fill="url(#goldGrad)" opacity="0.85"/>
+    <text y="-8" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#fef08a" letter-spacing="1.5">VERIFIED</text>
+    <text y="8" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="900" fill="#ffffff">★ 300h ★</text>
+    <text y="22" text-anchor="middle" font-family="'Inter', sans-serif" font-size="8" font-weight="700" fill="#93c5fd">FCC-DEV</text>
+  </g>
+
+  <!-- Signature 1 (Left) -->
+  <g transform="translate(220, 690)">
+    <!-- Signature Graphic -->
+    <path d="M 0 0 Q 30 -22 65 -5 T 140 -12 T 200 -2" fill="none" stroke="#93c5fd" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="0" y1="12" x2="220" y2="12" stroke="#64748b" stroke-width="1"/>
+    <text x="110" y="32" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">Quincy Larson</text>
+    <text x="110" y="48" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" font-weight="500" fill="#64748b">Executive Director, freeCodeCamp</text>
+  </g>
+
+  <!-- Signature 2 (Right) -->
+  <g transform="translate(760, 690)">
+    <!-- Code / Hash / Seal Details -->
+    <path d="M 0 -6 Q 40 -26 80 -4 T 150 -16 T 220 0" fill="none" stroke="#fcd34d" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="0" y1="12" x2="220" y2="12" stroke="#64748b" stroke-width="1"/>
+    <text x="110" y="32" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">Academic Board</text>
+    <text x="110" y="48" text-anchor="middle" font-family="'Inter', sans-serif" font-size="10" font-weight="500" fill="#64748b">Verification ID: FCC-RWD-2024-GD</text>
+  </g>
+
+  <!-- Bottom Verification URL -->
+  <text x="600" y="805" text-anchor="middle" font-family="'SF Mono', Menlo, Consolas, monospace" font-size="10" fill="#64748b">
+    Authenticity verified at freecodecamp.org/certification/ghayzelle/responsive-web-design
+  </text>
+</svg>

@@ -23,6 +23,7 @@ import {
   Briefcase,
   GraduationCap,
   Award,
+  ChevronLeft,
   ChevronRight,
   Maximize2,
   Mail,
@@ -47,7 +48,7 @@ const ROOM_STATIONS = {
   },
   techstack: {
     id: 'techstack',
-    name: 'Tech Stack',
+    name: 'Technical Skills',
     icon: Laptop,
     camPos: new THREE.Vector3(-2.056, 6.044, -1.233),
     targetPos: new THREE.Vector3(-2.507, 5.876, -1.591),
@@ -65,9 +66,9 @@ const ROOM_STATIONS = {
     id: 'resume',
     name: 'Resume',
     icon: FileText,
-    camPos: new THREE.Vector3(-0.83, 6.55, -1.25),
+    camPos: new THREE.Vector3(-0.828, 6.42, -1.30),
     targetPos: new THREE.Vector3(-0.827, 5.604, -1.579),
-    fov: 48,
+    fov: 45,
   },
 };
 
@@ -76,7 +77,7 @@ const STATION_LIMITS = {
   portfolio: { minDistance: 0.7, maxDistance: 1.9 },
   techstack: { minDistance: 0.35, maxDistance: 0.95 },
   aboutme: { minDistance: 0.4, maxDistance: 1.1 },
-  resume: { minDistance: 0.5, maxDistance: 1.4 },
+  resume: { minDistance: 0.35, maxDistance: 1.4 },
 };
 
 const CALLOUT_CONFIG = [
@@ -91,7 +92,7 @@ const CALLOUT_CONFIG = [
   },
   {
     id: 'techstack',
-    name: 'Tech Stack',
+    name: 'Technical Skills',
     icon: Laptop,
     iconColor: '#60a5fa',
     glowColor: 'rgba(96, 165, 250, 0.65)',
@@ -118,6 +119,140 @@ const CALLOUT_CONFIG = [
   },
 ];
 
+const PORTFOLIO_PROJECTS = [
+  {
+    id: 'plan_ed',
+    title: 'Plan_.ed',
+    subtitle: 'Shopping & Errand Planner App',
+    category: 'Mobile Application • Android APK',
+    role: 'Sole Developer & UI/UX Designer',
+    tag: 'Personal Project',
+    accent: '#d6b349',
+    accentGlow: 'rgba(214, 179, 73, 0.35)',
+    stack: ['React Native', 'Expo', 'Supabase', 'PostgreSQL', 'AsyncStorage', 'EAS Build'],
+    desc: 'Designed and built a mobile shopping planner featuring custom light/dark themes, collapsible headers, and an interactive errand calendar with native reminder alarms.',
+    highlights: [
+      'Smart checklists with real-time mall cost calculations linked to 4 Pampanga malls',
+      'Interactive errand calendar with native reminder alarms & notifications',
+      'Dual cloud sync and offline storage via Supabase RLS and AsyncStorage',
+      'Shipped optimized standalone Android APK via EAS Build',
+    ],
+    github: 'https://github.com/geyzz/shopping-planner',
+    demo: null,
+  },
+  {
+    id: 'cj_realestate',
+    title: 'C&J Real Estate',
+    subtitle: 'Property Showcase & Management Platform',
+    category: 'Full-Stack Web Platform',
+    role: 'Full-Stack Developer & Designer',
+    tag: 'Personal Project',
+    accent: '#4F6D3A',
+    accentGlow: 'rgba(79, 109, 58, 0.35)',
+    stack: ['React', 'Vite', 'Supabase', 'PostgreSQL RLS', 'EmailJS', 'Custom CSS3'],
+    desc: 'Architected a full-stack real estate platform and session-authenticated Admin Portal with Supabase for real-time property CRUD listings, status management, and lead tracking.',
+    highlights: [
+      'Interactive showroom with dual-thumb price sliders and Philippine geographic filters',
+      'Session-authenticated Admin Portal with real-time CRUD listings and inquiry tracking',
+      'Automated client notifications and lead capture workflows using EmailJS',
+      'Fluid CSS3 Grid/Flex layouts with sub-second load times',
+    ],
+    github: 'https://github.com/geyzz/real-estate',
+    demo: null,
+  },
+  {
+    id: 'hautogo',
+    title: 'HAUtogo',
+    subtitle: 'Real-Time Faculty Tracking & Management',
+    category: 'Collaborative Mobile App',
+    role: 'Front-End & UI/UX Developer',
+    tag: 'Holy Angel University',
+    accent: '#991b1b',
+    accentGlow: 'rgba(153, 27, 27, 0.35)',
+    stack: ['Flutter', 'Dart', 'Supabase', 'flutter_map', 'geolocator'],
+    desc: 'Campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations and timetables.',
+    highlights: [
+      'Live campus geofenced GPS map with sliding panel professor locator',
+      'Role-based weekly schedules for students and faculty with next-class alerts',
+      'One-tap classroom navigation and schedule synchronizer',
+      'Cloud auth and user profile management with Supabase',
+    ],
+    github: 'https://github.com/geyzz/HAUtogo',
+    secondaryGithub: 'https://github.com/qwertyuipaas/HAUtogo',
+    demo: null,
+  },
+];
+
+const CERTIFICATES_DATA = [
+  {
+    title: 'Legacy Responsive Web Design V8',
+    issuer: 'freeCodeCamp',
+    date: 'September 18, 2024 • 300 Hours Verified',
+    skills: 'HTML5 Semantic, Modern CSS3, Flexbox, CSS Grid, Responsive Architecture, Web Accessibility',
+    badge: 'Developer Certification',
+    accent: '#3b82f6',
+    image: '/certificates/fcc-responsive-web-design.jpg',
+    url: 'https://www.freecodecamp.org/certification/ghayzelle/responsive-web-design',
+  },
+  {
+    title: 'JavaScript Essentials 1',
+    issuer: 'Cisco Networking Academy • HAU',
+    date: '19 Oct 2024 • Cert ID: ad4c3402-fdc9-4f18-9693-cfd7e8891364',
+    skills: 'ES6+ Syntax, Control Flow, Functions, Arrays, Objects, Scope, Algorithmic Logic',
+    badge: 'Cisco & JS Institute',
+    accent: '#06b6d4',
+    image: '/certificates/cisco-javascript-essentials.jpg',
+    url: 'https://www.credly.com/users/ghayzelle-dizon.c089c1d2',
+  },
+  {
+    title: 'AWS Academy Graduate - Cloud Foundations',
+    issuer: 'Amazon Web Services (AWS) Academy',
+    date: '02/26/2026 • 20 Course Hours Completed',
+    skills: 'Cloud Architecture, AWS Core Services (EC2, S3, RDS, VPC), IAM Security, Cloud Economics',
+    badge: 'AWS Academy',
+    accent: '#f59e0b',
+    image: '/certificates/aws-cloud-foundations.jpg',
+    url: 'https://www.credly.com/go/lIjcca1p',
+  },
+];
+
+const PERSONAL_STRENGTHS = [
+  {
+    num: '01',
+    title: 'Creative Thinking',
+    desc: 'Original concepts and engaging visuals in UI/UX & development.',
+  },
+  {
+    num: '02',
+    title: 'Attention to Detail',
+    desc: 'Pixel-perfect typography, color harmony, layouts, and micro-interactions.',
+  },
+  {
+    num: '03',
+    title: 'Willingness to Learn',
+    desc: 'Exploring modern tech: Blender 3D, React, Flutter, and Three.js.',
+  },
+  {
+    num: '04',
+    title: 'Problem-Solving',
+    desc: 'Methodical troubleshooting, clean algorithmic logic, and resilient architecture.',
+  },
+  {
+    num: '05',
+    title: 'Adaptability',
+    desc: 'Swiftly embracing new frameworks, tools, and diverse team workflows.',
+  },
+  {
+    num: '06',
+    title: 'Initiative & Motivation',
+    desc: 'Taking original project ideas from concept to shipped deployment.',
+  },
+  {
+    num: '07',
+    title: 'Interpersonal Communication',
+    desc: 'Active listener, open communicator, and collaborative teammate.',
+  },
+];
 
 const BOOK_PALETTE = [
   0x822f1e,
@@ -172,627 +307,897 @@ function wrapCanvasText(text, maxChars) {
   return lines;
 }
 
-// ── PORTFOLIO DISPLAY IN LANDSCAPE TABLET FORM (DIRECTLY ON MONITOR SCREEN, 0 POPUPS) ──
-function createPortfolioCarouselTexture(projectIndex = 0) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 2048;
-  canvas.height = 1024;
+// ── REAL PROJECT ASSETS CACHE & PRELOADER (LITERAL GITHUB & SHIPPED BUILDS) ──
+const PROJECT_SCREEN_ASSETS = {
+  planedHome: '/projects/planed-home.jpg',
+  planedMalls: '/projects/planed-malls.jpg',
+  planedCalendar: '/projects/planed-calendar.jpg',
+  planedBanner: '/projects/planed-banner.png',
+  cjProperty1: '/projects/cj-property1.jpg',
+  cjProperty2: '/projects/cj-property2.png',
+  cjProperty3: '/projects/cj-property3.jpg',
+  cjAboutBg: '/projects/cj-about-bg.jpg',
+  hautogoEmblem: '/projects/hautogo-4.jpg',
+  hautogoMap: '/projects/hautogo-map.jpg',
+  hautogoBuilding: '/projects/hautogo-building.jpg',
+  hautogoSchedule: '/projects/hautogo-schedule.png',
+  hautogoLogin: '/projects/hautogo-login.jpg',
+  hautogoProfile: '/projects/hautogo-profile.jpg',
+  hautogoSupabase1: '/projects/hautogo-1.png',
+  hautogoSupabase2: '/projects/hautogo-2.png',
+  hautogoSupabase3: '/projects/hautogo-3.png',
+};
+
+const CERT_SCREEN_ASSETS = {
+  fcc: '/certificates/fcc-responsive-web-design.jpg',
+  cisco: '/certificates/cisco-javascript-essentials.jpg',
+  aws: '/certificates/aws-cloud-foundations.jpg',
+};
+
+const cachedProjectScreenImages = {};
+const cachedCertScreenImages = {};
+const registeredPortfolioCanvases = [];
+let onProjectImagesLoadedListener = null;
+let onCertImagesLoadedListener = null;
+
+function preloadCertScreenImages() {
+  if (typeof window === 'undefined') return;
+  Object.entries(CERT_SCREEN_ASSETS).forEach(([key, src]) => {
+    if (!cachedCertScreenImages[key]) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = src;
+      img.onload = () => {
+        cachedCertScreenImages[key] = img;
+        if (onCertImagesLoadedListener) {
+          onCertImagesLoadedListener();
+        }
+      };
+      cachedCertScreenImages[key] = img;
+    }
+  });
+}
+
+function preloadProjectScreenImages() {
+  if (typeof window === 'undefined') return;
+  Object.entries(PROJECT_SCREEN_ASSETS).forEach(([key, src]) => {
+    if (!cachedProjectScreenImages[key]) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = src;
+      img.onload = () => {
+        cachedProjectScreenImages[key] = img;
+        if (onProjectImagesLoadedListener) {
+          onProjectImagesLoadedListener();
+        }
+      };
+      cachedProjectScreenImages[key] = img;
+    }
+  });
+}
+
+// ── LITERAL PROJECT RENDERING ON 34" CURVED ULTRAWIDE MONITOR ──
+function drawProjectScreenOnCanvas(canvas, projectIndex = 0) {
   const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
 
   const projects = [
     {
       title: 'Plan_.ed - Shopping & Errand Planner App',
-      tag: 'MOBILE APP • REACT NATIVE',
-      desc: 'Mobile shopping planner featuring custom light/dark themes, real-time mall cost calculation, and errand reminder alarms.',
-      accent: '#ff4d15',
-      accentGlow: 'rgba(255, 77, 21, 0.4)',
+      subtitle: 'Smart Shopping & Real-Time Errand Management with Alarms',
+      tag: 'MOBILE APP • REACT NATIVE & EXPO',
+      desc: 'Smart mobile shopping & errand manager featuring custom light/dark themes, collapsible headers, 4-mall live cost calculations, and native reminder alarms.',
+      accent: '#d6b349',
+      accentGlow: 'rgba(214, 179, 73, 0.4)',
+      repo: 'github.com/geyzz/shopping-planner',
     },
     {
       title: 'C&J Real Estate - Property Showcase Website',
+      subtitle: 'Luxury Estates & Central Luzon Architectural Showroom',
       tag: 'WEB APP • REACT & CSS3',
-      desc: 'Single-page real estate property website crafted with custom brand identity, hero showcase, property filters, and glassmorphic cards.',
-      accent: '#06b6d4',
-      accentGlow: 'rgba(6, 182, 212, 0.4)',
+      desc: 'Single-page real estate property website crafted with custom brand identity, trapezoid navigation, hero showcase, property filters, and glassmorphic cards.',
+      accent: '#4F6D3A',
+      accentGlow: 'rgba(79, 109, 58, 0.4)',
+      repo: 'github.com/geyzz/real-estate',
     },
     {
-      title: 'HAUtogo - Real-Time Faculty Tracking & Management',
-      tag: 'MOBILE APP • FLUTTER & DART',
-      desc: 'Campus mobile app for Holy Angel University with interactive campus map, live professor GPS locator, and next-class timetables.',
-      accent: '#a855f7',
-      accentGlow: 'rgba(168, 85, 247, 0.4)',
+      title: 'HAUtogo - University Faculty Tracking & Class Management',
+      subtitle: 'Holy Angel University Geofence & Real-Time Faculty Radar',
+      tag: 'MOBILE APP • FLUTTER, DART & SUPABASE',
+      desc: 'Campus utility app for Holy Angel University with GPS geofencing, real-time professor room availability, next-class alerts, and live Supabase telemetry.',
+      accent: '#991b1b',
+      accentGlow: 'rgba(153, 27, 27, 0.4)',
+      repo: 'github.com/geyzz/HAUtogo',
     },
   ];
 
   const cur = projects[projectIndex % projects.length];
 
-  // Deep dark workstation background with atmospheric ambient radial
-  ctx.fillStyle = '#0a0d14';
-  ctx.fillRect(0, 0, 2048, 1024);
+  // 1. Deep workstation background with ambient vignette
+  ctx.fillStyle = '#06080e';
+  ctx.fillRect(0, 0, w, h);
 
-  const radial = ctx.createRadialGradient(1024, 450, 100, 1024, 450, 800);
-  radial.addColorStop(0, cur.accent + '24');
+  const radial = ctx.createRadialGradient(1024, 460, 150, 1024, 460, 950);
+  radial.addColorStop(0, cur.accent + '28');
   radial.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = radial;
-  ctx.fillRect(0, 0, 2048, 1024);
+  ctx.fillRect(0, 0, w, h);
 
-  // Top Nav Header Bar
-  ctx.fillStyle = '#0f1420';
-  ctx.fillRect(0, 0, 2048, 64);
+  // 2. Top Workstation Header Bar (height 56)
+  ctx.fillStyle = '#0a0e18';
+  ctx.fillRect(0, 0, w, 56);
 
-  // Window dots
+  // macOS window dots
   ctx.fillStyle = '#ff5f56';
-  ctx.beginPath(); ctx.arc(36, 32, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(36, 28, 7, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#ffbd2e';
-  ctx.beginPath(); ctx.arc(60, 32, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(60, 28, 7, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#27c93f';
-  ctx.beginPath(); ctx.arc(84, 32, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(84, 28, 7, 0, Math.PI * 2); ctx.fill();
 
-  // Left header label
-  ctx.font = '600 15px -apple-system, sans-serif';
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillText('Portfolio Preview', 120, 38);
+  ctx.font = 'bold 15px "SF Mono", Menlo, Consolas, monospace';
+  ctx.fillStyle = '#f1f5f9';
+  ctx.fillText('ghayzelle@workstation: ~/portfolio-showcase', 120, 34);
 
-  // Center [ 2026 ] Toggle Bar
-  ctx.font = '900 15px -apple-system, sans-serif';
-  ctx.fillStyle = '#f8fafc';
-  ctx.fillText('[ 2026 ]', 780, 38);
-
+  // Center navigation tabs
   const tabs = [
-    { label: 'Tech Stacks', active: false, x: 880, w: 120 },
-    { label: 'Portfolio', active: true, x: 1010, w: 110 },
-    { label: 'Certification', active: false, x: 1130, w: 130 },
-    { label: 'Resume', active: false, x: 1270, w: 100 },
+    { label: 'Technical Skills', active: false, x: 920, w: 140 },
+    { label: 'Portfolio: ACTIVE', active: true, x: 1075, w: 155 },
+    { label: 'Certificates', active: false, x: 1245, w: 125 },
+    { label: 'Resume', active: false, x: 1385, w: 95 },
   ];
 
   tabs.forEach((tab) => {
     if (tab.active) {
       ctx.fillStyle = cur.accent;
       ctx.beginPath();
-      ctx.roundRect(tab.x, 15, tab.w, 34, 17);
+      ctx.roundRect(tab.x, 12, tab.w, 32, 16);
       ctx.fill();
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 13px sans-serif';
-      ctx.fillText(tab.label, tab.x + 18, 37);
+      ctx.fillText(tab.label, tab.x + 16, 33);
     } else {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
       ctx.beginPath();
-      ctx.roundRect(tab.x, 15, tab.w, 34, 17);
+      ctx.roundRect(tab.x, 12, tab.w, 32, 16);
       ctx.fill();
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#e2e8f0';
       ctx.font = '600 13px sans-serif';
-      ctx.fillText(tab.label, tab.x + 16, 37);
+      ctx.fillText(tab.label, tab.x + 16, 33);
     }
   });
 
-  // Right Header Label
-  ctx.font = '600 14px sans-serif';
-  ctx.fillStyle = '#94a3b8';
-  ctx.textAlign = 'right';
-  ctx.fillText('Landscape Tablet Showcase', 1990, 38);
-  ctx.textAlign = 'left';
+  // 3. Main Display Chassis Area
+  const tabX = 36;
+  const tabY = 70;
+  const tabW = 1976;
+  const tabH = 800;
 
-  // ── TABLET IN LANDSCAPE FORM ──
-  const tabW = 1260;
-  const tabH = 590;
-  const tabX = (2048 - tabW) / 2;
-  const tabY = 95;
-
-  // Tablet Chassis Frame
-  ctx.fillStyle = '#141824';
+  ctx.fillStyle = '#0d121d';
   ctx.strokeStyle = cur.accent;
-  ctx.lineWidth = 3.5;
+  ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.roundRect(tabX, tabY, tabW, tabH, 26);
+  ctx.roundRect(tabX, tabY, tabW, tabH, 20);
   ctx.fill();
   ctx.stroke();
 
-  // Tablet Camera Pinhole on top bezel
-  ctx.fillStyle = '#262d3d';
+  // Internal screen area
+  const scrX = tabX + 8;
+  const scrY = tabY + 40;
+  const scrW = tabW - 16;
+  const scrH = tabH - 180; // height approx 620px
+
+  // Chassis title bar
+  ctx.fillStyle = '#111726';
   ctx.beginPath();
-  ctx.arc(tabX + tabW / 2, tabY + 7, 4, 0, Math.PI * 2);
+  ctx.roundRect(tabX, tabY, tabW, 40, [20, 20, 0, 0]);
   ctx.fill();
 
-  // Tablet Screen Area
-  const scrX = tabX + 16;
-  const scrY = tabY + 20;
-  const scrW = tabW - 32;
-  const scrH = tabH - 36;
+  ctx.font = 'bold 13px sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(cur.title, tabX + 24, tabY + 25);
 
-  ctx.fillStyle = '#07090f';
-  ctx.beginPath();
-  ctx.roundRect(scrX, scrY, scrW, scrH, 16);
-  ctx.fill();
-
-  // Screen Status Bar
-  ctx.fillStyle = '#0f1420';
-  ctx.fillRect(scrX, scrY, scrW, 30);
-  ctx.font = '12px monospace';
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillText('9:41 AM • Landscape Tablet Mode', scrX + 18, scrY + 20);
+  ctx.font = 'bold 12px "SF Mono", monospace';
   ctx.fillStyle = cur.accent;
-  ctx.font = 'bold 12px monospace';
-  ctx.fillText(cur.tag, scrX + scrW - 270, scrY + 20);
+  ctx.textAlign = 'right';
+  ctx.fillText(cur.repo + '  ●  LIVE REPO BUILD', tabX + tabW - 24, tabY + 25);
+  ctx.textAlign = 'left';
 
-  // ── LITERAL PREVIEWS INSIDE THE LANDSCAPE TABLET ──
+  // ── 4. LITERAL PROJECT VIEWS MATCHING USER GITHUB REPOSITORIES ──
   if (projectIndex === 0) {
-    // ── PLAN_.ED SHOPPING & ERRANDS APP LITERAL PREVIEW ──
-    const leftW = Math.floor(scrW * 0.55);
-    const rightW = scrW - leftW;
+    // ══════════════════════════════════════════════════════════════
+    // PROJECT 1: Plan_.ed (https://github.com/geyzz/shopping-planner)
+    // ══════════════════════════════════════════════════════════════
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(scrX, scrY, scrW, scrH);
 
-    // Left Pane: Shopping Checklist
-    ctx.fillStyle = '#0b0f19';
-    ctx.fillRect(scrX, scrY + 30, leftW, scrH - 30);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(scrX, scrY + 30, leftW, scrH - 30);
+    // Subtle golden glow background behind mobile showcase
+    const pGold = ctx.createRadialGradient(scrX + 500, scrY + 310, 80, scrX + 500, scrY + 310, 600);
+    pGold.addColorStop(0, 'rgba(214, 179, 73, 0.18)');
+    pGold.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = pGold;
+    ctx.fillRect(scrX, scrY, scrW, scrH);
 
-    ctx.fillStyle = '#ff7728';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText('SM CLARK SHOPPING LIST', scrX + 30, scrY + 65);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText('Plan_.ed Active Run', scrX + 30, scrY + 92);
+    // 3 Actual Mobile Device Mockups rendering real screenshots
+    const pw = 255;
+    const ph = 540;
+    const py = scrY + 40;
 
-    // Total pill
-    ctx.fillStyle = 'rgba(255, 77, 21, 0.18)';
-    ctx.beginPath();
-    ctx.roundRect(scrX + leftW - 170, scrY + 68, 140, 28, 14);
-    ctx.fill();
-    ctx.fillStyle = '#ffaa66';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('Total: ₱4,820.00', scrX + leftW - 155, scrY + 86);
-
-    // 4 Real Items
-    const items = [
-      { name: 'Ergonomic Desk Mat (Gray)', store: 'Miniso SM Clark', p: '₱499.00', checked: true },
-      { name: 'Keychron Low-Profile Switches', store: 'DataBlitz Nepo Mall', p: '₱1,850.00', checked: true },
-      { name: 'Type-C Coiled Keyboard Cable', store: 'Octagon Computer', p: '₱680.00', checked: false },
-      { name: 'Nordic Ceramic Coffee Mug', store: 'Muji SM Clark', p: '₱450.00', checked: false },
-      { name: 'Microfiber Cleaning Cloth 3-Pack', store: 'Miniso SM Clark', p: '₱199.00', checked: true },
+    const phones = [
+      {
+        key: 'planedHome',
+        fallbackText: 'Home Dashboard & Checklists',
+        label: '1. Home Dashboard & Progress',
+        x: scrX + 45,
+        elevated: false,
+      },
+      {
+        key: 'planedMalls',
+        fallbackText: '4 Malls Cost Breakdown (₱4,820.00)',
+        label: '2. 4-Mall Cost Breakdown ₱',
+        x: scrX + 335,
+        elevated: true,
+      },
+      {
+        key: 'planedCalendar',
+        fallbackText: 'Errand Calendar & Native Alarms',
+        label: '3. Errand Calendar & Alarms',
+        x: scrX + 625,
+        elevated: false,
+      },
     ];
 
-    items.forEach((it, i) => {
-      const iy = scrY + 115 + i * 72;
-      ctx.fillStyle = it.checked ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)';
-      ctx.beginPath();
-      ctx.roundRect(scrX + 25, iy, leftW - 50, 60, 10);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-      ctx.stroke();
+    phones.forEach((p) => {
+      const cy = p.elevated ? py - 14 : py;
+      const ch = p.elevated ? ph + 28 : ph;
+      const cw = p.elevated ? pw + 12 : pw;
 
-      // Checkbox circle
-      ctx.fillStyle = it.checked ? '#ff4d15' : 'transparent';
-      ctx.strokeStyle = it.checked ? '#ff4d15' : '#64748b';
-      ctx.lineWidth = 1.5;
+      // Phone outer bezel
+      ctx.fillStyle = '#1e2433';
+      ctx.strokeStyle = p.elevated ? '#d6b349' : '#334155';
+      ctx.lineWidth = p.elevated ? 3 : 1.5;
       ctx.beginPath();
-      ctx.arc(scrX + 55, iy + 30, 12, 0, Math.PI * 2);
+      ctx.roundRect(p.x, cy, cw, ch, 28);
       ctx.fill();
       ctx.stroke();
 
-      if (it.checked) {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 13px sans-serif';
-        ctx.fillText('✓', scrX + 50, iy + 35);
+      // Screen image area
+      const sx = p.x + 8;
+      const sy = cy + 8;
+      const sw = cw - 16;
+      const sh = ch - 16;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(sx, sy, sw, sh, 22);
+      ctx.clip();
+
+      const img = cachedProjectScreenImages[p.key];
+      if (img && img.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, sx, sy, sw, sh);
+      } else {
+        // High fidelity fallback matching actual screenshot colors
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(sx, sy, sw, sh);
+        ctx.fillStyle = '#d6b349';
+        ctx.font = 'bold 15px sans-serif';
+        ctx.fillText(p.fallbackText, sx + 20, sy + 60);
       }
+      ctx.restore();
 
-      ctx.fillStyle = it.checked ? '#94a3b8' : '#ffffff';
-      ctx.font = 'bold 15px sans-serif';
-      ctx.fillText(it.name, scrX + 80, iy + 27);
+      // Dynamic Island / Speaker Pill
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.roundRect(p.x + cw / 2 - 38, cy + 12, 76, 16, 8);
+      ctx.fill();
 
-      ctx.fillStyle = '#64748b';
-      ctx.font = '12px sans-serif';
-      ctx.fillText(it.store, scrX + 80, iy + 47);
-
-      ctx.fillStyle = it.checked ? '#94a3b8' : '#ffaa66';
-      ctx.font = 'bold 15px sans-serif';
-      ctx.fillText(it.p, scrX + leftW - 120, iy + 36);
+      // Bottom label badge
+      ctx.fillStyle = p.elevated ? '#d6b349' : 'rgba(255, 255, 255, 0.08)';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 10, cy + ch - 34, cw - 20, 24, 12);
+      ctx.fill();
+      ctx.fillStyle = p.elevated ? '#0f172a' : '#cbd5e1';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label, p.x + cw / 2, cy + ch - 18);
+      ctx.textAlign = 'left';
     });
 
-    // Right Pane: Errand Calendar & Alarms
-    const rx = scrX + leftW;
-    ctx.fillStyle = '#0e1320';
-    ctx.fillRect(rx, scrY + 30, rightW, scrH - 30);
+    // Right-Hand Telemetry & Architecture Panel
+    const rx = scrX + 935;
+    const rw = scrW - 955;
+    const ry = scrY + 30;
+    const rh = scrH - 60;
 
-    ctx.fillStyle = '#ff7728';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText('ERRAND CALENDAR & NATIVE ALARMS', rx + 30, scrY + 65);
+    ctx.fillStyle = 'rgba(15, 21, 35, 0.94)';
+    ctx.strokeStyle = 'rgba(214, 179, 73, 0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(rx, ry, rw, rh, 18);
+    ctx.fill();
+    ctx.stroke();
+
+    // Plan_.ed Brand Header
+    ctx.fillStyle = '#d6b349';
+    ctx.font = '900 34px sans-serif';
+    ctx.fillText('Plan_.ed', rx + 32, ry + 50);
+
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText('Today\'s Schedule', rx + 30, scrY + 92);
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText('Smart Shopping & Real-Time Errand Management with Alarms', rx + 32, ry + 82);
 
-    const alarms = [
-      { time: '10:30 AM', title: 'Pick up Keychron Switches at DataBlitz', loc: 'Nepo Mall • Alarm Set 🔔', active: true },
-      { time: '01:15 PM', title: 'Restock Ceramic Coffee Mug', loc: 'Muji SM Clark • Alarm Set 🔔', active: true },
-      { time: '04:00 PM', title: 'Studio Cable Management Run', loc: 'Octagon • Upcoming', active: false },
-    ];
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '500 15px sans-serif';
+    ctx.fillText('Personal mobile project engineered from scratch to solve unorganized errand runs with store-partitioned pricing.', rx + 32, ry + 108);
 
-    alarms.forEach((al, i) => {
-      const ay = scrY + 115 + i * 105;
-      ctx.fillStyle = al.active ? 'rgba(255, 77, 21, 0.1)' : 'rgba(255, 255, 255, 0.04)';
+    // Tech Stack Badges
+    const pStack = ['React Native', 'Expo Router', 'Supabase PostgreSQL', 'AsyncStorage', 'EAS Build', 'Native Alarms'];
+    let bx = rx + 32;
+    pStack.forEach((t) => {
+      ctx.font = 'bold 13px sans-serif';
+      const tw = ctx.measureText(t).width + 20;
+      ctx.fillStyle = 'rgba(214, 179, 73, 0.2)';
       ctx.beginPath();
-      ctx.roundRect(rx + 25, ay, rightW - 50, 90, 10);
+      ctx.roundRect(bx, ry + 128, tw, 28, 14);
       ctx.fill();
-      ctx.strokeStyle = al.active ? 'rgba(255, 77, 21, 0.35)' : 'rgba(255, 255, 255, 0.07)';
+      ctx.strokeStyle = 'rgba(214, 179, 73, 0.5)';
       ctx.stroke();
-
-      ctx.fillStyle = al.active ? '#ffaa44' : '#94a3b8';
-      ctx.font = 'bold 14px sans-serif';
-      ctx.fillText(al.time, rx + 45, ay + 30);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 15px sans-serif';
-      ctx.fillText(al.title, rx + 45, ay + 54);
-
-      ctx.fillStyle = al.active ? '#ff8a5c' : '#64748b';
-      ctx.font = '12px sans-serif';
-      ctx.fillText(al.loc, rx + 45, ay + 74);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillText(t, bx + 10, ry + 146);
+      bx += tw + 10;
     });
 
-    // Cloud status bar
-    ctx.fillStyle = 'rgba(255, 77, 21, 0.15)';
-    ctx.fillRect(rx, scrY + scrH - 45, rightW, 45);
-    ctx.fillStyle = '#ffedd5';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('⚡ Supabase Cloud & AsyncStorage Offline Sync Active', rx + 30, scrY + scrH - 18);
-  } else if (projectIndex === 1) {
-    // ── C&J REAL ESTATE PROPERTY WEBSITE LITERAL PREVIEW ──
-    // Browser URL bar inside tablet
-    ctx.fillStyle = '#111827';
-    ctx.fillRect(scrX, scrY + 30, scrW, 36);
-    ctx.fillStyle = '#06b6d4';
-    ctx.font = '12px monospace';
-    ctx.fillText('🔒 https://cj-realestate.ph/exclusive-listings/san-fernando', scrX + 24, scrY + 53);
-
-    // Main website showcase container
-    ctx.fillStyle = '#080d16';
-    ctx.fillRect(scrX, scrY + 66, scrW, scrH - 66);
-
-    // Left Hero: Full Architectural Residence Photo
-    const heroW = Math.floor(scrW * 0.62);
-    const heroH = scrH - 100;
-    const heroX = scrX + 24;
-    const heroY = scrY + 86;
-
-    const skyGrad = ctx.createLinearGradient(heroX, heroY, heroX, heroY + heroH);
-    skyGrad.addColorStop(0, '#164e63');
-    skyGrad.addColorStop(0.5, '#0e7490');
-    skyGrad.addColorStop(1, '#082f49');
-    ctx.fillStyle = skyGrad;
-    ctx.beginPath();
-    ctx.roundRect(heroX, heroY, heroW, heroH, 14);
-    ctx.fill();
-
-    // Architectural Villa Structure
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(heroX + 60, heroY + 80, heroW - 120, 180);
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(heroX + 110, heroY + 40, heroW - 220, 90);
-
-    // Floor-to-ceiling windows with warm interior glow
-    const winGlow = ctx.createLinearGradient(0, heroY + 90, 0, heroY + 230);
-    winGlow.addColorStop(0, '#fef08a');
-    winGlow.addColorStop(1, '#f59e0b');
-    ctx.fillStyle = winGlow;
-    ctx.fillRect(heroX + 85, heroY + 100, 150, 140);
-    ctx.fillRect(heroX + 265, heroY + 100, 170, 140);
-    ctx.fillRect(heroX + 465, heroY + 100, 150, 140);
-
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(heroX + 160, heroY + 100, 5, 140);
-    ctx.fillRect(heroX + 350, heroY + 100, 5, 140);
-    ctx.fillRect(heroX + 540, heroY + 100, 5, 140);
-
-    // Infinity pool
-    const poolGrad = ctx.createLinearGradient(heroX, heroY + 250, heroX, heroY + heroH);
-    poolGrad.addColorStop(0, '#06b6d4');
-    poolGrad.addColorStop(1, '#0e7490');
-    ctx.fillStyle = poolGrad;
-    ctx.beginPath();
-    ctx.roundRect(heroX + 40, heroY + 250, heroW - 80, 80, [0, 0, 12, 12]);
-    ctx.fill();
-
-    // Floating Glass Tag
-    ctx.fillStyle = 'rgba(8, 13, 22, 0.85)';
-    ctx.beginPath();
-    ctx.roundRect(heroX + 25, heroY + 25, 200, 32, 16);
-    ctx.fill();
-    ctx.fillStyle = '#22d3ee';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('EXCLUSIVE • SAN FERNANDO', heroX + 42, heroY + 46);
-
-    // Hero Property Overlay Typography
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 24px sans-serif';
-    ctx.fillText('The Obsidian Pavilion', heroX + 30, heroY + heroH - 65);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = '14px sans-serif';
-    ctx.fillText('5 Beds • 6 Baths • 650 sqm • Private Infinity Pool', heroX + 30, heroY + heroH - 40);
-    ctx.fillStyle = '#22d3ee';
-    ctx.font = '900 24px sans-serif';
-    ctx.fillText('₱28,500,000', heroX + 30, heroY + heroH - 12);
-
-    // Right Sidebar: Filtered Property Cards
-    const sideX = scrX + heroW + 45;
-    const sideW = scrW - heroW - 65;
-
-    ctx.fillStyle = '#22d3ee';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('CURATED SANCTUARIES', sideX, scrY + 95);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText('Central Luzon Listings', sideX, scrY + 120);
-
-    const listings = [
-      { name: 'Villa Solaria Retreat', loc: 'Angeles City', price: '₱18,200,000', specs: '4 Beds • 420 sqm' },
-      { name: 'The Glasshouse Loft', loc: 'Clark Freeport Zone', price: '₱34,000,000', specs: '6 Beds • 800 sqm' },
-      { name: 'Casa Terra Sanctuary', loc: 'San Fernando', price: '₱14,500,000', specs: '3 Beds • 310 sqm' },
+    // 4 Architecture Feature Cards
+    const features = [
+      {
+        title: '🛒 4-Mall Partitioned Checklists',
+        desc: 'Categorizes errand items into SM City Clark, Nepo Mall, Marquee Mall, and Robinsons Starmills with per-store pricing.',
+      },
+      {
+        title: '💰 Real-Time Mall Cost Calculator',
+        desc: 'Calculates active run totals (₱4,820.00) dynamically as checkboxes are checked, with budgeting thresholds.',
+      },
+      {
+        title: '⏰ Native Errand Calendar & Alarms',
+        desc: 'Interactive schedule with system alarms at 10:30 AM & 1:15 PM so critical errands are never missed.',
+      },
+      {
+        title: '🔄 Offline-First & Dual Sync',
+        desc: 'Uses AsyncStorage for instant offline access and synchronizes with Supabase cloud when internet restores.',
+      },
     ];
 
-    listings.forEach((prop, i) => {
-      const py = scrY + 145 + i * 115;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    features.forEach((feat, idx) => {
+      const fy = ry + 175 + idx * 82;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
       ctx.beginPath();
-      ctx.roundRect(sideX, py, sideW, 100, 10);
+      ctx.roundRect(rx + 32, fy, rw - 64, 70, 10);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(6, 182, 212, 0.3)';
+      ctx.strokeStyle = 'rgba(214, 179, 73, 0.2)';
       ctx.stroke();
 
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 16px sans-serif';
-      ctx.fillText(prop.name, sideX + 20, py + 30);
+      ctx.fillText(feat.title, rx + 48, fy + 26);
 
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '13px sans-serif';
-      ctx.fillText(`${prop.loc} • ${prop.specs}`, sideX + 20, py + 55);
-
-      ctx.fillStyle = '#22d3ee';
-      ctx.font = '900 16px sans-serif';
-      ctx.fillText(prop.price, sideX + 20, py + 82);
-
-      ctx.fillStyle = '#0891b2';
-      ctx.beginPath();
-      ctx.roundRect(sideX + sideW - 110, py + 60, 95, 26, 13);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 11px sans-serif';
-      ctx.fillText('Inspect ↗', sideX + sideW - 88, py + 77);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '500 13.5px sans-serif';
+      ctx.fillText(feat.desc, rx + 48, fy + 50);
     });
-  } else {
-    // ── HAUTOGO CAMPUS FACULTY TRACKING APP LITERAL PREVIEW ──
-    const mapW = Math.floor(scrW * 0.62);
-    const mapH = scrH - 60;
-    const mapX = scrX + 20;
-    const mapY = scrY + 45;
 
-    // Campus Vector Surface
-    ctx.fillStyle = '#101422';
+    // Status pill at bottom of right panel
+    ctx.fillStyle = 'rgba(34, 197, 94, 0.18)';
     ctx.beginPath();
-    ctx.roundRect(mapX, mapY, mapW, mapH, 14);
+    ctx.roundRect(rx + 32, ry + rh - 48, rw - 64, 34, 17);
     ctx.fill();
+    ctx.fillStyle = '#86efac';
+    ctx.font = 'bold 13.5px sans-serif';
+    ctx.fillText('✓ Standalone Android APK Shipped via EAS Build  •  100% Offline-Capable Mobile Engine', rx + 52, ry + rh - 26);
 
-    // Road Lines
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.35)';
-    ctx.lineWidth = 8;
+  } else if (projectIndex === 1) {
+    // ══════════════════════════════════════════════════════════════
+    // PROJECT 2: C&J Real Estate (https://github.com/geyzz/real-estate)
+    // ══════════════════════════════════════════════════════════════
+    ctx.fillStyle = '#DFE1E5';
+    ctx.fillRect(scrX, scrY, scrW, scrH);
+
+    // Left Browser Showcase Area (Width 1250px)
+    const bwW = 1250;
+    const bwX = scrX;
+    const bwY = scrY;
+    const bwH = scrH;
+
+    // Background Architectural Photo (Mirrored horizontally like .background-img in App.css)
+    const heroImg = cachedProjectScreenImages.cjProperty1;
+    ctx.save();
     ctx.beginPath();
-    ctx.moveTo(mapX, mapY + 180); ctx.lineTo(mapX + mapW, mapY + 180);
-    ctx.moveTo(mapX + 240, mapY); ctx.lineTo(mapX + 240, mapY + mapH);
-    ctx.moveTo(mapX + 500, mapY); ctx.lineTo(mapX + 500, mapY + mapH);
+    ctx.rect(bwX, bwY, bwW, bwH);
+    ctx.clip();
+
+    if (heroImg && heroImg.complete && heroImg.naturalWidth > 0) {
+      // Flip horizontally across hero width
+      ctx.save();
+      ctx.translate(bwX + bwW, bwY);
+      ctx.scale(-1, 1);
+      ctx.drawImage(heroImg, 0, 0, bwW, bwH);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(bwX, bwY, bwW, bwH);
+    }
+
+    // Soft Alabaster Radial Vignette Overlay (Matching .home-page::after in App.css)
+    const albGrad = ctx.createRadialGradient(bwX + bwW * 0.28, bwY + bwH * 0.4, 50, bwX + bwW * 0.28, bwY + bwH * 0.4, bwW * 0.75);
+    albGrad.addColorStop(0, 'rgba(243, 244, 246, 0.94)');
+    albGrad.addColorStop(0.55, 'rgba(243, 244, 246, 0.62)');
+    albGrad.addColorStop(1, 'rgba(243, 244, 246, 0.12)');
+    ctx.fillStyle = albGrad;
+    ctx.fillRect(bwX, bwY, bwW, bwH);
+
+    // Top Navbar: C [AND] J Real Est. + White Trapezoid Nav + Green "Find a Property" Pill
+    ctx.fillStyle = 'rgba(243, 244, 246, 0.9)';
+    ctx.fillRect(bwX, bwY, bwW, 46);
+
+    // Brand mark
+    ctx.fillStyle = '#3D3B36';
+    ctx.font = '900 18px sans-serif';
+    ctx.fillText('C', bwX + 28, bwY + 30);
+    ctx.font = '900 8px sans-serif';
+    ctx.fillText('AND', bwX + 43, bwY + 28);
+    ctx.font = '900 18px sans-serif';
+    ctx.fillText('J', bwX + 65, bwY + 30);
+    ctx.font = '600 15px Georgia, serif';
+    ctx.fillText('Real Est.', bwX + 80, bwY + 30);
+
+    // White Curved Trapezoid Center Nav (.nav-trapezoid)
+    ctx.fillStyle = '#F3F4F6';
+    ctx.beginPath();
+    ctx.roundRect(bwX + bwW / 2 - 180, bwY + 4, 360, 36, [0, 0, 16, 16]);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(61, 59, 54, 0.12)';
     ctx.stroke();
 
-    // Campus Buildings
-    ctx.fillStyle = '#1e2638';
-    ctx.strokeStyle = '#3d4d6e';
-    ctx.lineWidth = 1.5;
+    ctx.font = 'bold 12.5px sans-serif';
+    ctx.fillStyle = '#4F6D3A';
+    ctx.fillText('Home', bwX + bwW / 2 - 140, bwY + 27);
+    ctx.fillStyle = '#3D3B36';
+    ctx.fillText('About Us', bwX + bwW / 2 - 75, bwY + 27);
+    ctx.fillText('Properties', bwX + bwW / 2 + 10, bwY + 27);
+    ctx.fillText('Contact Us', bwX + bwW / 2 + 95, bwY + 27);
 
-    // SJH Building
-    ctx.fillRect(mapX + 40, mapY + 40, 160, 110);
-    ctx.strokeRect(mapX + 40, mapY + 40, 160, 110);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('SJH Building', mapX + 70, mapY + 95);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px sans-serif';
-    ctx.fillText('Engineering & CS Labs', mapX + 60, mapY + 115);
-
-    // MGN Hall
-    ctx.fillStyle = '#1e2638';
-    ctx.fillRect(mapX + 40, mapY + 220, 170, 140);
-    ctx.strokeRect(mapX + 40, mapY + 220, 170, 140);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('MGN Hall', mapX + 85, mapY + 285);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px sans-serif';
-    ctx.fillText('Arts & Sciences', mapX + 75, mapY + 305);
-
-    // STL Lab
-    ctx.fillStyle = '#1e2638';
-    ctx.fillRect(mapX + 280, mapY + 40, 180, 110);
-    ctx.strokeRect(mapX + 280, mapY + 40, 180, 110);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('STL Building', mapX + 325, mapY + 95);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px sans-serif';
-    ctx.fillText('Advanced Computing', mapX + 310, mapY + 115);
-
-    // Live GPS Radar Waves & Pin
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+    // Right Green Pill Button (.property-btn)
+    ctx.fillStyle = '#4F6D3A';
     ctx.beginPath();
-    ctx.arc(mapX + 120, mapY + 95, 36, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#a855f7';
-    ctx.beginPath();
-    ctx.arc(mapX + 120, mapY + 95, 12, 0, Math.PI * 2);
+    ctx.roundRect(bwX + bwW - 170, bwY + 8, 145, 30, 15);
     ctx.fill();
     ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(mapX + 120, mapY + 95, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Callout badge
-    ctx.fillStyle = '#1e1b4b';
-    ctx.beginPath();
-    ctx.roundRect(mapX + 140, mapY + 70, 170, 34, 8);
-    ctx.fill();
-    ctx.strokeStyle = '#a855f7';
-    ctx.stroke();
-    ctx.fillStyle = '#f3e8ff';
     ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('Engr. Dizon (LIVE)', mapX + 155, mapY + 92);
+    ctx.fillText('🔍 Find a Property', bwX + bwW - 156, bwY + 28);
 
-    // Geofence status pill
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+    // Left Hero Message (.home-msg in App.css)
+    ctx.fillStyle = '#1c1b18';
+    ctx.font = '900 36px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText('Find A Property', bwX + 42, bwY + 120);
+    ctx.fillText('To Build Your Dream House', bwX + 42, bwY + 165);
+
+    ctx.fillStyle = '#3D3B36';
+    ctx.font = '600 14.5px sans-serif';
+    ctx.fillText('Discover prime residential lots and modern estates set in peaceful, thriving communities.', bwX + 42, bwY + 205);
+    ctx.fillText('C and J Real Estate makes every step simple, secure, and transparent.', bwX + 42, bwY + 228);
+
+    // Get Started Button
+    ctx.fillStyle = '#4F6D3A';
     ctx.beginPath();
-    ctx.roundRect(mapX + 20, mapY + mapH - 45, 280, 28, 14);
+    ctx.roundRect(bwX + 42, bwY + 252, 140, 38, 19);
     ctx.fill();
-    ctx.fillStyle = '#d8b4fe';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText('● GPS Geofence: Active (Holy Angel Univ.)', mapX + 35, mapY + mapH - 26);
-
-    // Right Pane: Faculty Consultation Drawer
-    const rightX = scrX + mapW + 40;
-    const rightWidth = scrW - mapW - 60;
-
-    ctx.fillStyle = '#c084fc';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('FACULTY AVAILABILITY RADAR', rightX, scrY + 65);
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 22px sans-serif';
-    ctx.fillText('Ghayzelle Dizon', rightX, scrY + 95);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '13px sans-serif';
-    ctx.fillText('Computer Science Faculty & Researcher', rightX, scrY + 118);
+    ctx.font = 'bold 13.5px sans-serif';
+    ctx.fillText('Get Started', bwX + 75, bwY + 276);
 
-    // Consultation Status Box
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.14)';
-    ctx.beginPath();
-    ctx.roundRect(rightX, scrY + 140, rightWidth, 140, 12);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
-    ctx.stroke();
+    // Bottom 3 Hero Features
+    const featBoxY = bwY + bwH - 120;
+    const featW = 220;
+    const cjFeats = [
+      { title: 'Quality Estates', sub: 'Ready-to-build residential lots' },
+      { title: 'Prime Locations', sub: 'Safe, accessible communities' },
+      { title: 'Trusted Ownership', sub: 'Clean titles & verified deeds' },
+    ];
 
-    ctx.fillStyle = '#f3e8ff';
-    ctx.font = 'bold 15px sans-serif';
-    ctx.fillText('📍 Current Room: SJH 402 Lab', rightX + 20, scrY + 175);
+    cjFeats.forEach((f, i) => {
+      const fx = bwX + 42 + i * (featW + 16);
+      ctx.fillStyle = 'rgba(243, 244, 246, 0.92)';
+      ctx.beginPath();
+      ctx.roundRect(fx, featBoxY, featW, 75, 12);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.stroke();
 
-    ctx.fillStyle = '#34d399';
+      ctx.fillStyle = '#4F6D3A';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(f.title, fx + 16, featBoxY + 30);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '11.5px sans-serif';
+      ctx.fillText(f.sub, fx + 16, featBoxY + 54);
+    });
+
+    ctx.restore();
+
+    // Right-Hand Real Estate Showroom Cards (Width ~670px)
+    const rwX = bwX + bwW + 15;
+    const rwW = scrW - bwW - 25;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(rwX, scrY, rwW, scrH);
+
+    // Header
+    ctx.fillStyle = '#4F6D3A';
     ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('● Status: Available for Student Consultations', rightX + 20, scrY + 205);
-
-    ctx.fillStyle = '#c084fc';
-    ctx.font = '13px sans-serif';
-    ctx.fillText('⏰ Next Class: CS301 (2:00 PM • STL 204)', rightX + 20, scrY + 235);
-
-    // Weekly schedule timetable
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-    ctx.beginPath();
-    ctx.roundRect(rightX, scrY + 300, rightWidth, 120, 12);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-    ctx.stroke();
+    ctx.fillText('CURATED EXCLUSIVE RESIDENCES', rwX + 24, scrY + 35);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('Today\'s Timetable', rightX + 20, scrY + 330);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.font = '12px sans-serif';
-    ctx.fillText('• 09:00 AM - 11:30 AM: CS402 Capstone Consultation (SJH 402)', rightX + 20, scrY + 355);
-    ctx.fillText('• 02:00 PM - 04:30 PM: CS301 Advanced Web Engineering (STL 204)', rightX + 20, scrY + 380);
-    ctx.fillText('• 05:00 PM - 06:00 PM: Department Faculty Sync', rightX + 20, scrY + 405);
+    ctx.font = '900 22px sans-serif';
+    ctx.fillText('Central Luzon Architectural Showcase', rwX + 24, scrY + 65);
+
+    // Property Card 1 (The Obsidian Pavilion)
+    const c1Y = scrY + 85;
+    const c1H = 210;
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.roundRect(rwX + 20, c1Y, rwW - 40, c1H, 14);
+    ctx.fill();
+    ctx.strokeStyle = '#4F6D3A';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const pImg1 = cachedProjectScreenImages.cjProperty2;
+    if (pImg1 && pImg1.complete && pImg1.naturalWidth > 0) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(rwX + 32, c1Y + 16, 240, c1H - 32, 10);
+      ctx.clip();
+      ctx.drawImage(pImg1, rwX + 32, c1Y + 16, 240, c1H - 32);
+      ctx.restore();
+    }
+
+    const tX = rwX + 290;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText('The Obsidian Pavilion', tX, c1Y + 38);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '600 14px sans-serif';
+    ctx.fillText('Exclusive Residence • San Fernando, Pampanga', tX, c1Y + 65);
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = '500 13px sans-serif';
+    ctx.fillText('5 Bedrooms  •  6 Bathrooms  •  650 sqm  •  Private Infinity Pool', tX, c1Y + 95);
+    ctx.fillText('Automated Smart Home  •  Triple Garage  •  Turnkey Ready', tX, c1Y + 118);
+
+    ctx.fillStyle = '#facc15';
+    ctx.font = '900 22px sans-serif';
+    ctx.fillText('₱28,500,000', tX, c1Y + 155);
+
+    // Property Card 2 (Villa Solaria Sanctuary)
+    const c2Y = c1Y + c1H + 20;
+    const c2H = 210;
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.roundRect(rwX + 20, c2Y, rwW - 40, c2H, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(79, 109, 58, 0.4)';
+    ctx.stroke();
+
+    const pImg2 = cachedProjectScreenImages.cjProperty3;
+    if (pImg2 && pImg2.complete && pImg2.naturalWidth > 0) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(rwX + 32, c2Y + 16, 240, c2H - 32, 10);
+      ctx.clip();
+      ctx.drawImage(pImg2, rwX + 32, c2Y + 16, 240, c2H - 32);
+      ctx.restore();
+    }
+
+    const tX2 = rwX + 290;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText('Villa Solaria Sanctuary', tX2, c2Y + 38);
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '600 14px sans-serif';
+    ctx.fillText('Gated Community • Angeles City, Pampanga', tX2, c2Y + 65);
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = '500 13px sans-serif';
+    ctx.fillText('4 Bedrooms  •  5 Bathrooms  •  420 sqm  •  Courtyard Garden', tX2, c2Y + 95);
+    ctx.fillText('Solar Powered  •  Modern Minimalist Stone & Glass Architecture', tX2, c2Y + 118);
+
+    ctx.fillStyle = '#facc15';
+    ctx.font = '900 22px sans-serif';
+    ctx.fillText('₱18,200,000', tX2, c2Y + 155);
+
+    // Bottom Tech Info
+    ctx.fillStyle = '#86efac';
+    ctx.font = 'bold 13px monospace';
+    ctx.fillText('React 18  •  Vite  •  Supabase PostgreSQL CRUD  •  Custom CSS3 Grid/Flex  •  github.com/geyzz/real-estate', rwX + 24, scrY + scrH - 18);
+
+  } else {
+    // ══════════════════════════════════════════════════════════════
+    // PROJECT 3: HAUtogo (https://github.com/qwertyuipaas/HAUtogo / geyzz/HAUtogo)
+    // ══════════════════════════════════════════════════════════════
+    ctx.fillStyle = '#180407';
+    ctx.fillRect(scrX, scrY, scrW, scrH);
+
+    // Subtle HAU maroon/gold radial glow behind mobile showcase
+    const hGlow = ctx.createRadialGradient(scrX + 500, scrY + 310, 80, scrX + 500, scrY + 310, 600);
+    hGlow.addColorStop(0, 'rgba(239, 191, 4, 0.16)');
+    hGlow.addColorStop(0.6, 'rgba(85, 0, 0, 0.28)');
+    hGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = hGlow;
+    ctx.fillRect(scrX, scrY, scrW, scrH);
+
+    // 3 Actual Mobile Device Mockups rendering real HAUtogo screens (Matching Plan_.ed layout)
+    const pw = 255;
+    const ph = 540;
+    const py = scrY + 40;
+
+    const phones = [
+      {
+        key: 'hautogoMap',
+        fallbackText: 'Campus Map & Building Locator',
+        label: '1. Campus Map & Radar 📍',
+        x: scrX + 45,
+        elevated: false,
+      },
+      {
+        key: 'hautogoBuilding',
+        fallbackText: 'St. Joseph Hall Floor Radar',
+        label: '2. St. Joseph Hall Floor Radar 🏢',
+        x: scrX + 335,
+        elevated: true,
+      },
+      {
+        key: 'hautogoSchedule',
+        fallbackText: '1st Year Class Schedule',
+        label: '3. Student & Faculty Timetable ⏰',
+        x: scrX + 625,
+        elevated: false,
+      },
+    ];
+
+    phones.forEach((p) => {
+      const cy = p.elevated ? py - 14 : py;
+      const ch = p.elevated ? ph + 28 : ph;
+      const cw = p.elevated ? pw + 12 : pw;
+
+      // Phone outer bezel
+      ctx.fillStyle = '#1c0d10';
+      ctx.strokeStyle = p.elevated ? '#EFBF04' : '#550000';
+      ctx.lineWidth = p.elevated ? 3 : 1.5;
+      ctx.beginPath();
+      ctx.roundRect(p.x, cy, cw, ch, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      // Screen image area
+      const sx = p.x + 8;
+      const sy = cy + 8;
+      const sw = cw - 16;
+      const sh = ch - 16;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(sx, sy, sw, sh, 22);
+      ctx.clip();
+
+      const img = cachedProjectScreenImages[p.key];
+      if (img && img.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, sx, sy, sw, sh);
+      } else {
+        ctx.fillStyle = '#1a080d';
+        ctx.fillRect(sx, sy, sw, sh);
+        ctx.fillStyle = '#EFBF04';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText(p.fallbackText, sx + 20, sy + 60);
+      }
+      ctx.restore();
+
+      // Dynamic Island / Speaker Pill
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.roundRect(p.x + cw / 2 - 38, cy + 12, 76, 16, 8);
+      ctx.fill();
+
+      // Bottom label badge
+      ctx.fillStyle = p.elevated ? '#EFBF04' : 'rgba(255, 255, 255, 0.08)';
+      ctx.beginPath();
+      ctx.roundRect(p.x + 10, cy + ch - 34, cw - 20, 24, 12);
+      ctx.fill();
+      ctx.fillStyle = p.elevated ? '#3a0202' : '#cbd5e1';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label, p.x + cw / 2, cy + ch - 18);
+      ctx.textAlign = 'left';
+    });
+
+    // ── RIGHT-HAND TELEMETRY & ARCHITECTURE PANEL (Matching Plan_.ed layout) ──
+    const rx = scrX + 935;
+    const rw = scrW - 955;
+    const ry = scrY + 30;
+    const rh = scrH - 60;
+
+    ctx.fillStyle = 'rgba(28, 8, 12, 0.94)';
+    ctx.strokeStyle = 'rgba(239, 191, 4, 0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(rx, ry, rw, rh, 18);
+    ctx.fill();
+    ctx.stroke();
+
+    // HAUtogo Brand Header
+    ctx.fillStyle = '#EFBF04';
+    ctx.font = '900 34px sans-serif';
+    ctx.fillText('HAUtogo', rx + 32, ry + 50);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px sans-serif';
+    ctx.fillText('Holy Angel University Smart Campus Geofence & Faculty Radar', rx + 32, ry + 82);
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '500 15px sans-serif';
+    ctx.fillText('Location-aware mobile ecosystem engineered with Flutter & Supabase to track faculty room availability and send automated class alerts.', rx + 32, ry + 108);
+
+    // Tech Stack Badges
+    const hStack = ['Flutter', 'Dart', 'Supabase PostgreSQL', 'flutter_map', 'geolocator', 'WebSockets', 'Geofencing'];
+    let bx = rx + 32;
+    hStack.forEach((t) => {
+      ctx.font = 'bold 13px sans-serif';
+      const tw = ctx.measureText(t).width + 20;
+      ctx.fillStyle = 'rgba(239, 191, 4, 0.2)';
+      ctx.beginPath();
+      ctx.roundRect(bx, ry + 128, tw, 28, 14);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(239, 191, 4, 0.5)';
+      ctx.stroke();
+      ctx.fillStyle = '#fef08a';
+      ctx.fillText(t, bx + 10, ry + 146);
+      bx += tw + 10;
+    });
+
+    // 4 Architecture Feature Cards
+    const hFeatures = [
+      {
+        title: '📍 Live Campus Geofence Radar',
+        desc: 'Detects student arrival within HAU coordinates (15.1438° N, 120.5902° E) with high accuracy GPS.',
+      },
+      {
+        title: '👨‍🏫 Real-Time Faculty Availability',
+        desc: 'Instant room check-ins across SJH, MGN, and STL buildings using real-time database subscriptions.',
+      },
+      {
+        title: '🔔 Automated Next-Class Alerts',
+        desc: 'Triggers notifications 18 mins before upcoming lectures with assigned building room numbers and professor status.',
+      },
+      {
+        title: '⚡ Supabase PostgreSQL Backend',
+        desc: 'Synchronizes schedule tables, room assignments, and faculty telemetry via low-latency cloud database.',
+      },
+    ];
+
+    hFeatures.forEach((feat, idx) => {
+      const fy = ry + 175 + idx * 82;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.beginPath();
+      ctx.roundRect(rx + 32, fy, rw - 64, 70, 10);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(239, 191, 4, 0.25)';
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText(feat.title, rx + 48, fy + 26);
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '500 13.5px sans-serif';
+      ctx.fillText(feat.desc, rx + 48, fy + 50);
+    });
+
+    // Status pill at bottom of right panel
+    ctx.fillStyle = 'rgba(239, 191, 4, 0.18)';
+    ctx.beginPath();
+    ctx.roundRect(rx + 32, ry + rh - 48, rw - 64, 34, 17);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(239, 191, 4, 0.4)';
+    ctx.stroke();
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 13.5px sans-serif';
+    ctx.fillText('✓ Holy Angel University Campus Engine  •  PostgreSQL 15 Realtime Sync Active', rx + 52, ry + rh - 26);
   }
 
-  // ── BOTTOM PROJECT METADATA BAR (TITLE, SHORT DESC, VIEW, PREV, NEXT, FOLDER) ──
-  const botY = 715;
-  const botH = 190;
-  ctx.fillStyle = '#0b0f19';
+  // Floating Left / Right Navigation Chevrons directly on the 3D Monitor Viewport (Consistent 48x48, r:12)
+  // Left Chevron (scrX + 16)
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
   ctx.beginPath();
-  ctx.roundRect(tabX, botY, tabW, botH, 18);
+  ctx.roundRect(scrX + 16, scrY + scrH / 2 - 24, 48, 48, 12);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Project Category Tag
-  ctx.fillStyle = cur.accent;
-  ctx.font = 'bold 12px sans-serif';
-  ctx.fillText(cur.tag, tabX + 35, botY + 35);
-
-  // Title
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 24px -apple-system, sans-serif';
-  ctx.fillText(cur.title, tabX + 35, botY + 68);
+  ctx.font = '900 24px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('‹', scrX + 40, scrY + scrH / 2 + 8);
 
-  // Short Desc
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = '14.5px -apple-system, sans-serif';
-  ctx.fillText(cur.desc, tabX + 35, botY + 100);
-
-  // Buttons Row (y: botY + 120 to botY + 165)
-  // 1. View Project Button
-  ctx.fillStyle = cur.accent;
+  // Right Chevron (scrX + scrW - 64)
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
   ctx.beginPath();
-  ctx.roundRect(tabX + 35, botY + 125, 175, 42, 21);
+  ctx.roundRect(scrX + scrW - 64, scrY + scrH / 2 - 24, 48, 48, 12);
   ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.fillText('View Project ↗', tabX + 68, botY + 151);
-
-  // 2. Back to Folder Button
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.beginPath();
-  ctx.roundRect(tabX + 225, botY + 125, 175, 42, 21);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
   ctx.stroke();
-  ctx.fillStyle = '#cbd5e1';
-  ctx.font = 'bold 13.5px sans-serif';
-  ctx.fillText('📂 Back to Folder', tabX + 250, botY + 151);
 
-  // 3. Prev Button
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 24px sans-serif';
+  ctx.fillText('›', scrX + scrW - 40, scrY + scrH / 2 + 8);
+  ctx.textAlign = 'left';
+
+  // ── 5. BOTTOM METADATA BAR (TITLE, TECH STACK, ACTIONS, PREV/NEXT) ──
+  const botY = tabY + tabH - 130;
+  const botH = 120;
+
+  ctx.fillStyle = '#080c14';
   ctx.beginPath();
-  ctx.roundRect(tabX + tabW - 380, botY + 125, 130, 42, 21);
+  ctx.roundRect(tabX + 8, botY, tabW - 16, botH, [0, 0, 16, 16]);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.stroke();
+
+  // Left info
+  ctx.fillStyle = cur.accent;
+  ctx.font = 'bold 13px sans-serif';
+  ctx.fillText(cur.tag, tabX + 35, botY + 28);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillText(cur.title, tabX + 35, botY + 56);
+
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = '500 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillText(cur.desc, tabX + 35, botY + 84);
+
+  // Center / Right Controls (CONSISTENT DESIGN SYSTEM: Height 48px, Radius 12px)
+  // 1. View Project Link (Positioned cleanly at bottom right corner)
+  ctx.fillStyle = cur.accent;
+  ctx.beginPath();
+  ctx.roundRect(tabX + tabW - 225, botY + 36, 190, 48, 12);
   ctx.fill();
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.fillText('‹ Prev', tabX + tabW - 340, botY + 151);
+  ctx.font = 'bold 15px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('View Repository ↗', tabX + tabW - 130, botY + 65);
+  ctx.textAlign = 'left';
 
-  // 4. Next Button
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.beginPath();
-  ctx.roundRect(tabX + tabW - 235, botY + 125, 130, 42, 21);
-  ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.fillText('Next ›', tabX + tabW - 195, botY + 151);
-
-  // 5. Dots indicator
-  const dotsX = tabX + tabW - 85;
+  // 2. Dot indicators
   [0, 1, 2].forEach((idx) => {
     ctx.fillStyle = idx === projectIndex ? cur.accent : 'rgba(255, 255, 255, 0.2)';
     ctx.beginPath();
-    ctx.arc(dotsX + idx * 20, botY + 68, idx === projectIndex ? 5 : 4, 0, Math.PI * 2);
+    ctx.arc(tabX + tabW - 255 - (2 - idx) * 22, botY + 60, idx === projectIndex ? 6 : 4, 0, Math.PI * 2);
     ctx.fill();
   });
+}
 
-  // Bottom Monitor Footer
-  ctx.fillStyle = '#080c14';
-  ctx.fillRect(0, 960, 2048, 64);
-  ctx.font = '15px sans-serif';
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillText('Ghayzelle Dizon • Front-End Developer', 56, 998);
+function createPortfolioCarouselTexture(projectIndex = 0) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 1024;
+  canvas._projectIndex = projectIndex;
 
-  ctx.textAlign = 'center';
-  ctx.fillStyle = cur.accent;
-  ctx.font = 'bold 15px sans-serif';
-  ctx.fillText(`Project ${projectIndex + 1} of 3 • Click ‹ Prev / Next › to browse`, 1024, 998);
-  ctx.textAlign = 'left';
+  drawProjectScreenOnCanvas(canvas, projectIndex);
+
+  if (!registeredPortfolioCanvases.includes(canvas)) {
+    registeredPortfolioCanvases.push(canvas);
+  }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.flipY = false;
-  texture.minFilter = THREE.LinearFilter;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 16;
@@ -800,10 +1205,7 @@ function createPortfolioCarouselTexture(projectIndex = 0) {
 }
 
 // CERTIFICATES DISPLAY ON 34" CURVED ULTRAWIDE MONITOR
-function createCertificatesScreenTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 2048;
-  canvas.height = 1024;
+function drawCertificatesScreenOnCanvas(canvas) {
   const ctx = canvas.getContext('2d');
 
   // Deep dark IDE / workstation background
@@ -834,7 +1236,7 @@ function createCertificatesScreenTexture() {
   // App Title
   ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#f8fafc';
-  ctx.fillText('GHAYZELLE DIZON • 34" ULTRAWIDE DISPLAY', 130, 40);
+  ctx.fillText('GHAYZELLE DIZON • CREDENTIALS & WORK', 130, 40);
 
   // Segmented Interactive Toggle Tabs drawn on screen header:
   // Tab 1: Portfolio (inactive)
@@ -881,42 +1283,45 @@ function createCertificatesScreenTexture() {
   ctx.lineTo(1992, 160);
   ctx.stroke();
 
-  // 3 Large Certificate Cards
+  // 3 Industry Certificate Cards Aligned with Developer Role
   const certificates = [
     {
-      title: 'AWS Academy Graduate — Cloud Foundations',
-      issuer: 'Amazon Web Services (AWS)',
-      date: 'Feb 2026',
-      badge: 'AWS CLOUD FOUNDATIONS',
-      accent: '#ff9900',
-      description: 'Mastery of foundational AWS cloud architecture, global infrastructure, AWS IAM security, Amazon EC2 compute, S3 storage, VPC networking, and cloud monitoring.',
-      skills: ['AWS IAM', 'Amazon EC2', 'Amazon S3', 'VPC Networking', 'Cloud Security', 'Serverless'],
-    },
-    {
-      title: 'Responsive Web Design Certification',
+      title: 'Legacy Responsive Web Design V8',
       issuer: 'freeCodeCamp',
-      date: 'Sep 2024',
+      date: 'September 18, 2024',
       badge: '300 HOURS CERTIFIED',
-      accent: '#10b981',
+      accent: '#3b82f6',
+      imageKey: 'fcc',
       description: 'Comprehensive mastery of modern web standards, semantic HTML5, advanced CSS3 responsive architecture, Flexbox layouts, CSS Grid layouts, and web accessibility standards.',
-      skills: ['HTML5 Semantic', 'CSS3 Architecture', 'CSS Flexbox', 'CSS Grid', 'Mobile-First', 'Accessibility'],
+      skills: ['HTML5 Semantic', 'CSS3 Layouts', 'Flexbox', 'CSS Grid', 'Accessibility'],
     },
     {
       title: 'JavaScript Essentials 1',
-      issuer: 'Cisco Networking Academy & OpenEDG',
-      date: 'Oct 2024',
-      badge: 'CISCO ACCREDITED',
+      issuer: 'Cisco Networking Academy • HAU',
+      date: '19 Oct 2024',
+      badge: 'CISCO & JS INSTITUTE',
       accent: '#06b6d4',
-      description: 'Credential covering core JavaScript programming, variables, control flow, functions, DOM manipulation, asynchronous logic, and error handling.',
-      skills: ['JavaScript (ES6+)', 'DOM Manipulation', 'Event Handling', 'Data Structures', 'Debugging'],
+      imageKey: 'cisco',
+      description: 'Credential covering modern JavaScript ES6+ programming, variable scopes, control flow, functions, asynchronous patterns, objects, and algorithmic debugging.',
+      skills: ['JavaScript (ES6+)', 'DOM Logic', 'Async / Promises', 'Data Structures', 'Debugging'],
+    },
+    {
+      title: 'AWS Academy Graduate — Cloud Foundations',
+      issuer: 'Amazon Web Services (AWS)',
+      date: '02/26/2026',
+      badge: 'AWS CLOUD FOUNDATIONS',
+      accent: '#f59e0b',
+      imageKey: 'aws',
+      description: 'Mastery of foundational AWS cloud architecture, global infrastructure, AWS IAM security, Amazon EC2 compute, S3 storage, VPC networking, and cloud monitoring.',
+      skills: ['AWS IAM', 'Amazon EC2', 'Amazon S3', 'VPC Networking', 'Cloud Security'],
     },
   ];
 
-  const colW = 620;
+  const colW = 616;
   const colH = 750;
   const startX = 56;
   const startY = 184;
-  const gap = 38;
+  const gap = 28;
 
   certificates.forEach((cert, idx) => {
     const x = startX + idx * (colW + gap);
@@ -940,91 +1345,118 @@ function createCertificatesScreenTexture() {
     // Credential Badge Tag
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.beginPath();
-    ctx.roundRect(x + 24, y + 26, 185, 26, 6);
+    ctx.roundRect(x + 24, y + 24, 205, 26, 6);
     ctx.fill();
     ctx.font = 'bold 11px sans-serif';
     ctx.fillStyle = cert.accent;
-    ctx.fillText(cert.badge, x + 34, y + 43);
+    ctx.fillText(cert.badge, x + 34, y + 41);
 
     // Issue Date Tag
     ctx.font = '13px sans-serif';
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText(cert.date, x + colW - 120, y + 43);
+    ctx.fillText(cert.date, x + colW - 130, y + 41);
 
     // Title
-    ctx.font = 'bold 23px sans-serif';
+    ctx.font = 'bold 22px sans-serif';
     ctx.fillStyle = '#ffffff';
-    const titleLines = wrapCanvasText(cert.title, 32);
-    let curY = y + 84;
-    titleLines.forEach((tl) => {
-      ctx.fillText(tl, x + 24, curY);
-      curY += 30;
-    });
+    ctx.fillText(cert.title, x + 24, y + 74);
 
     // Issuer
-    ctx.font = 'bold 16px sans-serif';
+    ctx.font = 'bold 15px sans-serif';
     ctx.fillStyle = cert.accent;
-    ctx.fillText(cert.issuer, x + 24, curY + 6);
-    curY += 34;
+    ctx.fillText(cert.issuer, x + 24, y + 100);
+
+    // Certificate Photo Preview Image
+    const certImg = cachedCertScreenImages[cert.imageKey];
+    const imgX = x + 20;
+    const imgY = y + 118;
+    const imgW = colW - 40;
+    const imgH = 240;
+
+    ctx.fillStyle = '#070a12';
+    ctx.fillRect(imgX, imgY, imgW, imgH);
+
+    if (certImg && certImg.complete && certImg.naturalWidth > 0) {
+      const aspect = certImg.naturalWidth / certImg.naturalHeight;
+      let drawW = imgW;
+      let drawH = imgW / aspect;
+      if (drawH > imgH) {
+        drawH = imgH;
+        drawW = imgH * aspect;
+      }
+      const drawX = imgX + (imgW - drawW) / 2;
+      const drawY = imgY + (imgH - drawH) / 2;
+      ctx.drawImage(certImg, drawX, drawY, drawW, drawH);
+      ctx.strokeStyle = cert.accent;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(imgX, imgY, imgW, imgH);
+    } else {
+      ctx.strokeStyle = `${cert.accent}44`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(imgX, imgY, imgW, imgH);
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillStyle = cert.accent;
+      ctx.fillText('CERTIFICATE PREVIEW', imgX + 24, imgY + imgH / 2);
+    }
 
     // Description Box
+    const curY = y + 375;
     ctx.fillStyle = '#090d14';
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(x + 20, curY, colW - 40, 160, 10);
+    ctx.roundRect(x + 20, curY, colW - 40, 110, 8);
     ctx.fill();
     ctx.stroke();
 
-    ctx.font = '14.5px -apple-system, sans-serif';
+    ctx.font = '14px -apple-system, sans-serif';
     ctx.fillStyle = '#cbd5e1';
-    const descLines = wrapCanvasText(cert.description, 48);
-    descLines.forEach((dl, dIdx) => {
-      ctx.fillText(dl, x + 34, curY + 30 + dIdx * 24);
+    const descLines = wrapCanvasText(cert.description, 60);
+    descLines.slice(0, 4).forEach((dl, dIdx) => {
+      ctx.fillText(dl, x + 34, curY + 26 + dIdx * 22);
     });
-    curY += 184;
 
     // Skills & Competencies Heading
+    const compY = curY + 130;
     ctx.font = 'bold 13px sans-serif';
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText('COMPETENCIES & DOMAINS:', x + 24, curY);
-    curY += 24;
+    ctx.fillText('COMPETENCIES & DOMAINS:', x + 24, compY);
 
     // Skill pills
     let pillX = x + 24;
-    let pillY = curY;
+    let pillY = compY + 18;
     cert.skills.forEach((skill) => {
-      ctx.font = 'bold 13px sans-serif';
+      ctx.font = 'bold 12px sans-serif';
       const textW = ctx.measureText(skill).width;
-      const pillW = textW + 22;
+      const pillW = textW + 20;
 
       if (pillX + pillW > x + colW - 24) {
         pillX = x + 24;
-        pillY += 38;
+        pillY += 34;
       }
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
       ctx.strokeStyle = cert.accent;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.roundRect(pillX, pillY, pillW, 28, 6);
+      ctx.roundRect(pillX, pillY, pillW, 26, 6);
       ctx.fill();
       ctx.stroke();
 
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(skill, pillX + 11, pillY + 19);
+      ctx.fillText(skill, pillX + 10, pillY + 17);
 
-      pillX += pillW + 10;
+      pillX += pillW + 8;
     });
 
     // Verification Footer
     ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
     ctx.beginPath();
-    ctx.roundRect(x + 20, y + colH - 64, colW - 40, 44, 8);
+    ctx.roundRect(x + 20, y + colH - 60, colW - 40, 42, 8);
     ctx.fill();
     ctx.font = 'bold 13px sans-serif';
     ctx.fillStyle = '#34d399';
-    ctx.fillText('✓  OFFICIAL VERIFIED CREDENTIAL • GHAYZELLE DIZON', x + 36, y + colH - 37);
+    ctx.fillText('✓  OFFICIAL VERIFIED CREDENTIAL • GHAYZELLE DIZON', x + 36, y + colH - 34);
   });
 
   // Bottom Status Bar
@@ -1033,10 +1465,18 @@ function createCertificatesScreenTexture() {
   ctx.font = '16px sans-serif';
   ctx.fillStyle = '#94a3b8';
   ctx.fillText("Academic Honor: Holy Angel University Dean's Lister (1st Year, 2nd Year, 3rd Year) • School of Computing", 56, 998);
+}
+
+function createCertificatesScreenTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 1024;
+  drawCertificatesScreenOnCanvas(canvas);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.flipY = false;
-  texture.minFilter = THREE.LinearFilter;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 16;
@@ -1074,7 +1514,7 @@ function createTechStackScreenTexture() {
 
   ctx.font = 'bold 20px "SF Mono", Menlo, Consolas, monospace';
   ctx.fillStyle = '#94a3b8';
-  ctx.fillText('bash - ghayzelle@galaxy-book2: ~/technical-skills', 130, 41);
+  ctx.fillText('bash - ghayzelle@workstation: ~/technical-skills', 130, 41);
 
   // TECHNICAL SKILLS
   ctx.fillStyle = '#111b2b';
@@ -1091,22 +1531,22 @@ function createTechStackScreenTexture() {
   ctx.fillStyle = '#cbd5e1';
   ctx.fillText('Ghayzelle Dizon | Front-End Developer | Figma & Blender to React, React Native & Flutter', 88, 182);
 
-  // 5 Categories
+  // 5 Categories - realistic everyday developer stack
   const skillsList = [
     {
-      category: 'Design & UI',
-      color: '#ff7728',
-      text: 'Figma, Blender (3D Modeling), UI/UX Design, Wireframing & Prototyping, Responsive Design, Custom CSS3',
-    },
-    {
-      category: 'Languages',
+      category: 'Core Web & Languages',
       color: '#38bdf8',
-      text: 'JavaScript, TypeScript, HTML5, CSS3, Dart, Python, SQL',
+      text: 'HTML5, CSS3, JavaScript (ES6+), TypeScript, Dart, SQL',
     },
     {
-      category: 'Frameworks & Libraries',
+      category: 'Front-End & Mobile',
       color: '#34d399',
       text: 'React, Vite, React Native, Expo, Expo Router, Flutter',
+    },
+    {
+      category: 'UI/UX & 3D Design',
+      color: '#ff7728',
+      text: 'Figma (UI/UX & Prototyping), Blender (3D Modeling), Responsive Design, CSS Flexbox & Grid',
     },
     {
       category: 'Backend & Databases',
@@ -1114,7 +1554,7 @@ function createTechStackScreenTexture() {
       text: 'Supabase (Auth, Realtime, Row-Level Security), PostgreSQL, AsyncStorage',
     },
     {
-      category: 'Tools',
+      category: 'Developer Workflow',
       color: '#fbbf24',
       text: 'Git, GitHub, EAS Build, VS Code',
     },
@@ -1164,7 +1604,7 @@ function createTechStackScreenTexture() {
 
   ctx.font = '20px monospace';
   ctx.fillStyle = '#38bdf8';
-  ctx.fillText('ghayzelle@galaxy-book2:~$ npm run deploy --role "Front-End Developer" --status "READY" 🚀', 88, 1186);
+  ctx.fillText('ghayzelle@workstation:~$ npm run deploy --role "Front-End Developer" --status "READY" 🚀', 88, 1186);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.flipY = false; // Maps canvas top to top of laptop screen
@@ -1175,85 +1615,103 @@ function createTechStackScreenTexture() {
   return texture;
 }
 
-// RESUME PAPER DISPLAY ON STUDY DESK
-function createResumePaperTexture() {
-  const canvas = document.createElement('canvas');
-  // Ultra high-res A4 document aspect ratio (1 : 1.414)
-  canvas.width = 2048;
-  canvas.height = 2896;
+// RESUME PAPER DISPLAY ON STUDY DESK (EXACT MATCH OF DOWNLOADABLE RESUME)
+function drawResumeOnCanvas(canvas) {
   const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
 
-  // Pure bright white background
+  // Crisp pure white paper
   ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, 2048, 2896);
+  ctx.fillRect(0, 0, W, H);
 
-  // Subtle clean border
+  // Subtle clean paper border
   ctx.strokeStyle = '#cbd5e1';
   ctx.lineWidth = 3;
-  ctx.strokeRect(48, 48, 1952, 2800);
+  ctx.strokeRect(30, 30, W - 60, H - 60);
 
-  // Top Header (Matching Resume PDF exactly)
-  ctx.font = '900 88px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  const marginX = 110;
+  const marginR = W - 110;
+  const contentW = marginR - marginX;
+
+  // 1. Top Navy Accent Bar (#16263b)
+  ctx.fillStyle = '#16263b';
+  ctx.fillRect(marginX, 85, contentW, 14);
+
+  // 2. Header
+  ctx.font = 'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#0f172a';
-  ctx.fillText('Ghayzelle Dizon', 88, 155);
+  ctx.fillText('GHAYZELLE DIZON', marginX, 195);
 
-  // Role Title
-  ctx.font = '800 32px "Inter", -apple-system, sans-serif';
+  ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#ea580c';
-  ctx.fillText('FRONT-END DEVELOPER', 88, 205);
+  ctx.fillText('Front-End Developer', marginX, 245);
 
-  // Contact Info bar
-  ctx.font = '600 24.5px sans-serif';
+  ctx.font = '500 25px -apple-system, sans-serif';
   ctx.fillStyle = '#475569';
-  ctx.fillText('+63 969 0199 663 | ghayzelle.dzn@gmail.com | gazed.vercel.app | github.com/geyzz | linkedin.com/in/ghayzelle-dizon', 88, 252);
+  ctx.fillText('0969 0199 663  |  ghayzelle.dzn@gmail.com  |  gazed.vercel.app  |  github.com/geyzz  |  linkedin.com/in/ghayzelle-dizon', marginX, 292);
 
-  // Header separator
-  ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 2.5;
+  // Header Bottom Divider
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(88, 280);
-  ctx.lineTo(1960, 280);
+  ctx.moveTo(marginX, 340);
+  ctx.lineTo(marginR, 340);
   ctx.stroke();
 
-  let curY = 345;
+  let curY = 385;
 
-  // Helper section header with orange square bullet matching the PDF
   const drawSectionHeader = (title) => {
-    // Orange square icon
     ctx.fillStyle = '#ea580c';
-    ctx.fillRect(88, curY - 22, 18, 18);
+    ctx.fillRect(marginX, curY + 4, 20, 20);
 
-    ctx.font = '900 32px "Inter", -apple-system, sans-serif';
-    ctx.fillStyle = '#0f172a';
-    ctx.fillText(title, 120, curY - 5);
+    ctx.font = 'bold 34px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = '#16263b';
+    ctx.fillText(title.toUpperCase(), marginX + 32, curY + 22);
 
-    ctx.strokeStyle = '#e2e8f0';
+    curY += 44;
+    ctx.strokeStyle = '#cbd5e1';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(88, curY + 14);
-    ctx.lineTo(1960, curY + 14);
+    ctx.moveTo(marginX, curY);
+    ctx.lineTo(marginR, curY);
     ctx.stroke();
-
-    curY += 52;
+    curY += 28;
   };
 
-  // 1. PROFILE
-  drawSectionHeader('PROFILE');
-  ctx.font = '500 27px "Inter", -apple-system, sans-serif';
-  ctx.fillStyle = '#1e293b';
+  const wrapText = (text, maxWidth) => {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+    words.forEach((w) => {
+      const test = currentLine ? currentLine + ' ' + w : w;
+      if (ctx.measureText(test).width <= maxWidth) {
+        currentLine = test;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = w;
+      }
+    });
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+
+  // 3. PROFILE
+  drawSectionHeader('Profile');
+  ctx.font = '500 26px -apple-system, sans-serif';
+  ctx.fillStyle = '#334155';
   const profileText =
     'Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter. Works earnestly toward every goal, learns new tools quickly, and follows through from initial design to working product.';
-  const profileLines = wrapCanvasText(profileText, 94);
-  profileLines.forEach((line) => {
-    ctx.fillText(line, 88, curY);
-    curY += 40;
+  const pLines = wrapText(profileText, contentW);
+  pLines.forEach((l) => {
+    ctx.fillText(l, marginX, curY);
+    curY += 38;
   });
   curY += 28;
 
-  // 2. TECHNICAL SKILLS
-  drawSectionHeader('TECHNICAL SKILLS');
-
-  const skills = [
+  // 4. TECHNICAL SKILLS
+  drawSectionHeader('Technical Skills');
+  const skillsData = [
     { label: 'Design & UI:', val: 'Figma, Blender (3D Modeling), UI/UX Design, Wireframing & Prototyping, Responsive Design, Custom CSS3' },
     { label: 'Languages:', val: 'JavaScript, TypeScript, HTML5, CSS3, Dart, Python, SQL' },
     { label: 'Frameworks & Libraries:', val: 'React, Vite, React Native, Expo, Expo Router, Flutter' },
@@ -1261,27 +1719,26 @@ function createResumePaperTexture() {
     { label: 'Tools:', val: 'Git, GitHub, EAS Build, VS Code' },
   ];
 
-  skills.forEach((s) => {
-    ctx.font = '800 27px sans-serif';
+  skillsData.forEach((s) => {
+    ctx.font = 'bold 27px -apple-system, sans-serif';
     ctx.fillStyle = '#0f172a';
-    ctx.fillText(s.label, 88, curY);
+    ctx.fillText(s.label, marginX, curY);
 
-    const labelW = ctx.measureText(s.label).width;
-    ctx.font = '500 27px sans-serif';
+    const lblW = ctx.measureText(s.label).width;
+    ctx.font = '500 26px -apple-system, sans-serif';
     ctx.fillStyle = '#334155';
-    ctx.fillText(s.val, 88 + labelW + 12, curY);
-    curY += 40;
+    ctx.fillText(s.val, marginX + lblW + 16, curY);
+    curY += 42;
   });
   curY += 28;
 
-  // 3. PROJECTS
-  drawSectionHeader('PROJECTS');
-
+  // 5. PROJECTS
+  drawSectionHeader('Projects');
   const projects = [
     {
       title: 'Plan_.ed - Shopping & Errand Planner App',
-      tag: 'Personal',
-      stack: 'React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build',
+      tag: 'Personal Project',
+      tech: 'React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build',
       bullets: [
         'Designed and built a mobile shopping planner featuring custom light/dark themes, collapsible headers, and an interactive errand calendar with native reminder alarms.',
         'Created smart checklists with real-time cost calculation and a directory linking items to 4 major Pampanga malls.',
@@ -1289,19 +1746,18 @@ function createResumePaperTexture() {
       ],
     },
     {
-      title: 'C&J Real Estate - Property Showcase & Management Platform',
-      tag: 'Personal',
-      stack: 'React, Vite, Supabase (PostgreSQL, RLS), JavaScript (ES6+), EmailJS, Custom CSS3',
+      title: 'C&J Real Estate - Property Showcase Website',
+      tag: 'Personal Project',
+      tech: 'React, Vite, JavaScript (JSX), CSS3, HTML5',
       bullets: [
-        'Architected a full-stack real estate platform and session-authenticated Admin Portal with Supabase for real-time property CRUD listings, status management, and lead tracking.',
-        'Engineered an interactive showroom featuring dual-thumb price sliders, dynamic Philippine geographic selectors (phil-reg-prov-mun-brgy), and multi-property inquiry carts.',
-        'Integrated automated client notification workflows using EmailJS and crafted responsive CSS3 Grid layouts achieving sub-second load times and fluid modal views.',
+        'Designed and developed a single-page real estate website with a custom brand identity, hero showcase, company overview cards, and property section.',
+        'Crafted custom CSS3 Flexbox layouts, layered blurred and clipped background visuals, and tailored typography.',
       ],
     },
     {
       title: 'HAUtogo - Real-Time Faculty Tracking & Class Management',
-      tag: 'Collaborative',
-      stack: 'Flutter, Dart, Supabase, flutter_map, geolocator',
+      tag: 'Collaborative Project',
+      tech: 'Flutter, Dart, Supabase, flutter_map, geolocator',
       bullets: [
         'Built a campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations.',
         'Designed role-based weekly schedule views for students and professors, plus one-tap room navigation and next-class indicators.',
@@ -1311,96 +1767,129 @@ function createResumePaperTexture() {
   ];
 
   projects.forEach((p) => {
-    ctx.font = '800 29px sans-serif';
+    ctx.font = 'bold 29px -apple-system, sans-serif';
     ctx.fillStyle = '#0f172a';
-    ctx.fillText(p.title, 88, curY);
+    ctx.fillText(p.title, marginX, curY);
 
-    ctx.font = '600 24px sans-serif';
+    ctx.font = 'bold 26px -apple-system, sans-serif';
     ctx.fillStyle = '#64748b';
-    ctx.fillText(p.tag, 1840, curY);
-    curY += 36;
+    ctx.textAlign = 'right';
+    ctx.fillText(p.tag, marginR, curY);
+    ctx.textAlign = 'left';
+    curY += 40;
 
-    ctx.font = 'italic 700 25px sans-serif';
-    ctx.fillStyle = '#c2410c';
-    ctx.fillText('Tech Stack: ' + p.stack, 88, curY);
-    curY += 34;
+    ctx.font = 'italic 26px -apple-system, sans-serif';
+    ctx.fillStyle = '#ea580c';
+    ctx.fillText('Tech Stack: ' + p.tech, marginX, curY);
+    curY += 38;
 
     p.bullets.forEach((b) => {
-      ctx.fillStyle = '#475569';
+      ctx.fillStyle = '#ea580c';
       ctx.beginPath();
-      ctx.arc(98, curY - 7, 4.5, 0, Math.PI * 2);
+      ctx.arc(marginX + 12, curY - 9, 5, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.font = '500 26px sans-serif';
-      ctx.fillStyle = '#1e293b';
-      const lines = wrapCanvasText(b, 90);
-      lines.forEach((l) => {
-        ctx.fillText(l, 118, curY);
-        curY += 36;
+      ctx.font = '500 26px -apple-system, sans-serif';
+      ctx.fillStyle = '#334155';
+      const bLines = wrapText(b, contentW - 40);
+      bLines.forEach((bl) => {
+        ctx.fillText(bl, marginX + 28, curY);
+        curY += 38;
       });
+      curY += 4;
     });
     curY += 18;
   });
   curY += 12;
 
-  // 4. EDUCATION
-  drawSectionHeader('EDUCATION');
-  ctx.font = '800 29px sans-serif';
+  // 6. EDUCATION
+  drawSectionHeader('Education');
+  ctx.font = 'bold 29px -apple-system, sans-serif';
   ctx.fillStyle = '#0f172a';
-  ctx.fillText('Bachelor of Science in Computer Science', 88, curY);
+  ctx.fillText('Bachelor of Science in Computer Science', marginX, curY);
 
-  ctx.font = '600 24px sans-serif';
+  ctx.font = 'bold 26px -apple-system, sans-serif';
   ctx.fillStyle = '#64748b';
-  ctx.fillText('2023 - Present', 1780, curY);
-  curY += 36;
+  ctx.textAlign = 'right';
+  ctx.fillText('2023 - Present', marginR, curY);
+  ctx.textAlign = 'left';
+  curY += 38;
 
-  ctx.font = '600 26px sans-serif';
-  ctx.fillStyle = '#334155';
-  ctx.fillText('Holy Angel University', 88, curY);
-  curY += 34;
-
+  ctx.font = '500 26px -apple-system, sans-serif';
   ctx.fillStyle = '#475569';
+  ctx.fillText('Holy Angel University', marginX, curY);
+  curY += 38;
+
+  // Dean's Lister badge pill
+  const badgeText = "• Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year";
+  ctx.font = 'bold 24px -apple-system, sans-serif';
+  const badgeW = ctx.measureText(badgeText).width;
+  ctx.fillStyle = '#f0fdfa';
+  ctx.strokeStyle = '#0d9488';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(98, curY - 7, 4.5, 0, Math.PI * 2);
+  ctx.roundRect(marginX, curY, badgeW + 32, 42, 6);
   ctx.fill();
+  ctx.stroke();
 
-  ctx.font = '600 25.5px sans-serif';
-  ctx.fillStyle = '#0f172a';
-  ctx.fillText("Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year", 118, curY);
-  curY += 56;
+  ctx.fillStyle = '#0f766e';
+  ctx.fillText(badgeText, marginX + 16, curY + 29);
+  curY += 72;
 
-  // 5. CERTIFICATIONS
-  drawSectionHeader('CERTIFICATIONS');
-
+  // 7. CERTIFICATIONS
+  drawSectionHeader('Certifications');
   const certs = [
-    'Responsive Web Design - freeCodeCamp',
-    'JavaScript Essentials 1 - Cisco Networking Academy',
-    'AWS Academy Graduate - Cloud Foundations - Amazon Web Services',
+    { title: 'Responsive Web Design - freeCodeCamp', date: 'Sep 2024' },
+    { title: 'JavaScript Essentials 1 - Cisco Networking Academy', date: 'Oct 2024' },
+    { title: 'AWS Academy Graduate - Cloud Foundations - Amazon Web Services', date: 'Feb 2026' },
   ];
 
   certs.forEach((c) => {
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = '#ea580c';
     ctx.beginPath();
-    ctx.arc(98, curY - 7, 4.5, 0, Math.PI * 2);
+    ctx.arc(marginX + 12, curY - 9, 5, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.font = '600 26px sans-serif';
+    ctx.font = 'bold 27px -apple-system, sans-serif';
     ctx.fillStyle = '#0f172a';
-    ctx.fillText(c, 118, curY);
-    curY += 40;
+    ctx.fillText(c.title, marginX + 28, curY);
+
+    ctx.font = '500 26px -apple-system, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'right';
+    ctx.fillText(c.date, marginR, curY);
+    ctx.textAlign = 'left';
+
+    curY += 44;
   });
 
-  const texture = new THREE.CanvasTexture(canvas);
-  // Three.js PlaneGeometry uses standard top-to-bottom UVs when flipY is true
+  // Footer bar
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(marginX, H - 85);
+  ctx.lineTo(marginR, H - 85);
+  ctx.stroke();
+
+  ctx.font = '500 24px -apple-system, sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillText('Ghayzelle Dizon  •  Front-End Developer  •  gazed.vercel.app  •  Official Resume', marginX, H - 60);
+}
+
+function createResumePaperTexture() {
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load('/resume-sheet.png?v=4');
   texture.flipY = true;
-  texture.minFilter = THREE.LinearFilter;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 16;
+  texture.needsUpdate = true;
   return texture;
 }
 
-// ABOUT ME PAPER DISPLAY ON BULLETIN BOARD
+// ABOUT ME PAPER DISPLAY ON BULLETIN BOARD (BIO & PERSONAL STRENGTHS)
 function createAboutMePaperTexture() {
   const canvas = document.createElement('canvas');
   // Wide pinned memo paper matching the 3D bulletin board note proportions (~ 1.33 : 1)
@@ -1414,74 +1903,157 @@ function createAboutMePaperTexture() {
 
   // Clean paper border
   ctx.strokeStyle = '#dfd9ce';
-  ctx.lineWidth = 5;
-  ctx.strokeRect(40, 40, 1968, 1456);
+  ctx.lineWidth = 4;
+  ctx.strokeRect(36, 36, 1976, 1464);
 
   // Top pin hole indicator
-  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.fillStyle = '#b0a898';
   ctx.beginPath();
-  ctx.arc(1024, 70, 14, 0, Math.PI * 2);
+  ctx.arc(1024, 64, 10, 0, Math.PI * 2);
   ctx.fill();
 
   // Title: A Little About Me (Bold, High Contrast, Centered)
-  ctx.font = '900 78px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.font = '900 64px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#0f172a';
   ctx.textAlign = 'center';
-  ctx.fillText('A Little About Me', 1024, 195);
+  ctx.fillText('A Little About Me', 1024, 138);
 
   // Warm terracotta accent line under title
   ctx.strokeStyle = '#ea580c';
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(760, 228);
-  ctx.lineTo(1288, 228);
+  ctx.moveTo(760, 168);
+  ctx.lineTo(1288, 168);
   ctx.stroke();
 
-  // Reset text alignment for paragraphs
+  // Reset text alignment for two columns
   ctx.textAlign = 'left';
 
-  // 3 paragraphs provided by Ghayzelle
+  // ═════════════════════════════════════════════════════════════════════
+  // LEFT COLUMN: HELLO, I'M GHAYZELLE + EDUCATION (X: 90 .. 1000)
+  // ═════════════════════════════════════════════════════════════════════
+  ctx.font = '900 34px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#ea580c';
+  ctx.fillText("Hello, I'm Ghayzelle", 90, 235);
+
+  const helloWidth = ctx.measureText("Hello, I'm Ghayzelle").width;
+  ctx.strokeStyle = '#fed7aa';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(90, 255);
+  ctx.lineTo(90 + helloWidth + 20, 255);
+  ctx.stroke();
+
   const paragraphs = [
     "I'm someone who embraces new experiences, welcomes different ideas and perspectives, and is always open to learning.",
     "As an aspiring Front-End Developer, I enjoy turning ideas into interactive and meaningful digital experiences. I'm interested in exploring how design and technology work together to create interfaces that are both functional and engaging.",
     "I believe growth comes from stepping outside my comfort zone, taking on challenges, and turning new ideas into action. I may not have everything figured out, but I'm always moving forward, learning through experience, and finding new ways to improve.",
   ];
 
-  let curY = 345;
+  let curY = 300;
+  ctx.font = '500 27px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#1e293b';
 
   paragraphs.forEach((p) => {
-    // Bold, punchy font size and pitch dark color guarantees 100% readability from any camera angle
-    ctx.font = 'bold 46px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = '#020617';
-    const lines = wrapCanvasText(p, 52);
+    const lines = wrapCanvasText(p, 42);
     lines.forEach((line) => {
-      ctx.fillText(line, 150, curY);
-      curY += 66;
+      ctx.fillText(line, 90, curY);
+      curY += 40;
     });
-    curY += 48; // comfortable spacing between paragraphs
+    curY += 26;
   });
 
-  // Education tag
-  ctx.font = 'bold 40px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = '#1e293b';
-  ctx.fillText('🎓 Holy Angel University — BS Computer Science (2023 – Present)', 150, 1430);
+  // Education Card Box
+  const eduY = curY + 14;
+  ctx.fillStyle = '#f1f5f9';
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(90, eduY, 890, 175, 12);
+  ctx.fill();
+  ctx.stroke();
 
-  // Sign-off
-  ctx.font = 'bold italic 48px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.font = 'bold 28px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#0f172a';
+  ctx.fillText('🎓 Holy Angel University', 115, eduY + 44);
+
+  ctx.font = '500 24px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#475569';
+  ctx.fillText('Bachelor of Science in Computer Science (2023 – Present)', 115, eduY + 86);
+
+  ctx.font = 'bold 23px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#059669';
+  ctx.fillText("★ Dean's Lister: 1st Year (1st Sem), 2nd Year (1st Sem), 3rd Year", 115, eduY + 132);
+
+  // ═════════════════════════════════════════════════════════════════════
+  // RIGHT COLUMN: PERSONAL STRENGTHS (X: 1040 .. 1958)
+  // ═════════════════════════════════════════════════════════════════════
+  ctx.font = '900 34px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#ea580c';
+  ctx.fillText('PERSONAL STRENGTHS', 1040, 235);
+
+  ctx.strokeStyle = '#fed7aa';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(1040, 255);
+  ctx.lineTo(1450, 255);
+  ctx.stroke();
+
+  let sy = 295;
+  PERSONAL_STRENGTHS.forEach((item) => {
+    // Card background
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(1040, sy, 918, 128, 10);
+    ctx.fill();
+    ctx.stroke();
+
+    // Number badge
+    ctx.fillStyle = '#ffedd5';
+    ctx.strokeStyle = '#fdba74';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(1060, sy + 24, 60, 60, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.font = 'bold 26px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = '#c2410c';
+    ctx.textAlign = 'center';
+    ctx.fillText(item.num, 1090, sy + 62);
+    ctx.textAlign = 'left';
+
+    // Title & Description
+    ctx.font = 'bold 28px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(item.title, 1140, sy + 48);
+
+    ctx.font = '500 24px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = '#475569';
+    ctx.fillText(item.desc, 1140, sy + 90);
+
+    sy += 148;
+  });
+
+  // Signature
+  ctx.font = 'bold italic 36px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillStyle = '#ea580c';
   ctx.textAlign = 'right';
-  ctx.fillText('— Ghayzelle Dizon', 1898, 1430);
+  ctx.fillText('— Ghayzelle Dizon', 1958, 1445);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.flipY = false;
-  texture.minFilter = THREE.LinearFilter;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 16;
   return texture;
 }
 
-export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPaused = false }) {
+export default function Desk3DViewer({ onClose, onOpenInquiry = null, isPaused = false }) {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -1545,16 +2117,17 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
   const [activeStation, setActiveStation] = useState('room');
   const [hoveredStation, setHoveredStation] = useState(null);
   const [panelDismissed, setPanelDismissed] = useState(false);
-  const [monitorTab, setMonitorTab] = useState('portfolio'); // 'portfolio' | 'certificates'
+  const [resumeTab, setResumeTab] = useState('resume'); // 'resume' | 'certificates'
   const [carouselOpen, setCarouselOpen] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [selectedCertModal, setSelectedCertModal] = useState(null);
 
   // Stale-closure-safe refs for event handlers
   const activeStationRef = useRef(activeStation);
   activeStationRef.current = activeStation;
 
-  const onOpenPortfolioWebRef = useRef(onOpenPortfolioWeb);
-  onOpenPortfolioWebRef.current = onOpenPortfolioWeb;
+  const carouselIndexRef = useRef(carouselIndex);
+  carouselIndexRef.current = carouselIndex;
 
   const isPausedRef = useRef(isPaused);
   isPausedRef.current = isPaused;
@@ -1582,23 +2155,201 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     targetLimits: STATION_LIMITS.room,
   });
   const monitorMeshRef = useRef(null);
-  const portfolioTextureRef = useRef(null);
+  const portfolioTexturesRef = useRef(null);
+  if (!portfolioTexturesRef.current) {
+    portfolioTexturesRef.current = [
+      createPortfolioCarouselTexture(0),
+      createPortfolioCarouselTexture(1),
+      createPortfolioCarouselTexture(2),
+    ];
+  }
+  const transitionCanvasRef = useRef(null);
+  const transitionTextureRef = useRef(null);
+  const transitionAnimIdRef = useRef(null);
+  const isTransitioningMonitorRef = useRef(false);
+
+  if (!transitionCanvasRef.current && typeof document !== 'undefined') {
+    const tCanvas = document.createElement('canvas');
+    tCanvas.width = 2048;
+    tCanvas.height = 1024;
+    transitionCanvasRef.current = tCanvas;
+    const tTex = new THREE.CanvasTexture(tCanvas);
+    tTex.flipY = false;
+    tTex.colorSpace = THREE.SRGBColorSpace;
+    tTex.minFilter = THREE.LinearFilter;
+    tTex.magFilter = THREE.LinearFilter;
+    tTex.generateMipmaps = false;
+    transitionTextureRef.current = tTex;
+  }
+
   const certificatesTextureRef = useRef(null);
   const containerSizeRef = useRef({ w: 0, h: 0 });
   const cachedDomRectRef = useRef(null);
   const elementsRef = useRef({});
 
-  // Dynamically swap 3D monitor texture whenever monitorTab, carouselOpen, or carouselIndex changes
-  useEffect(() => {
-    if (monitorMeshRef.current && monitorMeshRef.current.material) {
-      let tex;
-      if (monitorTab === 'certificates') {
-        tex = certificatesTextureRef.current;
-      } else if (carouselOpen) {
-        tex = createPortfolioCarouselTexture(carouselIndex);
-      } else {
-        tex = portfolioTextureRef.current;
+  // Smooth cinematic animated slide transition between projects on the 3D monitor screen
+  const updateMonitorProject = (newIndex, explicitDir = null) => {
+    const fromIdx = carouselIndexRef.current;
+    const toIdx = ((newIndex % 3) + 3) % 3;
+
+    if (fromIdx === toIdx && !isTransitioningMonitorRef.current) return;
+
+    // Slide direction: +1 slides left (advance next), -1 slides right (go back)
+    let dir = explicitDir;
+    if (dir === null) {
+      if (fromIdx === 2 && toIdx === 0) dir = 1;
+      else if (fromIdx === 0 && toIdx === 2) dir = -1;
+      else dir = toIdx > fromIdx ? 1 : -1;
+    }
+
+    if (transitionAnimIdRef.current) {
+      cancelAnimationFrame(transitionAnimIdRef.current);
+      transitionAnimIdRef.current = null;
+    }
+
+    // Set transition lock IMMEDIATELY so secondary useEffect safeguard doesn't clobber the animation
+    isTransitioningMonitorRef.current = true;
+    setCarouselIndex(toIdx);
+    carouselIndexRef.current = toIdx;
+
+    if (!monitorMeshRef.current?.material || !portfolioTexturesRef.current) {
+      isTransitioningMonitorRef.current = false;
+      return;
+    }
+
+    const fromCanvas = portfolioTexturesRef.current[fromIdx]?.image;
+    const toCanvas = portfolioTexturesRef.current[toIdx]?.image;
+    const tCanvas = transitionCanvasRef.current;
+    const tTex = transitionTextureRef.current;
+
+    if (!fromCanvas || !toCanvas || !tCanvas || !tTex) {
+      const tex = portfolioTexturesRef.current[toIdx];
+      if (tex) {
+        tex.needsUpdate = true;
+        monitorMeshRef.current.material.map = tex;
+        monitorMeshRef.current.material.emissiveMap = tex;
+        monitorMeshRef.current.material.needsUpdate = true;
       }
+      isTransitioningMonitorRef.current = false;
+      return;
+    }
+
+    const tCtx = tCanvas.getContext('2d');
+    const targetAccent = PORTFOLIO_PROJECTS[toIdx]?.accent || '#d6b349';
+    const duration = 380; // snappy, fluid 380ms slide
+    const startTime = performance.now();
+
+    // Assign transition canvas texture to monitor
+    monitorMeshRef.current.material.map = tTex;
+    monitorMeshRef.current.material.emissiveMap = tTex;
+    monitorMeshRef.current.material.needsUpdate = true;
+
+    const animateSlide = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Snappy deceleration cubic curve
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const shift = dir * ease * 2048;
+
+      // Draw sliding canvases
+      tCtx.fillStyle = '#06080e';
+      tCtx.fillRect(0, 0, 2048, 1024);
+
+      // 1. Outgoing project sliding away
+      tCtx.drawImage(fromCanvas, -shift, 0);
+
+      // 2. Incoming project sliding into view
+      const incomingX = dir > 0 ? (2048 - shift) : (-2048 - shift);
+      tCtx.drawImage(toCanvas, incomingX, 0);
+
+      // 3. Futuristic glowing neon energy divider line
+      const dividerX = incomingX;
+      tCtx.save();
+      tCtx.strokeStyle = targetAccent;
+      tCtx.shadowColor = targetAccent;
+      tCtx.shadowBlur = 24;
+      tCtx.lineWidth = 6;
+      tCtx.beginPath();
+      tCtx.moveTo(dividerX, 0);
+      tCtx.lineTo(dividerX, 1024);
+      tCtx.stroke();
+
+      // Atmospheric glowing gradient bleed on the incoming side
+      const grad = tCtx.createLinearGradient(dividerX - (dir > 0 ? 40 : -40), 0, dividerX, 0);
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      grad.addColorStop(1, targetAccent + '55');
+      tCtx.fillStyle = grad;
+      tCtx.fillRect(dir > 0 ? (dividerX - 40) : dividerX, 0, 40, 1024);
+      tCtx.restore();
+
+      // Dynamic emissive pulse on monitor during transition (balanced, non-glaring)
+      if (monitorMeshRef.current?.material) {
+        const pulse = Math.sin(progress * Math.PI) * 0.08;
+        monitorMeshRef.current.material.emissiveIntensity = 0.95 + pulse;
+      }
+
+      tTex.needsUpdate = true;
+
+      if (progress < 1) {
+        transitionAnimIdRef.current = requestAnimationFrame(animateSlide);
+      } else {
+        // Animation finished: cleanly snap to target pre-rendered texture
+        isTransitioningMonitorRef.current = false;
+        transitionAnimIdRef.current = null;
+        if (monitorMeshRef.current?.material) {
+          const finalTex = portfolioTexturesRef.current[toIdx];
+          finalTex.needsUpdate = true;
+          monitorMeshRef.current.material.map = finalTex;
+          monitorMeshRef.current.material.emissiveMap = finalTex;
+          monitorMeshRef.current.material.emissiveIntensity = 0.95;
+          monitorMeshRef.current.material.needsUpdate = true;
+        }
+      }
+    };
+
+    transitionAnimIdRef.current = requestAnimationFrame(animateSlide);
+  };
+
+  // Preload actual project screenshots & certificate images and re-render monitor screen
+  useEffect(() => {
+    preloadProjectScreenImages();
+    preloadCertScreenImages();
+    onProjectImagesLoadedListener = () => {
+      if (portfolioTexturesRef.current) {
+        portfolioTexturesRef.current.forEach((tex, idx) => {
+          if (tex && tex.image) {
+            drawProjectScreenOnCanvas(tex.image, idx);
+            tex.needsUpdate = true;
+          }
+        });
+        if (monitorMeshRef.current?.material) {
+          const curTex = portfolioTexturesRef.current[carouselIndexRef.current];
+          if (curTex) {
+            monitorMeshRef.current.material.map = curTex;
+            monitorMeshRef.current.material.emissiveMap = curTex;
+            monitorMeshRef.current.material.needsUpdate = true;
+          }
+        }
+      }
+    };
+    onCertImagesLoadedListener = () => {
+      if (certificatesTextureRef.current?.image) {
+        drawCertificatesScreenOnCanvas(certificatesTextureRef.current.image);
+        certificatesTextureRef.current.needsUpdate = true;
+      }
+    };
+    return () => {
+      onProjectImagesLoadedListener = null;
+      onCertImagesLoadedListener = null;
+    };
+  }, []);
+
+  // Secondary safeguard: swap 3D monitor texture whenever carouselIndex state changes
+  useEffect(() => {
+    if (monitorMeshRef.current?.material && portfolioTexturesRef.current && !isTransitioningMonitorRef.current) {
+      const safeIdx = ((carouselIndex % 3) + 3) % 3;
+      const tex = portfolioTexturesRef.current[safeIdx];
       if (tex) {
         tex.needsUpdate = true;
         monitorMeshRef.current.material.map = tex;
@@ -1606,7 +2357,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         monitorMeshRef.current.material.needsUpdate = true;
       }
     }
-  }, [monitorTab, carouselOpen, carouselIndex]);
+  }, [carouselIndex]);
 
   const goToStation = (stationKey) => {
     setActiveStation(stationKey);
@@ -1774,8 +2525,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     ceilingLightCenter.position.set(-1.4, 7.82, 0.0);
     scene.add(ceilingLightCenter);
 
-    // H. Monitor Screen Cool Blue Ambient
-    const monitorScreenLight = new THREE.PointLight(0x3b77cc, 1.5, 2.5);
+    // H. Monitor Screen Cool Ambient (Soft, balanced illumination)
+    const monitorScreenLight = new THREE.PointLight(0x3b77cc, 0.45, 2.5);
     monitorScreenLight.position.set(-2.4, 5.65, 0.08);
     scene.add(monitorScreenLight);
 
@@ -1787,29 +2538,6 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     const interactiveList = [];
     let bookCounter = 0;
     const mugTexture = createTwoToneMugTexture();
-    const portfolioTexture = new THREE.TextureLoader().load(
-      '/monitor-screen.png',
-      (tex) => {
-        tex.flipY = false;
-        tex.generateMipmaps = true;
-        tex.minFilter = THREE.LinearFilter;
-        tex.magFilter = THREE.LinearFilter;
-        tex.anisotropy = 16;
-        tex.needsUpdate = true;
-        if (monitorMeshRef.current?.material) {
-          monitorMeshRef.current.material.map = tex;
-          monitorMeshRef.current.material.emissiveMap = tex;
-          monitorMeshRef.current.material.needsUpdate = true;
-        }
-      }
-    );
-    portfolioTexture.flipY = false;
-    portfolioTexture.generateMipmaps = true;
-    portfolioTexture.minFilter = THREE.LinearFilter;
-    portfolioTexture.magFilter = THREE.LinearFilter;
-    portfolioTexture.anisotropy = 16;
-    portfolioTextureRef.current = portfolioTexture;
-
     const certificatesTexture = createCertificatesScreenTexture();
     certificatesTextureRef.current = certificatesTexture;
     const techStackTexture = createTechStackScreenTexture();
@@ -1818,8 +2546,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
     const polaroidPhotoTexture = new THREE.TextureLoader().load('/ghayzelle-polaroid.jpg');
     polaroidPhotoTexture.flipY = true;
     polaroidPhotoTexture.generateMipmaps = true;
-    polaroidPhotoTexture.minFilter = THREE.LinearFilter;
+    polaroidPhotoTexture.minFilter = THREE.LinearMipmapLinearFilter;
     polaroidPhotoTexture.magFilter = THREE.LinearFilter;
+    polaroidPhotoTexture.anisotropy = 16;
 
     loader.load(
       '/desk.glb',
@@ -1858,9 +2587,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
             // Tag interactive objects for clicks
             if (
-              name.includes('monitor') ||
-              name.includes('screen_low') ||
-              matName.includes('monitor_screen')
+              (name.includes('monitor') || matName.includes('monitor_screen')) &&
+              !name.includes('screen_low')
             ) {
               child.userData = { station: 'portfolio' };
               interactiveList.push(child);
@@ -1899,8 +2627,8 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
                 emissiveMap: techStackTexture,
                 color: new THREE.Color(0xffffff),
                 emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 1.3,
-                roughness: 0.15,
+                emissiveIntensity: 0.32,
+                roughness: 0.35,
                 metalness: 0.0,
                 side: THREE.DoubleSide,
               });
@@ -1916,25 +2644,26 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               matName.includes('monitor_screen')
             ) {
               monitorMeshRef.current = child;
-              const initialTex = monitorTab === 'portfolio' ? portfolioTexture : certificatesTexture;
+              const curIdx = carouselIndexRef.current;
+              const initialTex = portfolioTexturesRef.current ? portfolioTexturesRef.current[curIdx] : createPortfolioCarouselTexture(0);
               initialTex.needsUpdate = true;
               child.material = new THREE.MeshStandardMaterial({
                 map: initialTex,
                 emissiveMap: initialTex,
-                color: new THREE.Color(0xffffff),
+                color: new THREE.Color(0x181818), // subtle diffuse catch so screen seamlessly integrates with ambient
                 emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 1.1,
-                roughness: 0.2,
+                emissiveIntensity: 0.95, // vivid, crisp high-contrast self-illumination
+                roughness: 0.4,
                 metalness: 0.0,
                 side: THREE.DoubleSide,
               });
               child.material.needsUpdate = true;
-              child.userData = { station: 'portfolio' };
+              child.userData = { station: 'portfolio', isScreen: true };
               interactiveList.push(child);
               return;
             }
 
-            // 0C. CLEAN PAPER STACK UNDERNEATH RESUME ()
+            // 0C. CLEAN PAPER STACK UNDERNEATH RESUME (LARGE DESK PAPER PILES)
             if (
               name === 'plane.015' ||
               name === 'plane015' ||
@@ -2228,21 +2957,22 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           }
         });
 
-        // DEDICATED CRISP PRINTED RESUME SHEET ON DESK
+        // DEDICATED CRISP PRINTED RESUME SHEET ON DESK (HIGH CONTRAST & SELF-ILLUMINATED TEXTURE)
         resumePaperTexture.needsUpdate = true;
-        const resumeGeo = new THREE.PlaneGeometry(0.42, 0.594); // standard A4 sheet proportion (1 : 1.414)
+        const resumeGeo = new THREE.PlaneGeometry(0.42, 0.594); // matches the paper stack on the desk
         const resumeMat = new THREE.MeshStandardMaterial({
           map: resumePaperTexture,
           emissiveMap: resumePaperTexture,
           emissive: new THREE.Color(0xffffff),
-          emissiveIntensity: 0.65, // Crisp self-illumination guarantees 100% text legibility under all room lighting
-          roughness: 0.25,
+          emissiveIntensity: 0.45,
+          color: new THREE.Color(0xffffff),
+          roughness: 0.4,
           metalness: 0.0,
           side: THREE.DoubleSide,
         });
         const resumeMesh = new THREE.Mesh(resumeGeo, resumeMat);
         resumeMesh.name = 'resumePaperSheet';
-        resumeMesh.position.set(-0.827, 5.604, -1.579);
+        resumeMesh.position.set(-0.827, 5.606, -1.579);
         resumeMesh.rotation.set(-Math.PI / 2, 0, -0.25);
         resumeMesh.userData = { station: 'resume' };
         resumeMesh.castShadow = true;
@@ -2297,23 +3027,28 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             renderer.domElement.style.cursor = 'pointer';
 
             if (station === 'portfolio' && monitorMeshRef.current?.material) {
-              monitorMeshRef.current.material.emissiveIntensity = 1.35;
-            } else if (monitorMeshRef.current?.material) {
               monitorMeshRef.current.material.emissiveIntensity = 1.05;
+            } else if (monitorMeshRef.current?.material) {
+              monitorMeshRef.current.material.emissiveIntensity = 0.95;
             }
           } else {
             setHoveredStation(null);
             renderer.domElement.style.cursor = 'grab';
             if (monitorMeshRef.current?.material) {
-              monitorMeshRef.current.material.emissiveIntensity = 1.05;
+              monitorMeshRef.current.material.emissiveIntensity = 0.95;
             }
           }
         });
       }
     };
 
-    const handleClick = () => {
+    const handleClick = (e) => {
       if (isPausedRef.current || flightState.current.active) return;
+      if (e) {
+        const rect = cachedDomRectRef.current || renderer.domElement.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      }
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(interactiveMeshesRef.current, false);
       if (intersects.length > 0) {
@@ -2323,14 +3058,32 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           const currentStation = activeStationRef.current;
           if (station === 'portfolio') {
             if (currentStation === 'portfolio') {
-              if (onOpenPortfolioWebRef.current) {
-                onOpenPortfolioWebRef.current();
-                return;
+              // 1. Check if clicked "View Repository" button in bottom right corner
+              const isViewRepo = hit.uv && hit.uv.x > 0.85 && hit.uv.y > 0.82;
+              if (isViewRepo) {
+                const currentProj = PORTFOLIO_PROJECTS[carouselIndexRef.current];
+                if (currentProj?.github) {
+                  window.open(currentProj.github, '_blank', 'noopener,noreferrer');
+                  return;
+                }
+              }
+
+              // 2. Bi-directional 3D Monitor navigation: click left side for Prev (-1), right side for Next (+1)
+              const isLeft = (hit.uv && typeof hit.uv.x === 'number')
+                ? hit.uv.x < 0.5
+                : (hit.point ? hit.point.x < -1.08 : false);
+
+              if (isLeft) {
+                const prevIdx = (carouselIndexRef.current - 1 + 3) % 3;
+                updateMonitorProject(prevIdx, -1);
+              } else {
+                const nextIdx = (carouselIndexRef.current + 1) % 3;
+                updateMonitorProject(nextIdx, 1);
               }
             } else {
               goToStation('portfolio');
-              return;
             }
+            return;
           } else {
             goToStation(station);
           }
@@ -2599,6 +3352,9 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
 
     return () => {
       cancelAnimationFrame(animationId);
+      if (transitionAnimIdRef.current) {
+        cancelAnimationFrame(transitionAnimIdRef.current);
+      }
       window.removeEventListener('resize', handleResize);
       domEl.removeEventListener('pointermove', handlePointerMove);
       domEl.removeEventListener('click', handleClick);
@@ -2799,20 +3555,311 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           STATION PANELS (DISPLAYED WHEN ZOOMED IN)
       */}
 
+      {/* 1. PORTFOLIO & CERTIFICATES STATION PANEL (CURVED ULTRAWIDE MONITOR) */}
+      {activeStation === 'portfolio' && !panelDismissed && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 'clamp(84px, 10vh, 100px)',
+            right: 'clamp(10px, 3vw, 36px)',
+            left: 'clamp(10px, 3vw, auto)',
+            width: 'min(460px, calc(100vw - 20px))',
+            maxHeight: 'min(74vh, calc(100vh - 164px))',
+            margin: '0 auto',
+            overflowY: 'auto',
+            backgroundColor: 'rgba(13, 17, 24, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 120, 60, 0.35)',
+            borderRadius: '16px',
+            padding: 'clamp(14px, 2.5vw, 24px)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 77, 21, 0.2)',
+            zIndex: 40,
+            animation: 'slideUp 0.3s ease-out',
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+              <Monitor size={18} color="#ff7728" style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#ff8a5c', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                PORTFOLIO • FEATURED PROJECTS
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              <button
+                onClick={() => goToStation('room')}
+                title="Return to Studio View"
+                style={{
+                  background: 'rgba(255, 120, 60, 0.12)',
+                  border: '1px solid rgba(255, 120, 60, 0.3)',
+                  color: '#ff8a5c',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <Compass size={12} />
+                <span>Studio</span>
+              </button>
+              <button
+                onClick={() => setPanelDismissed(true)}
+                title="Hide Panel to inspect 3D Monitor"
+                style={{
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#94a3b8',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </div>
 
+          {/* Project Pills & Carousel Arrows */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginBottom: '12px' }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateMonitorProject((carouselIndex - 1 + 3) % 3, -1);
+                  }}
+                  title="Previous Project"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#fff',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <ChevronLeft size={16} />
+                </button>
 
+                <div style={{ display: 'flex', gap: '6px', flex: 1 }}>
+                  {PORTFOLIO_PROJECTS.map((proj, idx) => {
+                    const isActive = carouselIndex === idx;
+                    return (
+                      <button
+                        key={proj.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateMonitorProject(idx);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '6px 4px',
+                          borderRadius: '6px',
+                          border: isActive ? `1px solid ${proj.accent}` : '1px solid rgba(255, 255, 255, 0.08)',
+                          background: isActive ? `${proj.accent}22` : 'rgba(255, 255, 255, 0.04)',
+                          color: isActive ? '#fff' : '#94a3b8',
+                          fontSize: '11px',
+                          fontWeight: isActive ? '800' : '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          textAlign: 'center',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {proj.title}
+                      </button>
+                    );
+                  })}
+                </div>
 
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateMonitorProject((carouselIndex + 1) % 3, 1);
+                  }}
+                  title="Next Project"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#fff',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+
+              {/* Interactive 3D Screen Hint */}
+              <div
+                style={{
+                  fontSize: '11px',
+                  color: '#ffaa80',
+                  backgroundColor: 'rgba(255, 77, 21, 0.08)',
+                  border: '1px dashed rgba(255, 77, 21, 0.3)',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <Sparkles size={12} color="#ff7728" style={{ flexShrink: 0 }} />
+                <span>Tip: Click directly on the 3D monitor screen to cycle through projects!</span>
+              </div>
+
+              {/* Current Project Details */}
+              {(() => {
+                const currentProj = PORTFOLIO_PROJECTS[carouselIndex];
+                return (
+                  <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                      <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#fff' }}>
+                        {currentProj.title}
+                      </h4>
+                      <span style={{ fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '100px', backgroundColor: `${currentProj.accent}25`, color: currentProj.accent, border: `1px solid ${currentProj.accent}55` }}>
+                        {currentProj.tag}
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '11.5px', color: '#94a3b8', marginBottom: '8px' }}>
+                      {currentProj.subtitle} • {currentProj.category}
+                    </div>
+
+                    <p style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: 1.5, margin: '0 0 10px 0' }}>
+                      {currentProj.desc}
+                    </p>
+
+                    {/* Highlights */}
+                    <div style={{ marginBottom: '10px' }}>
+                      {currentProj.highlights.map((h, i) => (
+                        <div key={i} style={{ fontSize: '11.5px', color: '#94a3b8', lineHeight: 1.45, marginBottom: '3px', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                          <span style={{ color: currentProj.accent, fontWeight: 'bold' }}>•</span>
+                          <span>{h}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Tech Stack Pills */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px' }}>
+                      {currentProj.stack.map((s, i) => (
+                        <span key={i} style={{ fontSize: '10px', fontWeight: '600', padding: '2px 7px', borderRadius: '4px', backgroundColor: 'rgba(255, 255, 255, 0.06)', color: '#e2e8f0', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Links */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {currentProj.github && (
+                        <a
+                          href={currentProj.github}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            flex: 1,
+                            padding: '8px 12px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            color: '#fff',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            textDecoration: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          <ExternalLink size={13} />
+                          <span>View Code on GitHub</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+          {/* Bottom Actions */}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => goToStation('room')}
+              style={{
+                flex: 1,
+                padding: '9px 14px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: '#fff',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+              }}
+            >
+              <Compass size={14} />
+              <span>Back to Studio</span>
+            </button>
+            <button
+              onClick={() => setPanelDismissed(true)}
+              style={{
+                flex: 1,
+                padding: '9px 14px',
+                backgroundColor: '#ff4d15',
+                color: '#fff',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                boxShadow: '0 4px 12px rgba(255, 77, 21, 0.35)',
+              }}
+            >
+              <Maximize2 size={14} />
+              <span>Inspect in 3D</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 2. TECH STACK PANEL (LAPTOP) */}
       {activeStation === 'techstack' && !panelDismissed && (
         <div
           style={{
             position: 'absolute',
-            bottom: 'clamp(14px, 3vh, 90px)',
+            bottom: 'clamp(84px, 10vh, 100px)',
             right: 'clamp(10px, 3vw, 36px)',
             left: 'clamp(10px, 3vw, auto)',
             width: 'min(440px, calc(100vw - 20px))',
-            maxHeight: 'min(76vh, calc(100vh - 120px))',
+            maxHeight: 'min(74vh, calc(100vh - 164px))',
             margin: '0 auto',
             overflowY: 'auto',
             backgroundColor: 'rgba(13, 17, 24, 0.95)',
@@ -2829,7 +3876,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
               <Laptop size={18} color="#60a5fa" style={{ flexShrink: 0 }} />
               <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#60a5fa', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                SAMSUNG GALAXY BOOK 2 • SKILLS
+                TECHNICAL SKILLS
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
@@ -2868,15 +3915,15 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           </h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {/* Design & UI */}
+            {/* Core Web Languages */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <Palette size={15} color="#ff7728" />
-                <span style={{ fontSize: '13px', fontWeight: '700', color: '#ff7728' }}>Design & UI</span>
+                <Code size={15} color="#38bdf8" />
+                <span style={{ fontSize: '13px', fontWeight: '700', color: '#38bdf8' }}>Core Languages</span>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                {['Figma', 'Blender (3D Modeling)', 'UI/UX Design', 'Wireframing & Prototyping', 'Responsive Design', 'Custom CSS3'].map((t) => (
-                  <span key={t} style={{ fontSize: '12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '4px 10px', borderRadius: '6px', color: '#e2e8f0' }}>
+                {['HTML5', 'Modern CSS3', 'JavaScript (ES6+)', 'TypeScript', 'Dart', 'SQL'].map((t) => (
+                  <span key={t} style={{ fontSize: '12px', backgroundColor: 'rgba(56, 189, 248, 0.12)', border: '1px solid rgba(56, 189, 248, 0.28)', padding: '4px 10px', borderRadius: '6px', color: '#bae6fd', fontWeight: '600' }}>
                     {t}
                   </span>
                 ))}
@@ -2886,27 +3933,27 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             {/* Frameworks & Libraries */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <Code size={15} color="#60a5fa" />
-                <span style={{ fontSize: '13px', fontWeight: '700', color: '#60a5fa' }}>Frameworks & Libraries</span>
+                <Code size={15} color="#34d399" />
+                <span style={{ fontSize: '13px', fontWeight: '700', color: '#34d399' }}>Frameworks & Libraries</span>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                 {['React', 'Vite', 'React Native', 'Expo', 'Expo Router', 'Flutter'].map((t) => (
-                  <span key={t} style={{ fontSize: '12px', backgroundColor: 'rgba(96, 165, 250, 0.12)', border: '1px solid rgba(96, 165, 250, 0.25)', padding: '4px 10px', borderRadius: '6px', color: '#bfdbfe' }}>
+                  <span key={t} style={{ fontSize: '12px', backgroundColor: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.28)', padding: '4px 10px', borderRadius: '6px', color: '#a7f3d0' }}>
                     {t}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Languages */}
+            {/* Design & UI */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <Code size={15} color="#34d399" />
-                <span style={{ fontSize: '13px', fontWeight: '700', color: '#34d399' }}>Languages</span>
+                <Palette size={15} color="#ff7728" />
+                <span style={{ fontSize: '13px', fontWeight: '700', color: '#ff7728' }}>UI/UX & 3D Design</span>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                {['JavaScript', 'TypeScript', 'HTML5', 'CSS3', 'Dart', 'Python', 'SQL'].map((t) => (
-                  <span key={t} style={{ fontSize: '12px', backgroundColor: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.25)', padding: '4px 10px', borderRadius: '6px', color: '#a7f3d0' }}>
+                {['Figma (UI/UX)', 'Blender (3D Modeling)', 'Responsive Design', 'CSS Grid & Flexbox', 'Wireframing & Prototyping'].map((t) => (
+                  <span key={t} style={{ fontSize: '12px', backgroundColor: 'rgba(255, 119, 40, 0.12)', border: '1px solid rgba(255, 119, 40, 0.28)', padding: '4px 10px', borderRadius: '6px', color: '#fed7aa' }}>
                     {t}
                   </span>
                 ))}
@@ -2951,11 +3998,11 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         <div
           style={{
             position: 'absolute',
-            bottom: 'clamp(14px, 3vh, 90px)',
+            bottom: 'clamp(84px, 10vh, 100px)',
             right: 'clamp(10px, 3vw, 36px)',
             left: 'clamp(10px, 3vw, auto)',
             width: 'min(430px, calc(100vw - 20px))',
-            maxHeight: 'min(76vh, calc(100vh - 120px))',
+            maxHeight: 'min(74vh, calc(100vh - 164px))',
             margin: '0 auto',
             overflowY: 'auto',
             backgroundColor: 'rgba(13, 17, 24, 0.95)',
@@ -2972,7 +4019,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
               <Pin size={18} color="#ffaa40" style={{ flexShrink: 0 }} />
               <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#ffaa40', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                BULLETIN BOARD • ABOUT ME
+                ABOUT ME
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
@@ -3009,10 +4056,10 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
           <div
             style={{
               backgroundColor: '#fffdfa',
-              padding: '12px 12px 18px 12px',
-              borderRadius: '6px',
+              padding: '12px 12px 16px 12px',
+              borderRadius: '8px',
               boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-              transform: 'rotate(-2deg)',
+              transform: 'rotate(-1.5deg)',
               marginBottom: '18px',
               border: '1px solid #e2dcd2',
             }}
@@ -3020,30 +4067,32 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             <div
               style={{
                 width: '100%',
-                maxHeight: '230px',
-                borderRadius: '3px',
+                aspectRatio: '1 / 1',
+                maxHeight: '340px',
+                borderRadius: '4px',
                 overflow: 'hidden',
                 backgroundColor: '#1c2230',
               }}
             >
               <img
-                src="/ghayzelle-polaroid.jpg"
+                src="/ghayzelle-about.png"
                 alt="Ghayzelle Dizon"
                 style={{
                   width: '100%',
-                  height: '230px',
+                  height: '100%',
                   objectFit: 'cover',
+                  objectPosition: 'center center',
                   display: 'block',
                 }}
               />
             </div>
-            <div style={{ textAlign: 'center', marginTop: '10px', fontWeight: '700', fontSize: '13px', color: '#1e293b' }}>
+            <div style={{ textAlign: 'center', marginTop: '10px', fontWeight: '800', fontSize: '13px', color: '#1e293b', letterSpacing: '0.02em' }}>
               Ghayzelle Dizon
             </div>
           </div>
 
           <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#ff7728', marginBottom: '10px' }}>
-            A Little About Me
+            Hello, I'm Ghayzelle
           </h3>
           <div style={{ fontSize: '12.5px', color: '#cbd5e1', lineHeight: 1.65, display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
             <p style={{ margin: 0 }}>
@@ -3056,7 +4105,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
               I believe growth comes from stepping outside my comfort zone, taking on challenges, and turning new ideas into action. I may not have everything figured out, but I'm always moving forward, learning through experience, and finding new ways to improve.
             </p>
           </div>
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '12px', marginBottom: '14px' }}>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '12px', marginBottom: '16px' }}>
             <div style={{ fontSize: '13px', fontWeight: '700', color: '#f8fafc' }}>
               Holy Angel University
             </div>
@@ -3065,6 +4114,55 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             </div>
             <div style={{ fontSize: '11px', color: '#34d399', fontWeight: '700', marginTop: '3px' }}>
               ★ Dean's Lister: 1st Year (1st Sem), 2nd Year (1st Sem), 3rd Year
+            </div>
+          </div>
+
+          {/* Personal Strengths Section */}
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+              <Sparkles size={15} color="#ffaa40" />
+              <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#ffaa40', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Personal Strengths
+              </h4>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {PERSONAL_STRENGTHS.map((item) => (
+                <div
+                  key={item.num}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 170, 64, 0.18)',
+                    borderRadius: '8px',
+                    padding: '9px 12px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: '800',
+                      color: '#ff9f43',
+                      backgroundColor: 'rgba(255, 159, 67, 0.15)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      marginTop: '2px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {item.num}
+                  </span>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#f8fafc', marginBottom: '2px' }}>
+                      {item.title}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: 1.45 }}>
+                      {item.desc}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -3114,11 +4212,11 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
         <div
           style={{
             position: 'absolute',
-            bottom: 'clamp(14px, 3vh, 90px)',
+            bottom: 'clamp(84px, 10vh, 100px)',
             right: 'clamp(10px, 3vw, 36px)',
             left: 'clamp(10px, 3vw, auto)',
             width: 'min(450px, calc(100vw - 20px))',
-            maxHeight: 'min(78vh, calc(100vh - 120px))',
+            maxHeight: 'min(74vh, calc(100vh - 164px))',
             margin: '0 auto',
             overflowY: 'auto',
             backgroundColor: 'rgba(13, 17, 24, 0.95)',
@@ -3135,7 +4233,7 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
               <FileText size={18} color="#ff4d15" style={{ flexShrink: 0 }} />
               <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '0.08em', color: '#ff7728', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                DESK DOCUMENT • RESUME
+                RESUME
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
@@ -3169,259 +4267,493 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             </div>
           </div>
 
-          <div
-            style={{
-              backgroundColor: '#fff',
-              color: '#1a1f2c',
-              padding: '22px',
-              borderRadius: '8px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-              marginBottom: '18px',
-              fontFamily: 'sans-serif',
-            }}
-          >
-            <div style={{ borderBottom: '2px solid #ea580c', paddingBottom: '10px', marginBottom: '14px' }}>
-              <h2 style={{ fontSize: '22px', fontWeight: '900', margin: 0, color: '#0f172a' }}>
-                Ghayzelle Dizon
-              </h2>
-              <div style={{ fontSize: '13px', color: '#ea580c', fontWeight: '800', marginTop: '2px' }}>
-                FRONT-END DEVELOPER
-              </div>
-              <div style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
-                +63 969 0199 663 | ghayzelle.dzn@gmail.com | gazed.vercel.app | github.com/geyzz | linkedin.com/in/ghayzelle-dizon
-              </div>
-            </div>
-
-            {/* Profile */}
-            <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Profile
-              </div>
-              <p style={{ fontSize: '12px', color: '#1e293b', margin: 0, lineHeight: 1.5 }}>
-                Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter. Works earnestly toward every goal, learns new tools quickly, and follows through from initial design to working product.
-              </p>
-            </div>
-
-            {/* Technical Skills */}
-            <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Technical Skills
-              </div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b', lineHeight: 1.5 }}>
-                <strong>Design &amp; UI:</strong> Figma, Blender (3D Modeling), UI/UX Design, Wireframing &amp; Prototyping, Responsive Design, Custom CSS3<br />
-                <strong>Languages:</strong> JavaScript, TypeScript, HTML5, CSS3, Dart, Python, SQL<br />
-                <strong>Frameworks &amp; Libraries:</strong> React, Vite, React Native, Expo, Expo Router, Flutter<br />
-                <strong>Backend &amp; Databases:</strong> Supabase (Auth, Realtime, Row-Level Security), PostgreSQL, AsyncStorage<br />
-                <strong>Tools:</strong> Git, GitHub, EAS Build, VS Code
-              </div>
-            </div>
-
-            {/* Projects */}
-            <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Projects
-              </div>
-              <div style={{ marginBottom: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Plan_.ed - Shopping &amp; Errand Planner App</strong>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>Personal Project</span>
-                </div>
-                <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Designed and built a mobile shopping planner featuring custom light/dark themes, collapsible headers, and an interactive errand calendar with native reminder alarms.</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Created smart checklists with real-time cost calculation and a directory linking items to 4 major Pampanga malls.</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Implemented cloud and offline sync using Supabase and AsyncStorage, and shipped an Android APK via EAS Build.</div>
-              </div>
-              <div style={{ marginBottom: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>C&amp;J Real Estate - Property Showcase &amp; Management Platform</strong>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>Personal Project</span>
-                </div>
-                <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: React, Vite, Supabase (PostgreSQL, RLS), JavaScript (ES6+), EmailJS, Custom CSS3</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Architected a full-stack real estate platform and session-authenticated Admin Portal with Supabase for real-time property CRUD listings, status management, and lead tracking.</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Engineered an interactive showroom featuring dual-thumb price sliders, dynamic Philippine geographic selectors (phil-reg-prov-mun-brgy), and multi-property inquiry carts.</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Integrated automated client notification workflows using EmailJS and crafted responsive CSS3 Grid layouts achieving sub-second load times and fluid modal views.</div>
-              </div>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>HAUtogo - Real-Time Faculty Tracking &amp; Class Management</strong>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>Collaborative Project</span>
-                </div>
-                <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: Flutter, Dart, Supabase, flutter_map, geolocator</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Built a campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations.</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Designed role-based weekly schedule views for students and professors, plus one-tap room navigation and next-class indicators.</div>
-                <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Implemented campus geofencing and full account authentication (login, password recovery, profile management) with Supabase.</div>
-              </div>
-            </div>
-
-            {/* Education */}
-            <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Education
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Bachelor of Science in Computer Science</strong>
-                <span style={{ fontSize: '11.5px', color: '#64748b' }}>2023 - Present</span>
-              </div>
-              <div style={{ fontSize: '12px', color: '#475569' }}>Holy Angel University</div>
-              <div style={{ fontSize: '11.5px', color: '#0f172a', fontWeight: '600', marginTop: '2px' }}>• Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year</div>
-            </div>
-
-            {/* Certifications */}
-            <div>
-              <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Certifications
-              </div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>Responsive Web Design</strong> - freeCodeCamp</div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>JavaScript Essentials 1</strong> - Cisco Networking Academy</div>
-              <div style={{ fontSize: '11.5px', color: '#1e293b' }}>• <strong>AWS Academy Graduate</strong> - Cloud Foundations - Amazon Web Services</div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <a
-              href="/Ghayzelle_Dizon_Resume.pdf"
-              download="Ghayzelle_Dizon_Resume.pdf"
+          {/* Tab Selector: Resume vs Certificates */}
+          <div style={{ display: 'flex', gap: '6px', backgroundColor: 'rgba(255, 255, 255, 0.05)', padding: '4px', borderRadius: '8px', marginBottom: '14px' }}>
+            <button
+              onClick={() => setResumeTab('resume')}
               style={{
-                flex: '1 1 140px',
+                flex: 1,
+                padding: '7px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: resumeTab === 'resume' ? 'linear-gradient(135deg, #ff4d15, #ff7728)' : 'transparent',
+                color: resumeTab === 'resume' ? '#fff' : '#94a3b8',
+                fontWeight: '700',
+                fontSize: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              Resume
+            </button>
+            <button
+              onClick={() => setResumeTab('certificates')}
+              style={{
+                flex: 1,
+                padding: '7px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: resumeTab === 'certificates' ? 'linear-gradient(135deg, #ff4d15, #ff7728)' : 'transparent',
+                color: resumeTab === 'certificates' ? '#fff' : '#94a3b8',
+                fontWeight: '700',
+                fontSize: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
-                padding: '11px 16px',
-                backgroundColor: '#ff4d15',
-                color: '#fff',
-                borderRadius: '8px',
-                fontWeight: '700',
-                fontSize: '13px',
-                textDecoration: 'none',
-                boxShadow: '0 4px 16px rgba(255, 77, 21, 0.4)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#ff6332';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#ff4d15';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <Download size={15} />
-              <span>Download Resume (PDF)</span>
-            </a>
-            <a
-              href="/Ghayzelle_Dizon_CV.pdf"
-              download="Ghayzelle_Dizon_CV.pdf"
-              style={{
-                flex: '1 1 140px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '11px 16px',
-                backgroundColor: '#0f172a',
-                color: '#fff',
-                borderRadius: '8px',
-                fontWeight: '700',
-                fontSize: '13px',
-                textDecoration: 'none',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1e293b';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#0f172a';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <Download size={15} />
-              <span>Download CV (PDF)</span>
-            </a>
-            <a
-              href="mailto:ghayzelle.dzn@gmail.com?subject=Job%20Inquiry%20-%20Ghayzelle%20Dizon"
-              style={{
-                flex: '1 1 120px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '11px 16px',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#fff',
-                borderRadius: '8px',
-                fontWeight: '700',
-                fontSize: '13px',
-                textDecoration: 'none',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.18)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-              }}
-            >
-              <Mail size={15} />
-              <span>Email</span>
-            </a>
-            <a
-              href="https://github.com/geyzz"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                padding: '11px 16px',
-                backgroundColor: 'rgba(255,255,255,0.08)',
-                color: '#fff',
-                borderRadius: '8px',
-                fontWeight: '700',
-                fontSize: '13px',
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
                 gap: '6px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
               }}
             >
-              <ExternalLink size={14} />
-              <span>GitHub</span>
-            </a>
+              <Award size={13} />
+              <span>Certificates (3)</span>
+            </button>
           </div>
+
+          {/* TAB 1: RESUME SHEET */}
+          {resumeTab === 'resume' && (
+            <>
+              <div
+                style={{
+                  backgroundColor: '#fff',
+                  color: '#1a1f2c',
+                  padding: '22px',
+                  borderRadius: '8px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                  marginBottom: '14px',
+                  fontFamily: 'sans-serif',
+                }}
+              >
+              <div style={{ borderBottom: '2px solid #ea580c', paddingBottom: '10px', marginBottom: '14px' }}>
+                <h2 style={{ fontSize: '22px', fontWeight: '900', margin: 0, color: '#0f172a' }}>
+                  Ghayzelle Dizon
+                </h2>
+                <div style={{ fontSize: '13px', color: '#ea580c', fontWeight: '800', marginTop: '2px' }}>
+                  Front-End Developer
+                </div>
+                <div style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
+                  0969 0199 663 | ghayzelle.dzn@gmail.com | gazed.vercel.app | github.com/geyzz | linkedin.com/in/ghayzelle-dizon
+                </div>
+              </div>
+
+              {/* Profile */}
+              <div style={{ marginBottom: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  PROFILE
+                </div>
+                <p style={{ fontSize: '12px', color: '#1e293b', margin: 0, lineHeight: 1.5 }}>
+                  Computer Science student and Front-End Developer with a strong passion for UI/UX design, 3D visuals, and building distinctive web and mobile interfaces. Seeking a Front-End Developer role where I can turn creative design concepts in Figma and Blender into polished, responsive applications using React, React Native, and Flutter. Works earnestly toward every goal, learns new tools quickly, and follows through from initial design to working product.
+                </p>
+              </div>
+
+              {/* Technical Skills */}
+              <div style={{ marginBottom: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  TECHNICAL SKILLS
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#1e293b', lineHeight: 1.5 }}>
+                  <strong>Design &amp; UI:</strong> Figma, Blender (3D Modeling), UI/UX Design, Wireframing &amp; Prototyping, Responsive Design, Custom CSS3<br />
+                  <strong>Languages:</strong> JavaScript, TypeScript, HTML5, CSS3, Dart, Python, SQL<br />
+                  <strong>Frameworks &amp; Libraries:</strong> React, Vite, React Native, Expo, Expo Router, Flutter<br />
+                  <strong>Backend &amp; Databases:</strong> Supabase (Auth, Realtime, Row-Level Security), PostgreSQL, AsyncStorage<br />
+                  <strong>Tools:</strong> Git, GitHub, EAS Build, VS Code
+                </div>
+              </div>
+
+              {/* Projects */}
+              <div style={{ marginBottom: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  PROJECTS
+                </div>
+                <div style={{ marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Plan_.ed - Shopping &amp; Errand Planner App</strong>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Personal Project</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: React Native, Expo, Supabase, PostgreSQL, AsyncStorage, EAS Build</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Designed and built a mobile shopping planner featuring custom light/dark themes, collapsible headers, and an interactive errand calendar with native reminder alarms.</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Created smart checklists with real-time cost calculation and a directory linking items to 4 major Pampanga malls.</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Implemented cloud and offline sync using Supabase and AsyncStorage, and shipped an Android APK via EAS Build.</div>
+                </div>
+                <div style={{ marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>C&amp;J Real Estate - Property Showcase &amp; Management Platform</strong>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Personal</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: React, Vite, Supabase (PostgreSQL, RLS), JavaScript (ES6+), EmailJS, Custom CSS3</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Architected a full-stack real estate platform and session-authenticated Admin Portal with Supabase for real-time property CRUD listings, status management, and lead tracking.</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Engineered an interactive showroom featuring dual-thumb price sliders, dynamic Philippine geographic selectors (phil-reg-prov-mun-brgy), and multi-property inquiry carts.</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Integrated automated client notification workflows using EmailJS and crafted responsive CSS3 Grid layouts achieving sub-second load times and fluid modal views.</div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>HAUtogo - Real-Time Faculty Tracking &amp; Class Management</strong>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Collaborative</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#c2410c', fontStyle: 'italic', marginBottom: '3px' }}>Tech Stack: Flutter, Dart, Supabase, flutter_map, geolocator</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Built a campus mobile app for Holy Angel University with an interactive map and sliding panel UI that displays live professor locations.</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Designed role-based weekly schedule views for students and professors, plus one-tap room navigation and next-class indicators.</div>
+                  <div style={{ fontSize: '11.5px', color: '#334155', lineHeight: 1.45 }}>• Implemented campus geofencing and full account authentication (login, password recovery, profile management) with Supabase.</div>
+                </div>
+              </div>
+
+              {/* Education */}
+              <div style={{ marginBottom: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  EDUCATION
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: '12.5px', color: '#0f172a' }}>Bachelor of Science in Computer Science</strong>
+                  <span style={{ fontSize: '11.5px', color: '#64748b' }}>2023 - Present</span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#475569' }}>Holy Angel University</div>
+                <div style={{ fontSize: '11.5px', color: '#0f172a', fontWeight: '600', marginTop: '2px' }}>• Dean's Lister: 1st Year (1st Semester), 2nd Year (1st Semester), 3rd Year</div>
+              </div>
+
+              {/* Certifications on sheet */}
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#ea580c', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  CERTIFICATIONS
+                </div>
+                <div style={{ fontSize: '11.5px', color: '#1e293b', lineHeight: 1.6 }}>
+                  <div>• <strong>Responsive Web Design</strong> - freeCodeCamp</div>
+                  <div>• <strong>JavaScript Essentials 1</strong> - Cisco Networking Academy</div>
+                  <div>• <strong>AWS Academy Graduate</strong> - Cloud Foundations - Amazon Web Services</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Download Resume & CV Action Bar (Positioned Below Resume Sheet) */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+                gap: '10px',
+                marginBottom: '16px',
+              }}
+            >
+              <a
+                href="/Ghayzelle_Dizon_Resume.pdf"
+                download="Ghayzelle_Dizon_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '11px 16px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #ff4d15, #ff7728)',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 14px rgba(255, 77, 21, 0.35)',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 77, 21, 0.55)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(255, 77, 21, 0.35)';
+                }}
+              >
+                <Download size={15} />
+                <span>Download Resume</span>
+              </a>
+
+              <a
+                href="/Ghayzelle_Dizon_CV.pdf"
+                download="Ghayzelle_Dizon_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '11px 16px',
+                  borderRadius: '10px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.22)',
+                  color: '#f8fafc',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.22)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <FileText size={15} color="#38bdf8" />
+                <span>Download CV</span>
+              </a>
+            </div>
+          </>
+        )}
+
+          {/* TAB 2: CERTIFICATES SHOWCASE */}
+          {resumeTab === 'certificates' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '18px' }}>
+              <div
+                style={{
+                  fontSize: '11.5px',
+                  color: '#ffaa80',
+                  backgroundColor: 'rgba(255, 77, 21, 0.08)',
+                  border: '1px dashed rgba(255, 77, 21, 0.3)',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <Award size={16} color="#ff7728" style={{ flexShrink: 0 }} />
+                <span>Verified industry credentials in modern web design, JavaScript algorithms, and cloud infrastructure.</span>
+              </div>
+
+              {CERTIFICATES_DATA.map((cert, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.09)',
+                    borderRadius: '12px',
+                    padding: '14px',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {/* Certificate Image Preview */}
+                  <div
+                    style={{
+                      width: '100%',
+                      aspectRatio: '16 / 11.2',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      marginBottom: '12px',
+                      border: `1.5px solid ${cert.accent}40`,
+                      backgroundColor: '#070a12',
+                      position: 'relative',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onClick={() => setSelectedCertModal(cert)}
+                    title="Click to view full certificate"
+                  >
+                    <img
+                      src={cert.image}
+                      alt={cert.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        transition: 'transform 0.3s ease',
+                        display: 'block',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1.0)'; }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        backgroundColor: 'rgba(10, 15, 29, 0.88)',
+                        backdropFilter: 'blur(6px)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#f8fafc',
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <ExternalLink size={10} color={cert.accent} />
+                      <span>Full Certificate</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px', gap: '8px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: '800', color: '#fff' }}>
+                      {cert.title}
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        color: cert.accent,
+                        padding: '2px 8px',
+                        borderRadius: '100px',
+                        backgroundColor: `${cert.accent}20`,
+                        border: `1px solid ${cert.accent}45`,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {cert.badge}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: '12px', color: '#ff8a5c', fontWeight: '700', marginBottom: '4px' }}>
+                    {cert.issuer}
+                  </div>
+
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '8px' }}>
+                    {cert.date}
+                  </div>
+
+                  <div style={{ fontSize: '11.5px', color: '#cbd5e1', lineHeight: 1.45, backgroundColor: 'rgba(255, 255, 255, 0.02)', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.05)', marginBottom: '10px' }}>
+                    <strong style={{ color: '#94a3b8' }}>Core Skills: </strong>
+                    {cert.skills}
+                  </div>
+
+                  {/* View Certificate Button */}
+                  <button
+                    onClick={() => setSelectedCertModal(cert)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '7px',
+                      padding: '9px 12px',
+                      backgroundColor: `${cert.accent}18`,
+                      border: `1px solid ${cert.accent}55`,
+                      borderRadius: '8px',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = `${cert.accent}30`;
+                      e.currentTarget.style.borderColor = cert.accent;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = `${cert.accent}18`;
+                      e.currentTarget.style.borderColor = `${cert.accent}55`;
+                    }}
+                  >
+                    <Maximize2 size={13} color={cert.accent} />
+                    <span>View Certificate</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Restore Info Panel Button when user dismissed it to inspect 3D */}
-      {panelDismissed && activeStation !== 'portfolio' && (
-        <button
-          onClick={() => setPanelDismissed(false)}
+      {/* ─────────────────────────────────────────────────────────────
+          BOTTOM-RIGHT ACTION CONTROLS: [Show Info Panel] [Inquire]
+      ───────────────────────────────────────────────────────────── */}
+      {!loading && (
+        <div
           style={{
             position: 'absolute',
-            bottom: '96px',
-            right: '36px',
-            backgroundColor: 'rgba(15, 20, 30, 0.92)',
-            border: '1px solid #ff4d15',
-            color: '#ff8a5c',
-            padding: '10px 18px',
-            borderRadius: '100px',
-            fontSize: '12.5px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.6), 0 0 16px rgba(255, 77, 21, 0.35)',
-            zIndex: 40,
+            bottom: '24px',
+            right: '28px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            transition: 'all 0.2s ease',
+            gap: '10px',
+            zIndex: 45,
           }}
         >
-          <Sparkles size={14} color="#ff7728" />
-          <span>Show Info Panel</span>
-        </button>
+          {/* 1. Show Info Panel (in bottom-right corner, placed before the Inquire button) */}
+          {panelDismissed && activeStation !== 'room' && (
+            <button
+              onClick={() => setPanelDismissed(false)}
+              style={{
+                backgroundColor: 'rgba(15, 20, 30, 0.92)',
+                border: '1px solid #ff4d15',
+                color: '#ff8a5c',
+                padding: '10px 18px',
+                borderRadius: '100px',
+                fontSize: '12.5px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.6), 0 0 16px rgba(255, 77, 21, 0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 77, 21, 0.22)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(15, 20, 30, 0.92)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <Sparkles size={14} color="#ff7728" />
+              <span>Show Info Panel</span>
+            </button>
+          )}
+
+          {/* 2. Inquire Button (rightmost in the bottom-right corner) */}
+          <button
+            onClick={() => {
+              if (onOpenInquiry) {
+                onOpenInquiry();
+              } else {
+                window.location.href = 'mailto:ghayzelle.dzn@gmail.com?subject=Portfolio%20Inquiry%20-%20Ghayzelle%20Dizon';
+              }
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #ff4d15, #ff7728)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#ffffff',
+              padding: '10px 20px',
+              borderRadius: '100px',
+              fontSize: '12.5px',
+              fontWeight: '800',
+              letterSpacing: '0.03em',
+              cursor: 'pointer',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 20px rgba(255, 77, 21, 0.45), 0 0 18px rgba(255, 77, 21, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 6px 24px rgba(255, 77, 21, 0.6), 0 0 24px rgba(255, 77, 21, 0.45)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(255, 77, 21, 0.45), 0 0 18px rgba(255, 77, 21, 0.3)';
+            }}
+          >
+            <Mail size={14} color="#fff" />
+            <span>Inquire</span>
+          </button>
+        </div>
       )}
 
       {/* ─────────────────────────────────────────────────────────────
@@ -3568,6 +4900,173 @@ export default function Desk3DViewer({ onClose, onOpenPortfolioWeb = null, isPau
             );
           })}
         </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          CERTIFICATE VIEWER LIGHTBOX MODAL
+      ───────────────────────────────────────────────────────────── */}
+      {selectedCertModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            backgroundColor: 'rgba(0, 0, 0, 0.88)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+          onClick={() => setSelectedCertModal(null)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '960px',
+              backgroundColor: '#0c1018',
+              borderRadius: '16px',
+              border: `1.5px solid ${selectedCertModal.accent || '#ff4d15'}66`,
+              boxShadow: `0 24px 64px rgba(0,0,0,0.92), 0 0 40px ${selectedCertModal.accent || '#ff4d15'}30`,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: '92vh',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header bar */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '16px 22px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: '800', color: '#ffffff' }}>
+                  {selectedCertModal.title}
+                </div>
+                <div style={{ fontSize: '12px', color: selectedCertModal.accent || '#ff7728', fontWeight: '700', marginTop: '2px' }}>
+                  {selectedCertModal.issuer} • {selectedCertModal.date}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {selectedCertModal.url && (
+                  <a
+                    href={selectedCertModal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '11.5px',
+                      fontWeight: '700',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      padding: '7px 13px',
+                      borderRadius: '8px',
+                      backgroundColor: `${selectedCertModal.accent}30`,
+                      border: `1px solid ${selectedCertModal.accent}80`,
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = `${selectedCertModal.accent}50`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = `${selectedCertModal.accent}30`;
+                    }}
+                  >
+                    <ExternalLink size={13} color={selectedCertModal.accent} />
+                    <span>Verify Credential ↗</span>
+                  </a>
+                )}
+                <a
+                  href={selectedCertModal.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '11.5px',
+                    fontWeight: '700',
+                    color: '#cbd5e1',
+                    textDecoration: 'none',
+                    padding: '7px 13px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+                    e.currentTarget.style.color = '#ffffff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
+                    e.currentTarget.style.color = '#cbd5e1';
+                  }}
+                >
+                  <ExternalLink size={13} />
+                  <span>Full View</span>
+                </a>
+                <button
+                  onClick={() => setSelectedCertModal(null)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    padding: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '6px',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = '#ffffff'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = '#94a3b8'; }}
+                  title="Close"
+                >
+                  <X size={22} />
+                </button>
+              </div>
+            </div>
+
+            {/* Certificate image display */}
+            <div
+              style={{
+                padding: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'auto',
+                backgroundColor: '#070a10',
+              }}
+            >
+              <img
+                src={selectedCertModal.image}
+                alt={selectedCertModal.title}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '72vh',
+                  objectFit: 'contain',
+                  borderRadius: '10px',
+                  boxShadow: '0 16px 44px rgba(0,0,0,0.8)',
+                  display: 'block',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Return to Room View Pill (Visible when zoomed into any station) */}
       {!loading && activeStation !== 'room' && (
